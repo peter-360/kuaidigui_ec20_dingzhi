@@ -231,7 +231,7 @@ u16 cjson_to_struct_info_qrcode(char *text)
 
 }
 
-
+char regst_key[60]={0};
 
 u16 cjson_to_struct_info(char *text)
 {
@@ -258,7 +258,7 @@ u16 cjson_to_struct_info(char *text)
 	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";
 
 
-	char regst_key[60]={0};
+
 	char regst_key_post[300];
 	u16 index_m=0;
 
@@ -537,9 +537,9 @@ u16 cjson_to_struct_info(char *text)
 
 
 //-----------------------------------------------------------
-			delay_ms(1000); //500
-			USART2_RX_STA=0;
-			printf("...a-9-1...\n");
+			// delay_ms(1000); //500
+			// USART2_RX_STA=0;
+			// printf("...a-9-1...\n");
 
 			sim900a_send_cmd("AT+QHTTPURL=52,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-9...\n");

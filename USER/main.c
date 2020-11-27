@@ -27,9 +27,9 @@
  void uart0_debug_str(uint8_t* str,uint16_t len)//str8
 {
 	int i;
-    DB_PR("--1str---debug_str:");
+    DB_PR("--1str---debug_str:\n");
     for(i=0;i<len;i++)
-        DB_PR("%c ",str[i]);
+        DB_PR("%c",str[i]);
     DB_PR("\r\n");
 }
  

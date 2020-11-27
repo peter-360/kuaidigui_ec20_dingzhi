@@ -23,6 +23,14 @@
 #define DB_PR(...) 
 #endif
 
+
+
+extern char regst_key[];
+
+
+
+
+
 void lcd_at_response(u8 mode);
 
 
@@ -42,6 +50,9 @@ extern void Usart_SendArray( USART_TypeDef * pUSARTx, uint8_t *array, uint16_t n
 void uart0_debug_data_h(uint8_t* data,uint16_t len);//hex8
 
 void uart0_debug_data_d(uint8_t* data,uint16_t len);//dec8
+
+
+void send_cmd_to_lcd_pic(uint16_t temp);
 #endif
 
 

@@ -7,6 +7,9 @@
 #include "led.h"
 #include <stdio.h>
 #include "stdlib.h"
+
+#include "usart2.h"
+#include "cJSON.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32开发板
@@ -431,6 +434,110 @@ pbDest[i] = s1*16 + s2;
 }
 }
 
+
+
+
+
+
+
+u16 cjson_to_struct_info_opendoor(char *text)
+{
+	u8 reg_status=0x000f;
+	char *index;
+	cJSON * root = NULL;
+	cJSON * item = NULL;//cjson???ó
+
+//	cJSON * item2 = NULL;//cjson???ó
+//	
+//	cJSON * item3 = NULL;//cjson???ó
+	uint8_t buff_t[256]={0};
+	int i=0;
+	u16 index_m=0;
+
+
+	
+    if( text == NULL)
+    {
+        printf("\n----1 err----text=\n%s\n",text);
+        return 0xffff;
+    }
+    // cJSON *root,*psub;
+
+    // cJSON *arrayItem;
+
+    //???????§json
+    printf("\n----1----text=\n%s\n",text);
+    index=strchr(text,'{');
+
+    if(NULL == index)
+    {
+        printf("------NULL----4444----------\n");
+        return 0xffff;
+    }
+    strcpy(text,index);
+
+	printf("\n----2----text=\n%s\n",text);
+
+
+    // root = cJSON_Parse(text);     
+    // if (!root) 
+    // {
+    //     printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+    // }
+    // else
+    // {
+    //     printf("%s\n", "????????·????ò??Json:");           
+    //     // printf("%s\n\n", cJSON_Print(root));
+    //     // printf("%s\n", "??????·????ò??json??");
+    //     // printf("%s\n\n", cJSON_PrintUnformatted(root));
+
+	// 	//---------------------
+	// 	printf("\n%s\n", "--1--??????????????------------ ?ü????:");
+	// 	printf("%s\n", "????result????cjson???ó:");
+	// 	item = cJSON_GetObjectItem(root, "result");//
+	// 	printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+	// 	printf("--2--%s\n", item->valuestring);
+
+	// 	// printf("%s\n", cJSON_Print(item));
+
+
+
+
+	// 	memset(buff_t,0,256);
+	// 	memcpy(buff_t, item->valuestring,strlen( item->valuestring));
+	// 	index_m = strlen(buff_t);
+	// 	printf("--index_m=%d--\n", index_m);
+	// 	buff_t[index_m]=0xff;
+	// 	buff_t[index_m+1]=0xff;
+		
+	// 	uart0_debug_data_h(buff_t,256);
+
+
+	// 	send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+
+
+
+
+
+
+
+
+
+	// 	// send_cmd_to_lcd_pic(0x0003);
+
+           
+    // }
+
+
+
+    cJSON_Delete(root);
+    return reg_status;
+
+}
+
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
@@ -441,8 +548,12 @@ void lcd_at_response(u8 mode)
 	uint8_t data_rx_t[USART4_MAX_RECV_LEN] = {0};
 	uint16_t len_rx_t= 0;
 	uint16_t bl_addr=0;//bianliang lcd
+    uint8_t qujian_num[8]={0};  
 	// int32_t guimen_gk_temp =0;
-
+    uint32_t qujian_num_int=0;  //
+		int i=0;
+    char regst_key_post[300]={0};
+	char qhttp_post_req[150]={0};
 
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
@@ -472,6 +583,88 @@ void lcd_at_response(u8 mode)
                         {
                             case 0x1600://
                                 DB_PR("--11111111--\r\n");
+                                //POST
+                                memcpy( qujian_num,data_rx_t+7 ,8);
+
+                                for (i = 7; i < 7+ data_rx_t[6] *2 -2 ; i++) {
+                                    DB_PR("0x%.2X ", (uint8_t)data_rx_t[i]);
+                                    if((data_rx_t[i] == 0xFF)
+                                        ||(data_rx_t[i] == 0x00))
+                                    {
+                                        //send_cmd_to_lcd_pic(0x0053);
+                                        send_cmd_to_lcd_pic(0x0005);
+                                        DB_PR("----weishu err---.\r\n");
+                                        //break;
+                                        return;
+                                    }
+                                }
+                                DB_PR("\r\n");
+
+                                DB_PR("qujian_num=");
+                                uart0_debug_str(qujian_num,8);
+                                // uint16_t j=0,k=0;
+
+                                qujian_num_int = atoi((const char*)qujian_num);
+                                DB_PR("--qujian_num_int=%8u---.\r\n",qujian_num_int);
+
+
+
+                                //----------------------------
+                                sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                                printf("...a-9...\n");
+
+                                sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",8000);
+                                printf("...a-10...\n");
+
+
+
+                                //USART2_RX_STA =0;  86
+                                // memset(regst_key_post,0,sizeof(regst_key_post));
+                                memset(regst_key_post,0,sizeof(regst_key_post));
+                                sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
+                                uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+                                printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+
+                                sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
+                                sim900a_send_cmd(qhttp_post_req,"CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+
+
+                                // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
+                                printf("...a-11...\n");
+
+                                delay_ms(1000); //500
+                                delay_ms(1000); //500
+                                delay_ms(1000); //500
+                                delay_ms(1000); //500
+
+
+
+
+                                // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
+                                uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+                                sim900a_send_cmd(regst_key_post,"OK",25000);
+                                // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
+                                
+                                printf("...a-12...\n");
+
+                                
+                                delay_ms(1000); //500
+                                delay_ms(1000); //500
+                                // delay_xs(30);
+
+                                //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+                                if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+                                { 
+                                    cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+                                    USART2_RX_STA=0;
+
+                                    // cJSON_Delete(root);
+                                    // return reg_status;
+                                } 
+
+
                                 break;
                             default:
                                 DB_PR("--default in--\r\n");
