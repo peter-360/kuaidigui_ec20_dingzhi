@@ -41,6 +41,17 @@
 //mode:0,不清零USART2_RX_STA;
 //     1,清零USART2_RX_STA;
 
+void delay_xs(u16 xms)
+{	 	
+	int i=0;
+	for(i=0; i<xms; i++);
+	{
+   		delay_ms(1000);
+		printf("-----------\n");
+	}
+
+}
+
 
 
 u8 UTF8toUnicode(u8 *ch, u16 *_unicode)
@@ -251,6 +262,7 @@ u16 cjson_to_struct_info(char *text)
 
 
 	char regst_key[60];
+	char regst_key_post[160];
 
 	// const char needle[10] = "\r\n";
 	// char *ret;
@@ -395,50 +407,15 @@ u16 cjson_to_struct_info(char *text)
 			memset(buff_t,0,256);
 			memcpy(regst_key,item->valuestring,8* sizeof(item->valuestring));
 			DB_PR("sizeof(item->valuestring)=%d\n", sizeof(item->valuestring));
-			DB_PR("regst_key=%s\n", regst_key);
+			DB_PR("regst_key=%s\n", regst_key);//-----------------------------------------------
 			// send_cmd_to_lcd_bl_len(0x1150,(uint8_t*)buff_t,32+4);//gekou 33 +3
 
 
 
 
-			// // delay_ms(1000); //500
-			// // delay_ms(1000); //500
-			// // delay_ms(1000); //500
-			// delay_ms(1000); //500
-			// USART2_RX_STA=0;
-			// printf("...a-9-1...\n");
-
-			// sim900a_send_cmd("AT+QHTTPURL=50,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			// printf("...a-9...\n");
-
-			// sim900a_send_cmd("https://iot.modoubox.com/web_wechat/deliver/qrcode","OK",8000);
-			// printf("...a-10...\n");
 
 
 
-			// //USART2_RX_STA =0;
-			// sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			// printf("...a-11...\n");
-
-
-			// sim900a_send_cmd("from=cabinet&register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
-			// // sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
-			// printf("...a-12...\n");
-
-
-
-
-			// delay_ms(1000); //500
-			// delay_ms(1000); //500
-			// delay_ms(1000); //500
-			// delay_ms(1000); //500
-
-			// //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-			// if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",12000))// != GSM_TRUE) return GSM_FALSE;//"OK"
-			// { 
-			// 	cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
-			// 	USART2_RX_STA=0;
-			// } 
 
 
 			// //----------todo utf8 gbk-----------
@@ -553,7 +530,65 @@ u16 cjson_to_struct_info(char *text)
 
 
 
-			send_cmd_to_lcd_pic(0x0003);
+
+
+
+//-----------------------------------------------------------
+			delay_ms(1000); //500
+			USART2_RX_STA=0;
+			printf("...a-9-1...\n");
+
+			sim900a_send_cmd("AT+QHTTPURL=50,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			printf("...a-9...\n");
+
+			sim900a_send_cmd("https://iot.modoubox.com/web_wechat/deliver/qrcode","OK",8000);
+			printf("...a-10...\n");
+
+
+			//USART2_RX_STA =0;
+			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			printf("...a-11-1...\n");
+
+			//USART2_RX_STA =0;
+			sim900a_send_cmd("AT+QHTTPPOST=86,80,80\r\n","CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			printf("...a-11...\n");
+
+			delay_ms(1000); //500
+			delay_ms(1000); //500
+			delay_ms(1000); //500
+			delay_ms(1000); //500
+
+
+			// sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);
+			// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+			// uart0_debug_str(regst_key_post,strlen(regst_key_post));
+			// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+			// sim900a_send_cmd(regst_key_post,"OK",25000);
+			sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
+			// sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
+			printf("...a-12...\n");
+
+			
+			delay_ms(1000); //500
+			delay_ms(1000); //500
+			// delay_xs(30);
+
+			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+			if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+			{ 
+				cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
+				USART2_RX_STA=0;
+
+				cJSON_Delete(root);
+    			return reg_status;
+			} 
+
+
+
+
+
+
+			send_cmd_to_lcd_pic(0x0003);//---------------
 
 		}
 		
