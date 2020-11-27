@@ -138,7 +138,9 @@ u16 cjson_to_struct_info_qrcode(char *text)
 	cJSON * item2 = NULL;//cjson对象
 	
 	cJSON * item3 = NULL;//cjson对象
+	uint8_t buff_t[256]={0};
 	int i=0;
+	u16 index_m=0;
 
 
 	
@@ -177,50 +179,45 @@ u16 cjson_to_struct_info_qrcode(char *text)
         // printf("%s\n", "无格式方式打印json：");
         // printf("%s\n\n", cJSON_PrintUnformatted(root));
 
+		//---------------------
+		printf("\n%s\n", "--1--一步一步的获取------------ 键值对:");
+		printf("%s\n", "获取result下的cjson对象:");
+		item = cJSON_GetObjectItem(root, "result");//
+		printf("--1--%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+		printf("--2--%s\n", item->valuestring);
 
-
-
-        // printf("%s\n", "获取status下的cjson对象");
-        // item = cJSON_GetObjectItem(root, "status");
-        // // printf("%s\n", cJSON_Print(item));
-        // printf("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
-        // printf("%d\n", item->valueint);
-        // reg_status = item->valueint;
-        // printf("reg_status=%d\n", reg_status);
+		// printf("%s\n", cJSON_Print(item));
 
 
 
 
+		memset(buff_t,0,256);
+		memcpy(buff_t, item->valuestring,strlen( item->valuestring));
+		index_m = strlen(buff_t);
+		printf("--index_m=%d--\n", index_m);
+		buff_t[index_m]=0xff;
+		buff_t[index_m+1]=0xff;
+		
+		uart0_debug_data_h(buff_t,256);
 
-		// if(0== reg_status)
-		// {
-		// 	//---------------------
-		// 	printf("\n%s\n", "--1--一步一步的获取------------ 键值对:");
-		// 	printf("%s\n", "获取result下的cjson对象:");
-		// 	item = cJSON_GetObjectItem(root, "result");//
-		// 	// printf("%s\n", cJSON_Print(item));
 
-		// 	printf("%s\n", "获取active_code下的cjson对象");
-		// 	item = cJSON_GetObjectItem(item, "active_code");
-		// 	// printf("%s\n", cJSON_Print(item));
-
-		// 	printf("--1--%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
-		// 	printf("--2--%u\n", item->valueint);
-		// 	reg_active_code= item->valueint;
-		// 	printf("reg_active_code=%u\n", reg_active_code);
-
-		// 	// reg_active_code = 12345608;//-------------
-		// 	// reg_active_code = 0x12345078;//-------------
-		// 	ltoa(reg_active_code,(char*)buff_t,10);
-		// 	uart0_debug_data_h(buff_t,strlen(buff_t));
-		// 	send_cmd_to_lcd_bl_len(0x1010,(uint8_t*)buff_t,32+4);//gekou 33 +3
-
-		// 	send_cmd_to_lcd_pic(0x0002);
+		send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
 
 
 
-		// 	//获取http数据------------
-		// }
+
+
+
+
+
+
+
+
+
+
+		send_cmd_to_lcd_pic(0x0003);
+
+
 
 		
 
@@ -261,8 +258,9 @@ u16 cjson_to_struct_info(char *text)
 	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";
 
 
-	char regst_key[60];
-	char regst_key_post[160];
+	char regst_key[60]={0};
+	char regst_key_post[300];
+	u16 index_m=0;
 
 	// const char needle[10] = "\r\n";
 	// char *ret;
@@ -405,8 +403,9 @@ u16 cjson_to_struct_info(char *text)
 			DB_PR("%s\n", item->valuestring);
 
 			memset(buff_t,0,256);
-			memcpy(regst_key,item->valuestring,8* sizeof(item->valuestring));
+			memcpy(regst_key,item->valuestring,strlen((item->valuestring)));//8* sizeof(item->valuestring)
 			DB_PR("sizeof(item->valuestring)=%d\n", sizeof(item->valuestring));
+			DB_PR("strlen((item->valuestring)=%d\n", strlen((item->valuestring)));
 			DB_PR("regst_key=%s\n", regst_key);//-----------------------------------------------
 			// send_cmd_to_lcd_bl_len(0x1150,(uint8_t*)buff_t,32+4);//gekou 33 +3
 
@@ -497,8 +496,12 @@ u16 cjson_to_struct_info(char *text)
 			
 			memset(buff_t,0,256);
 			sprintf(buff_t,"%s%d",url_t,company_id);
-			buff_t[strlen(buff_t)]=0xff;
-			buff_t[strlen(buff_t)+1]=0xff;
+
+			index_m = strlen(buff_t);
+			printf("--index_m=%d--\n", index_m);
+			buff_t[index_m]=0xff;
+			buff_t[index_m+1]=0xff;
+
 			
 			uart0_debug_data_h(buff_t,256);
 
@@ -538,10 +541,10 @@ u16 cjson_to_struct_info(char *text)
 			USART2_RX_STA=0;
 			printf("...a-9-1...\n");
 
-			sim900a_send_cmd("AT+QHTTPURL=50,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd("AT+QHTTPURL=52,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-9...\n");
 
-			sim900a_send_cmd("https://iot.modoubox.com/web_wechat/deliver/qrcode","OK",8000);
+			sim900a_send_cmd("https://iot.xintiangui.com/web_wechat/deliver/qrcode","OK",8000);
 			printf("...a-10...\n");
 
 
@@ -549,8 +552,10 @@ u16 cjson_to_struct_info(char *text)
 			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11-1...\n");
 
-			//USART2_RX_STA =0;
-			sim900a_send_cmd("AT+QHTTPPOST=86,80,80\r\n","CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			//USART2_RX_STA =0;  86
+			memset(regst_key_post,0,sizeof(regst_key_post));
+			sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80\r\n",46+strlen(regst_key));
+			sim900a_send_cmd(regst_key_post,"CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11...\n");
 
 			delay_ms(1000); //500
@@ -559,13 +564,18 @@ u16 cjson_to_struct_info(char *text)
 			delay_ms(1000); //500
 
 
+
+			memset(regst_key_post,0,sizeof(regst_key_post));
+			//Content-Type:application/x-www-form-urlencoded\r\n
+			//Content-Type=application/x-www-form-urlencoded
+			sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);//
+
 			// sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);
 			// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
-			// uart0_debug_str(regst_key_post,strlen(regst_key_post));
+			uart0_debug_str(regst_key_post,strlen(regst_key_post));
 			// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-			// sim900a_send_cmd(regst_key_post,"OK",25000);
-			sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
-			// sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
+			sim900a_send_cmd(regst_key_post,"OK",25000);
+			// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
 			printf("...a-12...\n");
 
 			
@@ -1613,10 +1623,10 @@ u8 sim900a_gprs_test(void)
 
 	while(1)
 	{
-		sim900a_send_cmd("AT+QHTTPURL=47,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		sim900a_send_cmd("AT+QHTTPURL=49,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		printf("...a-9...\n");
 
-		sim900a_send_cmd("https://iot.modoubox.com/api/control_app/status","OK",8000);
+		sim900a_send_cmd("https://iot.xintiangui.com/api/control_app/status","OK",8000);
 		printf("...a-10...\n");
 
 
