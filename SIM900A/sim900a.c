@@ -112,7 +112,7 @@ u8 UTF8toUnicode(u8 *ch, u16 *_unicode)
 
 
 
-char* regst_key=NULL;
+
 
 
 
@@ -169,55 +169,51 @@ u16 cjson_to_struct_info_qrcode(char *text)
 
 
 
-        printf("%s\n", "获取status下的cjson对象");
-        item = cJSON_GetObjectItem(root, "status");
-        // printf("%s\n", cJSON_Print(item));
-        printf("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
-        printf("%d\n", item->valueint);
-        reg_status = item->valueint;
-        printf("reg_status=%d\n", reg_status);
+        // printf("%s\n", "获取status下的cjson对象");
+        // item = cJSON_GetObjectItem(root, "status");
+        // // printf("%s\n", cJSON_Print(item));
+        // printf("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+        // printf("%d\n", item->valueint);
+        // reg_status = item->valueint;
+        // printf("reg_status=%d\n", reg_status);
 
 
 
 
 
-		if(0== reg_status)
-		{
-			//---------------------
-			printf("\n%s\n", "--1--一步一步的获取------------ 键值对:");
-			printf("%s\n", "获取result下的cjson对象:");
-			item = cJSON_GetObjectItem(root, "result");//
-			// printf("%s\n", cJSON_Print(item));
+		// if(0== reg_status)
+		// {
+		// 	//---------------------
+		// 	printf("\n%s\n", "--1--一步一步的获取------------ 键值对:");
+		// 	printf("%s\n", "获取result下的cjson对象:");
+		// 	item = cJSON_GetObjectItem(root, "result");//
+		// 	// printf("%s\n", cJSON_Print(item));
 
-			printf("%s\n", "获取active_code下的cjson对象");
-			item = cJSON_GetObjectItem(item, "active_code");
-			// printf("%s\n", cJSON_Print(item));
+		// 	printf("%s\n", "获取active_code下的cjson对象");
+		// 	item = cJSON_GetObjectItem(item, "active_code");
+		// 	// printf("%s\n", cJSON_Print(item));
 
-			printf("--1--%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
-			printf("--2--%u\n", item->valueint);
-			reg_active_code= item->valueint;
-			printf("reg_active_code=%u\n", reg_active_code);
+		// 	printf("--1--%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+		// 	printf("--2--%u\n", item->valueint);
+		// 	reg_active_code= item->valueint;
+		// 	printf("reg_active_code=%u\n", reg_active_code);
 
-			// reg_active_code = 12345608;//-------------
-			// reg_active_code = 0x12345078;//-------------
-			ltoa(reg_active_code,(char*)buff_t,10);
-			uart0_debug_data_h(buff_t,strlen(buff_t));
-			send_cmd_to_lcd_bl_len(0x1010,(uint8_t*)buff_t,32+4);//gekou 33 +3
+		// 	// reg_active_code = 12345608;//-------------
+		// 	// reg_active_code = 0x12345078;//-------------
+		// 	ltoa(reg_active_code,(char*)buff_t,10);
+		// 	uart0_debug_data_h(buff_t,strlen(buff_t));
+		// 	send_cmd_to_lcd_bl_len(0x1010,(uint8_t*)buff_t,32+4);//gekou 33 +3
 
-			send_cmd_to_lcd_pic(0x0002);
+		// 	send_cmd_to_lcd_pic(0x0002);
 
 
 
-			//获取http数据------------
-		}
+		// 	//获取http数据------------
+		// }
 
 		
 
                         
-
-        
-        // printf("\n%s\n", "打印json所有最内层键值对:");
-        // printJson(root);
     }
 
 
@@ -226,6 +222,9 @@ u16 cjson_to_struct_info_qrcode(char *text)
     return reg_status;
 
 }
+
+
+
 u16 cjson_to_struct_info(char *text)
 {
 	u8 reg_status=0x000f;
@@ -249,6 +248,9 @@ u16 cjson_to_struct_info(char *text)
 	
 	int company_id=0;
 	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";
+
+
+	char regst_key[60];
 
 	// const char needle[10] = "\r\n";
 	// char *ret;
@@ -396,46 +398,47 @@ u16 cjson_to_struct_info(char *text)
 			DB_PR("regst_key=%s\n", regst_key);
 			// send_cmd_to_lcd_bl_len(0x1150,(uint8_t*)buff_t,32+4);//gekou 33 +3
 
-			sim900a_send_cmd("AT+QHTTPURL=50,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			printf("...a-9...\n");
-
-			sim900a_send_cmd("https://iot.modoubox.com/web_wechat/deliver/qrcode","OK",8000);
-			printf("...a-10...\n");
 
 
 
-			//USART2_RX_STA =0;
-			sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			printf("...a-11...\n");
+			// // delay_ms(1000); //500
+			// // delay_ms(1000); //500
+			// // delay_ms(1000); //500
+			// delay_ms(1000); //500
+			// USART2_RX_STA=0;
+			// printf("...a-9-1...\n");
+
+			// sim900a_send_cmd("AT+QHTTPURL=50,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			// printf("...a-9...\n");
+
+			// sim900a_send_cmd("https://iot.modoubox.com/web_wechat/deliver/qrcode","OK",8000);
+			// printf("...a-10...\n");
 
 
-			sim900a_send_cmd("from=cabinet&register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
-			// sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
-			printf("...a-12...\n");
+
+			// //USART2_RX_STA =0;
+			// sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			// printf("...a-11...\n");
+
+
+			// sim900a_send_cmd("from=cabinet&register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
+			// // sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
+			// printf("...a-12...\n");
 
 
 
 
-			delay_ms(1000); //500
-			delay_ms(1000); //500
-			delay_ms(1000); //500
-			delay_ms(1000); //500
+			// delay_ms(1000); //500
+			// delay_ms(1000); //500
+			// delay_ms(1000); //500
+			// delay_ms(1000); //500
 
-			sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-			if(USART2_RX_STA&0X8000)		//接收到一次数据了
-			{ 
-				USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-				printf("%s",USART2_RX_BUF);	//发送到串口
-
-
-				cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
-				
-				//cjson_dbg();
-
-				if(mode)
-					USART2_RX_STA=0;
-			} 
+			// //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+			// if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",12000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+			// { 
+			// 	cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
+			// 	USART2_RX_STA=0;
+			// } 
 
 
 			// //----------todo utf8 gbk-----------
