@@ -448,7 +448,6 @@ u16 cjson_to_struct_info_opendoor(char *text)
 	cJSON * item = NULL;//cjson???ó
 
 //	cJSON * item2 = NULL;//cjson???ó
-//	
 //	cJSON * item3 = NULL;//cjson???ó
 	uint8_t buff_t[256]={0};
 	int i=0;
@@ -479,41 +478,61 @@ u16 cjson_to_struct_info_opendoor(char *text)
 	printf("\n----2----text=\n%s\n",text);
 
 
-    // root = cJSON_Parse(text);     
-    // if (!root) 
-    // {
-    //     printf("Error before: [%s]\n",cJSON_GetErrorPtr());
-    // }
-    // else
-    // {
-    //     printf("%s\n", "????????·????ò??Json:");           
-    //     // printf("%s\n\n", cJSON_Print(root));
-    //     // printf("%s\n", "??????·????ò??json??");
-    //     // printf("%s\n\n", cJSON_PrintUnformatted(root));
+    root = cJSON_Parse(text);     
+    if (!root) 
+    {
+        printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+    }
+    else
+    {
 
-	// 	//---------------------
-	// 	printf("\n%s\n", "--1--??????????????------------ ?ü????:");
-	// 	printf("%s\n", "????result????cjson???ó:");
-	// 	item = cJSON_GetObjectItem(root, "result");//
-	// 	printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-	// 	printf("--2--%s\n", item->valuestring);
+			//---------------------
+			printf("%s\n", "获取status下的cjson对象");
+			item = cJSON_GetObjectItem(root, "status");//
+			printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+			printf("--2--%d\n", item->valueint);
+			reg_status = item->valueint;
+			// printf("%s\n", cJSON_Print(item));
+			
+			printf("--reg_status=%d---\n", reg_status);
+			if(reg_status == 0)
+			{
+				printf("-0-reg_status=%d---\n", reg_status);
+				printf("%s\n", "获取 result 下的cjson对象");
+				item = cJSON_GetObjectItem(root, "result");//
+				printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+				printf("--2--%s\n", item->valuestring);
+				
+				printf("%s\n", "获取 door_number 下的cjson对象");
+				item = cJSON_GetObjectItem(item, "door_number");//
+				printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+				printf("--2--%s\n", item->valuestring);
+				printf("--door---\n");
+				
+				send_cmd_to_lcd_pic(0x0006);
+			}
+			else if(reg_status == 1)
+			{
+				printf("-1-reg_status=%d---\n", reg_status);
+				send_cmd_to_lcd_pic(0x0005);
+			}
+			else if(reg_status == 2)
+			{
+				printf("-2-reg_status=%d---\n", reg_status);
+				send_cmd_to_lcd_pic(0x0007);
+			}
 
-	// 	// printf("%s\n", cJSON_Print(item));
+	//		memset(buff_t,0,256);
+	//		memcpy(buff_t, item->valuestring,strlen( item->valuestring));
+	//		index_m = strlen(buff_t);
+	//		printf("--index_m=%d--\n", index_m);
+	//		buff_t[index_m]=0xff;
+	//		buff_t[index_m+1]=0xff;
+	//		
+	//		uart0_debug_data_h(buff_t,256);
 
 
-
-
-	// 	memset(buff_t,0,256);
-	// 	memcpy(buff_t, item->valuestring,strlen( item->valuestring));
-	// 	index_m = strlen(buff_t);
-	// 	printf("--index_m=%d--\n", index_m);
-	// 	buff_t[index_m]=0xff;
-	// 	buff_t[index_m+1]=0xff;
-		
-	// 	uart0_debug_data_h(buff_t,256);
-
-
-	// 	send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+			send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
 
 
 
@@ -523,10 +542,10 @@ u16 cjson_to_struct_info_opendoor(char *text)
 
 
 
-	// 	// send_cmd_to_lcd_pic(0x0003);
+			// send_cmd_to_lcd_pic(0x0003);
 
            
-    // }
+    }
 
 
 
