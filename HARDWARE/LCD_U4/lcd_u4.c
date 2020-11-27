@@ -479,6 +479,8 @@ u16 cjson_to_struct_info_opendoor(char *text)
 
 
     root = cJSON_Parse(text);     
+    printf("\n----3----\n");
+
     if (!root) 
     {
         printf("Error before: [%s]\n",cJSON_GetErrorPtr());
@@ -532,7 +534,7 @@ u16 cjson_to_struct_info_opendoor(char *text)
 	//		uart0_debug_data_h(buff_t,256);
 
 
-			send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+			// send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
 
 
 
