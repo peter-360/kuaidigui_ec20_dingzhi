@@ -36,7 +36,7 @@
 void uart0_debug_data_h(uint8_t* data,uint16_t len)//hex8
 {
 	int i;
-    DB_PR("---2s----debug_data:");
+    DB_PR("---2s----debug_data:\n");
     for(i=0;i<len;i++)
         DB_PR("%02x ",data[i]);
     DB_PR("-----2e---------\r\n");

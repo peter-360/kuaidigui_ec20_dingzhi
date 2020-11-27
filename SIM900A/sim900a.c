@@ -215,7 +215,7 @@ u16 cjson_to_struct_info_qrcode(char *text)
 
 
 
-		send_cmd_to_lcd_pic(0x0003);
+		// send_cmd_to_lcd_pic(0x0003);
 
 
 
@@ -589,8 +589,8 @@ u16 cjson_to_struct_info(char *text)
 				cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
 				USART2_RX_STA=0;
 
-				cJSON_Delete(root);
-    			return reg_status;
+				// cJSON_Delete(root);
+    			// return reg_status;
 			} 
 
 
@@ -1767,11 +1767,12 @@ u8 sim900a_gprs_test(void)
 			timex=0;
 			LED0=!LED0;
 		}
-		// if(timex_t==1000)
-		// {
-		// 	timex_t =0;
-		// 	sim900a_send_cmd("cabinet_heartbeat",0,0);			
-		// }
+		if(timex_t==1000)
+		{
+			timex_t =0;
+			//sim900a_send_cmd("cabinet_heartbeat",0,0);		
+			printf("-----------------------\n");	
+		}
 
 		delay_ms(10);
 		

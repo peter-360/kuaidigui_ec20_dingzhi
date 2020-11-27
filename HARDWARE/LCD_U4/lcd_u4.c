@@ -438,15 +438,53 @@ pbDest[i] = s1*16 + s2;
 //     1,清零USART4_RX_STA;
 void lcd_at_response(u8 mode)
 {
+	uint8_t data_rx_t[USART4_MAX_RECV_LEN] = {0};
+	uint16_t len_rx_t= 0;
+	uint16_t bl_addr=0;//bianliang lcd
+	// int32_t guimen_gk_temp =0;
+
+
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
-		USART4_RX_BUF[USART4_RX_STA&0X7FFF]=0;//添加结束符 -------------
-		printf("%s",USART4_RX_BUF);	//发送到串口
-		//debug_uart4_send_datas(USART4_RX_BUF,USART4_RX_STA);
-		uart4_send_datas(USART4_RX_BUF,USART4_RX_STA);
-		
-		if(mode)
-			USART4_RX_STA=0;
+        USART4_RX_BUF[USART4_RX_STA&0X7FFF]=0;//添加结束符 -------------
+        // printf("USART4_RX_BUF=%s\n",USART4_RX_BUF);	//发送到串口
+        len_rx_t=USART4_RX_STA&0x7FFF;
+        printf("len_rx_t=%x",len_rx_t);	//asdUSART4_RX_STA=8003
+
+        //Usart_SendByte
+        memcpy(data_rx_t,USART4_RX_BUF,len_rx_t);
+        uart0_debug_data_h(data_rx_t,len_rx_t);
+
+        if(mode)
+            USART4_RX_STA=0;
+
+
+        if((0x5A == data_rx_t[0])
+            &&(0xA5 == data_rx_t[1])
+            &&((len_rx_t-3) == data_rx_t[2]))
+            {
+                bl_addr = (data_rx_t[4]<<8) + data_rx_t[5];
+                DB_PR("-----.bl_addr=%04x\r\n",bl_addr);
+                switch (data_rx_t[3])
+                {
+                    case 0x83:
+                        switch (bl_addr)
+                        {
+                            case 0x1600://
+                                DB_PR("--11111111--\r\n");
+                                break;
+                            default:
+                                DB_PR("--default in--\r\n");
+                                break;
+                        }
+                    default:
+                        DB_PR("--default out--\r\n");
+                        break;
+
+                }
+            }
+
+
 	} 
 }
 

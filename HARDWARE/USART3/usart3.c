@@ -202,8 +202,11 @@ void lock_at_response(u8 mode)
 	{ 
 		RS485_TX_EN();
 		USART3_RX_BUF[USART3_RX_STA&0X7FFF]=0;//添加结束符
-		printf("%s",USART3_RX_BUF);	//发送到串口 ------------------------
-		spear_uart3_send_datas(USART3_RX_BUF,USART3_RX_STA);
+			printf("USART3_RX_BUF=%s\n",USART3_RX_BUF);	//发送到串口-----to
+			printf("USART3_RX_STA=%x",USART3_RX_STA);	
+			// spear_uart3_send_datas(USART3_RX_BUF,USART3_RX_STA);
+		//Usart_SendByte
+		// uart0_debug_data_h(USART3_RX_BUF,USART3_RX_STA);
 		if(mode)
 		{
 			RS485_RX_EN();
