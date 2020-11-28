@@ -1552,6 +1552,18 @@ u8 sim900a_gprs_test(void)
 	// myfree(p); 
 
 
+
+
+
+
+
+
+
+
+
+//----------------http-----------------------
+	
+
 	sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-1...\n");
 	
@@ -1669,91 +1681,129 @@ u8 sim900a_gprs_test(void)
 
 
 
-
-
-
+	// sim900a_send_cmd("AT+QISWTMD=1,2\r\n","OK",2000);
 
 //-------------TCP-------------
 
-// 	//GSM_CLEAN_RX();
-// //	if(gsm_cmd("AT+CIPCLOSE=1\r","OK",200) != GSM_TRUE)
-// 	sim900a_send_cmd("AT+QICLOSE=0\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
-// 	printf("...a-1...\n");
-
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+QIDEACT=1\r\n","OK",400) ;//!= GSM_TRUE) return GSM_FALSE;//"OK"
-// 	printf("...a0...\n");
 
 
-// 	//GSM_CLEAN_RX();  SIM READY?
-// 	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
-// 	printf("...a1...\n");
-	
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+CSQ\r\n","+CSQ:", 150);// != GSM_TRUE) return GSM_FALSE;
-// 	printf("...a2...\n");
-	
-// 	//
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
-// 	printf("...b...\n");
-	
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+CGREG?\r\n","+CGREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
-// 	printf("...c...\n");
-	
-	
+	sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",3000);
+	printf("...a0...\n");
+
+	//GSM_CLEAN_RX();
+//	if(gsm_cmd("AT+CIPCLOSE=1\r","OK",200) != GSM_TRUE)
+	sim900a_send_cmd("AT+QICLOSE=0\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	printf("...a-1...\n");
+
+	//GSM_CLEAN_RX();
+	sim900a_send_cmd("AT+QIDEACT=1\r\n","OK",400) ;//!= GSM_TRUE) return GSM_FALSE;//"OK"
+	printf("...a0...\n");
 
 
-
-
-	
-	// //UNINET CMNET
-	// //GSM_CLEAN_RX();
-	// sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
-	// printf("...1...\n");
+	//GSM_CLEAN_RX();  SIM READY?
+	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
+	printf("...a1...\n");
 	
 	// //GSM_CLEAN_RX();
-	// sim900a_send_cmd("AT+QIACT=1\r\n","OK", 50);// != GSM_TRUE) return GSM_FALSE;
-	// printf("...2...\n");
+	// sim900a_send_cmd("AT+CSQ\r\n","+CSQ:", 150);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...a2...\n");
+	
+	//
+	//GSM_CLEAN_RX();
+	sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
+	printf("...b...\n");
+	
+	//GSM_CLEAN_RX();
+	sim900a_send_cmd("AT+CGREG?\r\n","+CGREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
+	printf("...c...\n");
 	
 	
-	
-	
-// 	USART2_RX_STA =0;
-// 	//GSM_CLEAN_RX();register:53988b31ffdb2e7db9c9429b84f0f84  register:6ef6d30c49a08134897c6f2cc297063
-// //	AT+QIOPEN=1,0,"TCP","116.247.104.27",6003,0,1
-// 	//if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8088,0,2\r\n","CONNECT", 800) == 0)//touchuan116.247.104.27
-// 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1500)==0)//192.168.10.111
-	
-// 	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 1500)==0)
-// 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
-// 	{
-// 		printf("----conn-----\r\n");
-// 		delay_ms(100); //500
-// 		// delay_ms(1000); //500
-// 		// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-// 		sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
-// 		// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
-
-// 	}
-
-// //	//检测是否建立连接
-// //	while(gsm_cmd_check("CONNECT") != GSM_TRUE)//OK
-// //	{		
-// //		if(++testConnect >200)//最长等待20秒   150s----------
-// //		{
-// //			return GSM_FALSE;
-// //		}
-// //		GSM_DELAY(100); 		
-// //	}
 
 
-// 	delay_ms(100); //500
-// 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-// 	sim900a_send_cmd("cabinet_heartbeat",0,0);	
-// 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
+
+
 	
+	//UNINET CMNET
+	//GSM_CLEAN_RX();
+	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
+	printf("...1...\n");
+	
+	//GSM_CLEAN_RX();
+	sim900a_send_cmd("AT+QIACT=1\r\n","OK", 50);// != GSM_TRUE) return GSM_FALSE;
+	printf("...2...\n");
+	
+	
+	
+	
+	USART2_RX_STA =0;
+	//GSM_CLEAN_RX();register:53988b31ffdb2e7db9c9429b84f0f84  register:6ef6d30c49a08134897c6f2cc297063
+//	AT+QIOPEN=1,0,"TCP","116.247.104.27",6003,0,1
+	//if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8088,0,2\r\n","CONNECT", 800) == 0)//touchuan116.247.104.27
+	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1500)==0)//192.168.10.111
+	// express_tcp.xintiangui.com
+	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 1500)==0)
+	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
+	{
+		printf("----conn-----\r\n");
+		delay_ms(100); //500
+			// delay_ms(1000); //500
+			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
+		sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
+		// sim900a_send_cmd("touchuan",0,0) ;
+			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
+
+	}
+
+//	//检测是否建立连接
+//	while(gsm_cmd_check("CONNECT") != GSM_TRUE)//OK
+//	{		
+//		if(++testConnect >200)//最长等待20秒   150s----------
+//		{
+//			return GSM_FALSE;
+//		}
+//		GSM_DELAY(100); 		
+//	}
+
+
+	delay_ms(100); //500
+	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
+	sim900a_send_cmd("cabinet_heartbeat",0,0);	
+	// sim900a_send_cmd("123",0,0);	
+	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
+
+		// printf("...a-0-0...\n");
+		// delay_ms(1000); //500
+		// delay_ms(1000); //500
+		// delay_ms(1000); //500
+        // delay_ms(1000); //500
+		// sim900a_send_cmd("+++",0,0);//AT
+        // // sim900a_send_cmd("+++\r\n","OK",3000);//AT
+        // printf("...a-0-1...\n");
+        // delay_ms(1000); //500
+
+
+
+// while(1)
+// {
+// 	printf("...a-0-1...\n");
+//     delay_ms(1000); //500
+// }
+
 
 
 
@@ -1787,7 +1837,7 @@ u8 sim900a_gprs_test(void)
 		{
 			timex_t =0;
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-			// sim900a_send_cmd("cabinet_heartbeat",0,0);	
+			sim900a_send_cmd("cabinet_heartbeat",0,0);	
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			printf("-----------------------\n");	
 		}
