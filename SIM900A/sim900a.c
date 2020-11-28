@@ -649,7 +649,10 @@ void sim_at_response(u8 mode)
 	if(USART2_RX_STA&0X8000)		//接收到一次数据了
 	{ 
 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+		DB_PR("--4G_UART_RCV=--\r\n");
+        // uart0_debug_data_h(data_rx_t,len_rx_t);
 		printf("%s",USART2_RX_BUF);	//发送到串口
+
 
 
 		// reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
@@ -1666,6 +1669,10 @@ u8 sim900a_gprs_test(void)
 
 
 
+
+
+
+
 //-------------TCP-------------
 
 // 	//GSM_CLEAN_RX();
@@ -1678,7 +1685,7 @@ u8 sim900a_gprs_test(void)
 // 	printf("...a0...\n");
 
 
-// 	//GSM_CLEAN_RX();
+// 	//GSM_CLEAN_RX();  SIM READY?
 // 	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
 // 	printf("...a1...\n");
 	
@@ -1696,15 +1703,19 @@ u8 sim900a_gprs_test(void)
 // 	printf("...c...\n");
 	
 	
+
+
+
+
 	
-// 	//UNINET CMNET
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
-// 	printf("...1...\n");
+	// //UNINET CMNET
+	// //GSM_CLEAN_RX();
+	// sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...1...\n");
 	
-// 	//GSM_CLEAN_RX();
-// 	sim900a_send_cmd("AT+QIACT=1\r\n","OK", 50);// != GSM_TRUE) return GSM_FALSE;
-// 	printf("...2...\n");
+	// //GSM_CLEAN_RX();
+	// sim900a_send_cmd("AT+QIACT=1\r\n","OK", 50);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...2...\n");
 	
 	
 	
@@ -1714,12 +1725,16 @@ u8 sim900a_gprs_test(void)
 // //	AT+QIOPEN=1,0,"TCP","116.247.104.27",6003,0,1
 // 	//if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8088,0,2\r\n","CONNECT", 800) == 0)//touchuan116.247.104.27
 // 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1500)==0)//192.168.10.111
+	
 // 	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 1500)==0)
+// 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
 // 	{
 // 		printf("----conn-----\r\n");
 // 		delay_ms(100); //500
 // 		// delay_ms(1000); //500
+// 		// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 // 		sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
+// 		// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 
 // 	}
 
@@ -1735,27 +1750,28 @@ u8 sim900a_gprs_test(void)
 
 
 // 	delay_ms(100); //500
+// 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 // 	sim900a_send_cmd("cabinet_heartbeat",0,0);	
+// 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 	
+
+
+
+
+
+
+
+// //  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
+// // 	// sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
+// // 	// if(sim900a_send_cmd("AT+CGCLASS=\"B\"","OK",1000))return 1;				//设置GPRS移动台类别为B,支持包交换和数据交换 
+// // 	// if(sim900a_send_cmd("AT+CGDCONT=1,\"IP\",\"CMNET\"","OK",1000))return 2;//设置PDP上下文,互联网接协议,接入点等信息
+// // 	// if(sim900a_send_cmd("AT+CGATT=1","OK",500))return 3;					//附着GPRS业务
+// // 	// if(sim900a_send_cmd("AT+CIPCSGP=1,\"CMNET\"","OK",500))return 4;	 	//设置为GPRS连接模式
+// // 	// if(sim900a_send_cmd("AT+CIPHEAD=1","OK",500))return 5;	 				//设置接收数据显示IP头(方便判断数据来源)
+// // 	// ipbuf[0]=0; 		
 	
-
-
-
-
-
-
-
-//  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
-// 	// sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
-// 	// if(sim900a_send_cmd("AT+CGCLASS=\"B\"","OK",1000))return 1;				//设置GPRS移动台类别为B,支持包交换和数据交换 
-// 	// if(sim900a_send_cmd("AT+CGDCONT=1,\"IP\",\"CMNET\"","OK",1000))return 2;//设置PDP上下文,互联网接协议,接入点等信息
-// 	// if(sim900a_send_cmd("AT+CGATT=1","OK",500))return 3;					//附着GPRS业务
-// 	// if(sim900a_send_cmd("AT+CIPCSGP=1,\"CMNET\"","OK",500))return 4;	 	//设置为GPRS连接模式
-// 	// if(sim900a_send_cmd("AT+CIPHEAD=1","OK",500))return 5;	 				//设置接收数据显示IP头(方便判断数据来源)
-// 	// ipbuf[0]=0; 		
-	
-	USART4_RX_STA=0;
-	delay_ms(100);
+// 	USART4_RX_STA=0;
+// 	delay_ms(100);
 	
 	while(1)
 	{
@@ -1770,7 +1786,9 @@ u8 sim900a_gprs_test(void)
 		if(timex_t==1000)
 		{
 			timex_t =0;
-			//sim900a_send_cmd("cabinet_heartbeat",0,0);		
+			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
+			// sim900a_send_cmd("cabinet_heartbeat",0,0);	
+			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			printf("-----------------------\n");	
 		}
 
