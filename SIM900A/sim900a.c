@@ -643,6 +643,136 @@ u16 sim_at_response_https(u8 mode)
 }
 
 
+
+u16 cjson_to_struct_info_opendoor_2(char *text)
+{
+	u8 reg_status=0x000f;
+	char *index;
+	cJSON * root = NULL;
+	cJSON * item = NULL;//cjson???ó
+
+//	cJSON * item2 = NULL;//cjson???ó
+//	cJSON * item3 = NULL;//cjson???ó
+	uint8_t buff_t[256]={0};
+	uint8_t buff_t2[8]={0};
+	int i=0;
+	u16 index_m=0;
+	int16_t guimen_gk_temp =0;
+	
+	int size=0;
+
+
+	
+    if( text == NULL)
+    {
+        printf("\n----1 err----text=\n%s\n",text);
+        return 0xffff;
+    }
+    // cJSON *root,*psub;
+
+    // cJSON *arrayItem;
+
+    //???????§json
+    printf("\n----1----text=\n%s\n",text);
+    index=strchr(text,'{');
+
+    if(NULL == index)
+    {
+        printf("------NULL----4444----------\n");
+        return 0xffff;
+    }
+    strcpy(text,index);
+
+	printf("\n----2----text=\n%s\n",text);
+
+
+    root = cJSON_Parse(text);     
+    printf("\n----3----\n");
+
+    if (!root) 
+    {
+        printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+    }
+    else
+    {
+
+			//---------------------
+			printf("%s\n", "获取type下的cjson对象");
+			item = cJSON_GetObjectItem(root, "type");//
+			printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+			printf("--2--%d\n", item->valuestring);
+			// reg_status = item->valueint;
+			// printf("%s\n", cJSON_Print(item));
+			
+			if(0==strcmp("stc:opendoor",item->valuestring))
+			{
+				//---------------------
+				DB_PR("----------tcp opendoor---------\n");   
+				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
+
+				DB_PR("%s\n", "获取 door_number 下的cjson对象");
+				item = cJSON_GetObjectItem(root, "door_number");
+				DB_PR("%s\n", cJSON_Print(item));
+				DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+				DB_PR("%d\n", item->valueint);
+				guimen_gk_temp = item->valueint;
+				DB_PR("---open lock-----guimen_gk_temp=%d\n", guimen_gk_temp);
+
+
+				item = cJSON_GetObjectItem(root, "order_ary");
+				DB_PR("%s\n", cJSON_Print(item));
+				item = cJSON_GetObjectItem(item, "data");
+				DB_PR("%s\n", cJSON_Print(item));
+				size = cJSON_GetArraySize(item);
+				DB_PR("--------size=%d-----------\n",size);
+				// fprintf(stdout, "key: %s:", "value2");
+
+				for (i = 0; i < size; ++i) {
+					cJSON* tmp = cJSON_GetArrayItem(item, i);
+					buff_t[i] = tmp->valueint;
+					// fprintf(stdout, " %f,", tmp->valuedouble);
+					DB_PR("buff_t[%d]=%02x\n",i, buff_t[i]);
+				}
+
+
+				RS485_TX_EN();
+				DB_PR("buff_t=");
+				uart0_debug_data_h(buff_t, size);
+				// uart_write_bytes(UART_NUM_LOCK, (const char *) tx_Buffer2, 11);
+				Usart_SendArray( USART3,buff_t, size);
+				RS485_RX_EN();
+
+				DB_PR("\n----------lock open-----------\n");  
+				// buff_t2[0] = guimen_gk_temp/100 +0x30;
+				// buff_t2[1] = guimen_gk_temp%100/100 +0x30;
+				// buff_t2[2] = guimen_gk_temp%10 +0x30;
+
+
+				itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
+				// send_cmd_to_lcd_bl(0x1650,buff_t2);
+				send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
+				send_cmd_to_lcd_pic(0x0006); 
+
+				
+			}
+
+
+			
+			
+
+		
+            //  uart0_debug_data_h(buff_t,256);
+            // send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+
+    }
+
+
+
+    cJSON_Delete(root);
+    return reg_status;
+
+}
+
 void sim_at_response(u8 mode)
 {
 	int reg_status2=0;
@@ -652,6 +782,9 @@ void sim_at_response(u8 mode)
 		DB_PR("--4G_UART_RCV=--\r\n");
         // uart0_debug_data_h(data_rx_t,len_rx_t);
 		printf("%s",USART2_RX_BUF);	//发送到串口
+
+
+		cjson_to_struct_info_opendoor_2((char*)USART2_RX_BUF);
 
 
 
@@ -1786,37 +1919,31 @@ u8 sim900a_gprs_test(void)
 		delay_ms(500); //500
 			// delay_ms(1000); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-		sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
+		
+		sim900a_send_cmd_go_at(regst_key,0,0) ;
+		// sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
 		// sim900a_send_cmd("touchuan",0,0) ;
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 
 	}
 
-//	//检测是否建立连接
-//	while(gsm_cmd_check("CONNECT") != GSM_TRUE)//OK
-//	{		
-//		if(++testConnect >200)//最长等待20秒   150s----------
-//		{
-//			return GSM_FALSE;
-//		}
-//		GSM_DELAY(100); 		
-//	}
+	//	//检测是否建立连接
+	//	while(gsm_cmd_check("CONNECT") != GSM_TRUE)//OK
+	//	{		
+	//		if(++testConnect >200)//最长等待20秒   150s----------
+	//		{
+	//			return GSM_FALSE;
+	//		}
+	//		GSM_DELAY(100); 		
+	//	}
 
 
 	delay_ms(500); //500
 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-	sim900a_send_cmd("cabinet_heartbeat",0,0);	
+	sim900a_send_cmd_go_at("cabinet_heartbeat",0,0);	
 	// sim900a_send_cmd("123",0,0);	
 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 	
-
-
-
-
-
-
-
-
 
 
 
@@ -1834,13 +1961,6 @@ u8 sim900a_gprs_test(void)
 		// delay_ms(1000); //500
 
 
-
-
-// while(1)
-// {
-// 	printf("...a-0-1...\n");
-//     delay_ms(1000); //500
-// }
 
 
 
@@ -1874,7 +1994,7 @@ u8 sim900a_gprs_test(void)
 		{
 			timex_t =0;
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-			sim900a_send_cmd("cabinet_heartbeat",0,0);	
+			sim900a_send_cmd_go_at("iot",0,0);	
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			printf("-----------------------\n");	
 		}

@@ -511,7 +511,7 @@ u16 cjson_to_struct_info_opendoor(char *text)
 				printf("--2--%s\n", item->valuestring);
 				printf("--door---\n");
 				
-				send_cmd_to_lcd_pic(0x0006);
+				// send_cmd_to_lcd_pic(0x0006);
 			}
 			else if(reg_status == 1)
 			{
@@ -546,6 +546,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
 		char regst_key_post[300]={0};
 		char qhttp_post_req[150]={0};
     DB_PR("\n\n-----------------------shangping_exe=%8u---.\r\n",qujian_num_int);
+
+    
     switch (qujian_num_input_len)
     {
     case 1:/* constant-expression */
@@ -570,6 +572,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         send_cmd_to_lcd_bl(0x1280,qujian_num_one_lcd);
         break;
     case 8:/* constant-expression */
+        send_cmd_to_lcd_pic(0x000a);//-----------
         send_cmd_to_lcd_bl(0x1290,qujian_num_one_lcd);
         DB_PR("--qujian_num  buff =---\r\n");
         uart0_debug_data_h(qujian_num, 8);
@@ -662,7 +665,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
         if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
         { 
-            send_cmd_to_lcd_pic(0x0008);//-----------
+            
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
             USART2_RX_STA=0;
 
@@ -756,6 +759,22 @@ void lcd_at_response(u8 mode)
                         send_cmd_to_lcd_bl(0x1290,0x0000);
 
                         send_cmd_to_lcd_pic(0x0004);
+                        break;
+
+                    case 0x1210://
+                        DB_PR("\n---------qujianmaqujian fanhui--------\r\n");
+                        // qujian_num_input_len =0;
+                        //开始计时-------------------------
+                        // send_cmd_to_lcd_bl(0x1220,0x0000);
+                        // send_cmd_to_lcd_bl(0x1230,0x0000);
+                        // send_cmd_to_lcd_bl(0x1240,0x0000);
+                        // send_cmd_to_lcd_bl(0x1250,0x0000);
+                        // send_cmd_to_lcd_bl(0x1260,0x0000);
+                        // send_cmd_to_lcd_bl(0x1270,0x0000);
+                        // send_cmd_to_lcd_bl(0x1280,0x0000);
+                        // send_cmd_to_lcd_bl(0x1290,0x0000);
+
+                        send_cmd_to_lcd_pic(0x0003);
                         break;
                     case 0x1340://
                         DB_PR("\n------------qujianma clear--\r\n");
