@@ -200,6 +200,7 @@ void lock_at_response(u8 mode)
 {
 	if(USART3_RX_STA&0X8000)		//接收到一次数据了
 	{ 
+		printf("USART3_RX_BUF=sssssssssssss\n");
 		RS485_TX_EN();
 		USART3_RX_BUF[USART3_RX_STA&0X7FFF]=0;//添加结束符
 			printf("USART3_RX_BUF=%s\n",USART3_RX_BUF);	//发送到串口-----to
@@ -212,6 +213,8 @@ void lock_at_response(u8 mode)
 			RS485_RX_EN();
 			USART3_RX_STA=0;		
 		}
+
+		printf("USART3_RX_BUF=eeeeeeeeeeeeeee\n");
 
 	} 
 }

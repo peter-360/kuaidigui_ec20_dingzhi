@@ -654,7 +654,7 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 //	cJSON * item2 = NULL;//cjson???ó
 //	cJSON * item3 = NULL;//cjson???ó
 	uint8_t buff_t[256]={0};
-	uint8_t buff_t2[8]={0};
+	uint8_t buff_t2[40]={0};
 	int i=0;
 	u16 index_m=0;
 	int16_t guimen_gk_temp =0;
@@ -712,7 +712,7 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 
 				DB_PR("%s\n", "获取 door_number 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "door_number");
-				DB_PR("%s\n", cJSON_Print(item));
+				// DB_PR("%s\n", cJSON_Print(item));
 				DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
 				DB_PR("%d\n", item->valueint);
 				guimen_gk_temp = item->valueint;
@@ -720,7 +720,7 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 
 
 				item = cJSON_GetObjectItem(root, "order_ary");
-				DB_PR("%s\n", cJSON_Print(item));
+				// DB_PR("%s\n", cJSON_Print(item));
 				item = cJSON_GetObjectItem(item, "data");
 				DB_PR("%s\n", cJSON_Print(item));
 				size = cJSON_GetArraySize(item);
@@ -778,6 +778,7 @@ void sim_at_response(u8 mode)
 	int reg_status2=0;
 	if(USART2_RX_STA&0X8000)		//接收到一次数据了
 	{ 
+		printf("USART2_RX_BUF=sssssssssssss\n");
 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");
         // uart0_debug_data_h(data_rx_t,len_rx_t);
@@ -793,6 +794,8 @@ void sim_at_response(u8 mode)
 		//cjson_dbg();
 
 		if(mode)USART2_RX_STA=0;
+
+		printf("USART2_RX_BUF=eeeeeeeeeeeee\n");
 	} 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
@@ -2003,8 +2006,8 @@ u8 sim900a_gprs_test(void)
 		
 
 		sim_at_response(1);//检查GSM模块发送过来的数据,及时上传给电脑
-		
 		lcd_at_response(1);
+
 		lock_at_response(1);
 	}
 	return 0;

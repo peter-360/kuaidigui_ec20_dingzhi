@@ -489,7 +489,7 @@ u16 cjson_to_struct_info_opendoor(char *text)
     {
 
 			//---------------------
-			printf("%s\n", "获取status下的cjson对象");
+			printf("%s\n", "----获取status下的cjson对象---");
 			item = cJSON_GetObjectItem(root, "status");//
 			printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
 			printf("--2--%d\n", item->valueint);
@@ -673,8 +673,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // return reg_status;
         } 
 
-        delay_ms(1000); //500
-        sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+        // delay_ms(1000); //500
+        // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+        sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
+
 
         
 
@@ -720,6 +722,7 @@ void lcd_at_response(u8 mode)
 
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
+        printf("USART4_RX_BUF=sssssssssssss\n");
         USART4_RX_BUF[USART4_RX_STA&0X7FFF]=0;//添加结束符 -------------
         // printf("USART4_RX_BUF=%s\n",USART4_RX_BUF);	//发送到串口
         len_rx_t=USART4_RX_STA&0x7FFF;
@@ -1064,6 +1067,7 @@ void lcd_at_response(u8 mode)
                 }
             }
 
+        printf("USART4_RX_BUF=eeeeeeeeeeeeee\n");
 
 	} 
 }
