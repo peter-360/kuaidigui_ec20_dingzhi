@@ -55,6 +55,9 @@ void uart0_debug_data_d(uint8_t* data,uint16_t len);//dec8
 void send_cmd_to_lcd_pic(uint16_t temp);
 void send_cmd_to_lcd_bl_len(uint16_t opCode, uint8_t* buff_temp,uint16_t data_len);
 void send_cmd_to_lcd_bl(uint16_t opCode, uint16_t temp);
+
+
+u8 sim900a_send_cmd_go_at(u8 *cmd,u8 *ack,u16 waittime);
 #endif
 
 

@@ -679,6 +679,42 @@ u8* sim900a_check_cmd(u8 *str)
 	} 
 	return (u8*)strx;
 }
+
+
+
+
+//向sim900a发送命令
+//cmd:发送的命令字符串(不需要添加回车了),当cmd<0XFF的时候,发送数字(比如发送0X1A),大于的时候发送字符串.
+//ack:期待的应答结果,如果为空,则表示不需要等待应答
+//waittime:等待时间(单位:10ms)
+//返回值:0,发送成功(得到了期待的应答结果)
+//       1,发送失败
+u8 sim900a_send_cmd_go_at(u8 *cmd,u8 *ack,u16 waittime)
+{
+	u8 res=0; 
+	USART2_RX_STA=0;
+	if((u32)cmd<=0XFF)
+	{
+		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
+		USART2->DR=(u32)cmd;
+	}else u2_printf("%s",cmd);//发送命令
+	if(ack&&waittime)		//需要等待应答
+	{
+		while(--waittime)	//等待倒计时
+		{
+			delay_ms(10);
+			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			{
+				if(sim900a_check_cmd(ack))break;//得到有效数据 
+				USART2_RX_STA=0;
+			} 
+		}
+		if(waittime==0)res=1; 
+	}
+	return res;
+} 
+
+
 //向sim900a发送命令
 //cmd:发送的命令字符串(不需要添加回车了),当cmd<0XFF的时候,发送数字(比如发送0X1A),大于的时候发送字符串.
 //ack:期待的应答结果,如果为空,则表示不需要等待应答
@@ -1558,13 +1594,15 @@ u8 sim900a_gprs_test(void)
 
 
 
-
-
+	//GSM_CLEAN_RX();  SIM READY?
+	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
+	printf("...a-0...\n");
+	
 
 //----------------http-----------------------
 	
-
-	sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",2\r\n","OK",200);
+	// sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-1...\n");
 	
 	sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
@@ -1681,11 +1719,11 @@ u8 sim900a_gprs_test(void)
 
 
 
+
+
 	// sim900a_send_cmd("AT+QISWTMD=1,2\r\n","OK",2000);
 
 //-------------TCP-------------
-
-
 
 	sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",3000);
 	printf("...a0...\n");
@@ -1741,11 +1779,11 @@ u8 sim900a_gprs_test(void)
 	//if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8088,0,2\r\n","CONNECT", 800) == 0)//touchuan116.247.104.27
 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1500)==0)//192.168.10.111
 	// express_tcp.xintiangui.com
-	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 1500)==0)
-	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
+	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 3500)==0)
+		// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
 	{
 		printf("----conn-----\r\n");
-		delay_ms(100); //500
+		delay_ms(500); //500
 			// delay_ms(1000); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 		sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
@@ -1765,7 +1803,7 @@ u8 sim900a_gprs_test(void)
 //	}
 
 
-	delay_ms(100); //500
+	delay_ms(500); //500
 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 	sim900a_send_cmd("cabinet_heartbeat",0,0);	
 	// sim900a_send_cmd("123",0,0);	
@@ -1784,17 +1822,17 @@ u8 sim900a_gprs_test(void)
 
 
 
-        // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
+        // // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
 
 		// printf("...a-0-0...\n");
 		// delay_ms(1000); //500
 		// delay_ms(1000); //500
-		// delay_ms(1000); //500
-        // delay_ms(1000); //500
-		// sim900a_send_cmd("+++",0,0);//AT
+		// sim900a_send_cmd_go_at("+++",0,0);//AT
         // // sim900a_send_cmd("+++\r\n","OK",3000);//AT
         // printf("...a-0-1...\n");
         // delay_ms(1000); //500
+		// delay_ms(1000); //500
+
 
 
 
@@ -1803,7 +1841,6 @@ u8 sim900a_gprs_test(void)
 // 	printf("...a-0-1...\n");
 //     delay_ms(1000); //500
 // }
-
 
 
 

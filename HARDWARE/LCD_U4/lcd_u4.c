@@ -600,12 +600,18 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
-        // delay_ms(1000); //500
-        // delay_ms(1000); //500
-        // sim900a_send_cmd("+++","OK",3000);
-        // printf("...a-0-1...\n");
-        // delay_ms(1000); //500
-        // delay_ms(1000); //500
+       // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
+
+		printf("...a-0-0...\n");
+		delay_ms(1000); //500
+		delay_ms(1000); //500
+		sim900a_send_cmd_go_at("+++",0,0);//AT
+        // sim900a_send_cmd("+++\r\n","OK",3000);//AT
+        printf("...a-0-1...\n");
+        delay_ms(1000); //500
+		delay_ms(1000); //500
+
+
 
 
         //----------------------------
@@ -656,6 +662,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
         if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
         { 
+            send_cmd_to_lcd_pic(0x0008);//-----------
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
             USART2_RX_STA=0;
 
@@ -663,7 +670,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // return reg_status;
         } 
 
-        // sim900a_send_cmd("AT+QISWTMD=1,2\r\n","OK",2000);
+        delay_ms(1000); //500
+        sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+
+        
 
 
 
