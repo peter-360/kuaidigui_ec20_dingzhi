@@ -606,13 +606,13 @@ void shangping_exe(u16 qujian_num_one_lcd)
        // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
 
 		printf("...a-0-0...\n");
-		delay_ms(1000); //500
+		// delay_ms(1000); //500
 		delay_ms(1000); //500
 		sim900a_send_cmd_go_at("+++",0,0);//AT
         // sim900a_send_cmd("+++\r\n","OK",3000);//AT
         printf("...a-0-1...\n");
         delay_ms(1000); //500
-		delay_ms(1000); //500
+		// delay_ms(1000); //500
 
 
 
@@ -636,34 +636,34 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
-        sim900a_send_cmd(qhttp_post_req,"CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-
+        // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
 
         // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
         printf("...a-11...\n");
 
-        delay_ms(1000); //500
-        delay_ms(1000); //500
-        delay_ms(1000); //500
-        delay_ms(1000); //500
+        // delay_ms(1000); //500
+        // delay_ms(1000); //500
+        // delay_ms(1000); //500
+        delay_ms(200); //500
 
 
 
 
         // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
         uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-        sim900a_send_cmd(regst_key_post,"OK",25000);
+        sim900a_send_cmd_go_at(regst_key_post,"OK",25000);
         // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
         
         printf("...a-12...\n");
 
         
-        delay_ms(1000); //500
-        delay_ms(1000); //500
+        // delay_ms(1000); //500
+        delay_ms(200); //500
         // delay_xs(30);
 
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
         { 
             
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
