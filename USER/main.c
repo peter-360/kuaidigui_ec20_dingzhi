@@ -60,6 +60,17 @@ void Soft_Reset(void)
   NVIC_SystemReset();   /* 系统复位 */
 }
  
+void reset_ec20()
+{
+	/* 4G重启	*/
+	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
+	delay_ms(580); //500
+	/* 关闭所有led灯	*/
+	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
+
+}
+
+
 
 /*****************  发送一个字节 **********************/
 void Usart_SendByte( USART_TypeDef * pUSARTx, uint8_t ch)
@@ -103,6 +114,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
  
  
 
+
  int main(void)
  { 
 	u8 key,fontok=0;  
@@ -131,31 +143,11 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 
 
 
-
-
-
-
-	delay_ms(500); //500
+	// delay_ms(500); //500
 	
-	/* 4G重启	*/
-	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
-	delay_ms(580); //500
-	/* 关闭所有led灯	*/
-	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
 
-	//todo  RDY\r\n
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	printf("\r\n-1-野火WF-GSM模块TCP收发例程\r\n");
+
+	reset_ec20();
 
 	 
 //	tp_dev.init();			//触摸屏初始化

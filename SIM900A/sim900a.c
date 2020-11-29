@@ -905,7 +905,14 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			// reg_status = item->valueint;
 			// printf("%s\n", cJSON_Print(item));
 			
-			if(0==strcmp("stc:opendoor",item->valuestring))
+
+			if(0==strcmp("stc:restart",item->valuestring))
+			{
+				//---------------------
+				DB_PR("----------tcp will restart---------\n");   
+				Soft_Reset();//
+			}
+			else if(0==strcmp("stc:opendoor",item->valuestring))
 			{
 				//---------------------
 				DB_PR("----------tcp opendoor---------\n");   
@@ -1055,6 +1062,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
                 sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
 			}
+			else
+			{
+				printf("------tcp other-------\n");
+			}
+			
 			
 
 
@@ -1947,12 +1959,104 @@ u8 sim900a_gprs_test(void)
 //	sim900a_gprs_ui();	//加载主界面
 //	Show_Str(30+72,90,200,16,(u8*)modetbl[mode],16,0);	//显示连接方式	
 //	Show_Str(30+40,130,200,16,(u8*)port,16,0);			//显示端口 	
+
+
+
+
+
+
+// 	//GSM_CLEAN_RX();
+// //	if(gsm_cmd("AT+CIPCLOSE=1\r","OK",200) != GSM_TRUE)
+// 	sim900a_send_cmd("AT+QICLOSE=0\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+// 	printf("...a-1...\n");
+
+// 	//GSM_CLEAN_RX();
+// 	sim900a_send_cmd("AT+QIDEACT=1\r\n","OK",400) ;//!= GSM_TRUE) return GSM_FALSE;//"OK"
+// 	printf("...a0...\n");
+	printf("\r\n-1-野火WF-GSM模块TCP收发例程\r\n");
+	while(1)
+	{
+		delay_ms(1000); //500
+		if(0==sim900a_send_cmd("AT","OK", 1000) )//!= GSM_TRUE) return GSM_FALSE;
+		{
+			printf("...a0-1...\n");
+			break;
+		}
+		else
+		{
+			printf("...a0-2 wait...\n");		
+		}
+	}
+	printf("\r\n-2-野火WF-GSM模块TCP收发例程\r\n");
+
+
+
+
+	//GSM_CLEAN_RX();  SIM READY?
+	if(0==sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 5000) )//!= GSM_TRUE) return GSM_FALSE;
+	{
+		printf("...a1-1...\n");
+	}
+	else
+	{
+		send_cmd_to_lcd_pic(0x000a);
+		printf("...a1-2 err...\n");		
+		// return;
+		Soft_Reset();
+	}
+
 	
-//https post
 
 
-	USART2_RX_STA=0;
 
+
+	// //GSM_CLEAN_RX();
+	// sim900a_send_cmd("AT+CSQ\r\n","+CSQ:", 150);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...a2...\n");
+	
+	//
+	//GSM_CLEAN_RX();
+	if(0==sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 5000))// != GSM_TRUE) return GSM_FALSE;
+	{
+		printf("...a2-1...\n");
+	}
+	else
+	{
+		send_cmd_to_lcd_pic(0x000a);
+		printf("...a2-2 err...\n");		
+		// return;
+		Soft_Reset();
+	}
+	
+	//GSM_CLEAN_RX();
+	if(0==sim900a_send_cmd("AT+CGREG?\r\n","+CGREG: 0,1", 150))// != GSM_TRUE) return GSM_FALSE;
+	{
+		printf("...a3-1...\n");
+	}
+	else
+	{
+		send_cmd_to_lcd_pic(0x000a);
+		printf("...a3-2 err...\n");		
+		// return;
+	}
+	
+	
+	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",3000))
+	{
+		printf("...a4-1...\n");
+	}
+	else
+	{
+		// send_cmd_to_lcd_pic(0x000a);
+		printf("...a4-2 err...\n");		
+		// return;
+	}
+
+
+
+
+
+	//imei
 	if(sim900a_send_cmd("AT+CGSN","OK",500)==0)//查询产品序列号
 	{ 
 		// p1=(u8*)strstr((const char*)(USART2_RX_BUF+2),"\r\n");//查找回车
@@ -2031,10 +2135,7 @@ u8 sim900a_gprs_test(void)
 
 
 
-	//GSM_CLEAN_RX();  SIM READY?
-	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
-	printf("...a-0...\n");
-	
+
 
 //----------------http-----------------------
 	
@@ -2042,18 +2143,18 @@ u8 sim900a_gprs_test(void)
 	// sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-1...\n");
 	
-	sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT?\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-2...\n");
 
-	sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 200);
+	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);
 	//sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\","" ,"" ,1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-3...\n");
 
 
-	sim900a_send_cmd("AT+QIACT=1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT=1\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-4...\n");
 	
-	sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT?\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-4-2...\n");
 
 
@@ -2162,49 +2263,16 @@ u8 sim900a_gprs_test(void)
 
 //-------------TCP-------------
 
-	sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",3000);
-	printf("...a0...\n");
-
-	//GSM_CLEAN_RX();
-//	if(gsm_cmd("AT+CIPCLOSE=1\r","OK",200) != GSM_TRUE)
-	sim900a_send_cmd("AT+QICLOSE=0\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
-	printf("...a-1...\n");
-
-	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QIDEACT=1\r\n","OK",400) ;//!= GSM_TRUE) return GSM_FALSE;//"OK"
-	printf("...a0...\n");
 
 
-	//GSM_CLEAN_RX();  SIM READY?
-	sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 100) ;//!= GSM_TRUE) return GSM_FALSE;
-	printf("...a1...\n");
-	
-	// //GSM_CLEAN_RX();
-	// sim900a_send_cmd("AT+CSQ\r\n","+CSQ:", 150);// != GSM_TRUE) return GSM_FALSE;
-	// printf("...a2...\n");
-	
-	//
-	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
-	printf("...b...\n");
-	
-	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+CGREG?\r\n","+CGREG: 0,1", 150);// != GSM_TRUE) return GSM_FALSE;
-	printf("...c...\n");
-	
-	
-
-
-
-
-	
+	//TCP 2
 	//UNINET CMNET
 	//GSM_CLEAN_RX();
 	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
 	printf("...1...\n");
 	
 	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QIACT=1\r\n","OK", 50);// != GSM_TRUE) return GSM_FALSE;
+	sim900a_send_cmd("AT+QIACT=1\r\n","OK", 1000);// != GSM_TRUE) return GSM_FALSE;
 	printf("...2...\n");
 	
 	
@@ -2433,6 +2501,17 @@ void sim900a_test(void)
 
 	
 	sim900a_gprs_test();	//GPRS测试--------------------
+
+
+
+
+
+
+
+
+
+
+
 	// while(1)
 	// {
 	// 	delay_ms(10); 
