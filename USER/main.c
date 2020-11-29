@@ -60,16 +60,50 @@ void Soft_Reset(void)
   NVIC_SystemReset();   /* 系统复位 */
 }
  
-void reset_ec20()
+
+void power_down_reset_ec20()
 {
+	GPIO_ResetBits(GPIOB,GPIO_Pin_8);
+	delay_ms(800); 
+	GPIO_SetBits(GPIOB,GPIO_Pin_8);
+
+
+
+	printf("---------ec20 will rst-----------\n");
 	/* 4G重启	*/
 	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
 	delay_ms(580); //500
 	/* 关闭所有led灯	*/
 	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
+	printf("---------ec20 rst  ok--------------\n");	
 
 }
 
+void reset_ec20()
+{
+	// GPIO_ResetBits(GPIOB,GPIO_Pin_8);
+	// delay_ms(800); 
+	// GPIO_SetBits(GPIOB,GPIO_Pin_8);
+
+
+
+	printf("---------ec20 will rst-----------\n");
+	/* 4G重启	*/
+	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
+	delay_ms(580); //500
+	/* 关闭所有led灯	*/
+	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
+	printf("---------ec20 rst  ok--------------\n");	
+
+}
+void at_mode_go()
+{
+	printf("...at_mode_go...\n");
+	delay_ms(1000); //500
+	sim900a_send_cmd_go_at("+++",0,0);//AT
+	printf("...a-0-1...\n");
+	delay_ms(1000); //500
+}
 
 
 /*****************  发送一个字节 **********************/
