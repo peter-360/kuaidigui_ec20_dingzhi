@@ -522,7 +522,7 @@ u16 cjson_to_struct_info_opendoor(char *text)
 			{
 				printf("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
-                //-----------
+                //-----------  TCP中接受   stc:overtime_pay
 
 			}
 
@@ -600,26 +600,19 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         // qujian_num_int = 22256613;//--------超时dbg
-
-
-
-
-
        // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
 
 
+
         //--------http----------------
-		printf("...a-0-0...\n");
-		// delay_ms(1000); //500
-		delay_ms(1000); //500
-		sim900a_send_cmd_go_at("+++",0,0);//AT
+        printf("...a-0-0...\n");
+        // delay_ms(1000); //500
+        delay_ms(1000); //500
+        sim900a_send_cmd_go_at("+++",0,0);//AT
         // sim900a_send_cmd("+++\r\n","OK",3000);//AT
         printf("...a-0-1...\n");
         delay_ms(1000); //500
-		// delay_ms(1000); //500
-
-
-
+        // delay_ms(1000); //500
 
         //----------------------------
         sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
@@ -646,24 +639,37 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
         printf("...a-11...\n");
 
-        // delay_ms(1000); //500
-        // delay_ms(1000); //500
-        // delay_ms(1000); //500
-        delay_ms(200); //500
-
 
 
 
         // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
         uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-        sim900a_send_cmd_go_at(regst_key_post,"OK",25000);
+        if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",15000))
+        {
+            printf("...a-11-1...\n");
+            USART2_RX_STA =0;
+            while(1)
+            {
+                if(USART2_RX_STA&0X8000)		//接收到一次数据了
+                { 
+
+                    if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
+                    {
+                        printf("...a-11-2...\n");
+                        break;
+                    }
+
+                }
+            }
+
+        }
         // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
         
         printf("...a-12...\n");
 
         
         // delay_ms(1000); //500
-        delay_ms(200); //500
+        // delay_ms(200); //500
         // delay_xs(30);
 
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
@@ -673,17 +679,11 @@ void shangping_exe(u16 qujian_num_one_lcd)
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
             USART2_RX_STA=0;
 
-            // cJSON_Delete(root);
-            // return reg_status;
         } 
 
         // delay_ms(1000); //500
         // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
         sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
-
-
-        
-
 
 
 
