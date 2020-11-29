@@ -812,79 +812,99 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 
 
 
-			//--------http----------------
-			printf("...a-0-0...\n");
-			// delay_ms(1000); //500
-			delay_ms(1000); //500
-			sim900a_send_cmd_go_at("+++",0,0);//AT
-			// sim900a_send_cmd("+++\r\n","OK",3000);//AT
-			printf("...a-0-1...\n");
-			delay_ms(1000); //500
-			// delay_ms(1000); //500
+		// //--------http----------------
+		// 	printf("...a-0-0...\n");
+		// 	// delay_ms(1000); //500
+		// 	delay_ms(1000); //500
+		// 	sim900a_send_cmd_go_at("+++",0,0);//AT
+		// 	// sim900a_send_cmd("+++\r\n","OK",3000);//AT
+		// 	printf("...a-0-1...\n");
+		// 	delay_ms(1000); //500
+		// 	// delay_ms(1000); //500
+
+
+
+		// 	while(1)
+		// 	{
+		// 		if(USART4_RX_STA&0X8000)//返回LCD首页
+		// 		{
+		// 			USART2_RX_BUF
+		// 			break;
+		// 		}
+
+		// 		lcd_at_response(1);
+
+
+		// 		//----------------------------
+		// 		sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		// 		printf("...a-9...\n");
+
+		// 		//4-2
+		// 		sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/Deliverorder/checkSupplementalPaid","OK",8000);
+		// 		printf("...a-10...\n");
+
+
+
+		// 		//USART2_RX_STA =0;  86
+		// 		// memset(regst_key_post,0,sizeof(regst_key_post));
+		// 		memset(regst_key_post,0,sizeof(regst_key_post));
+		// 		sprintf(regst_key_post,"captcha_id=%d",captcha_id);//
+		// 		uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+		// 		printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+
+		// 		sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
+		// 		// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		// 		sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
+
+		// 		// sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
+		// 		printf("...a-11...\n");
+
+		// 		// delay_ms(1000); //500
+		// 		// delay_ms(1000); //500
+		// 		// delay_ms(1000); //500
+		// 		delay_ms(200); //500
 
 
 
 
-			//----------------------------
-			sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			printf("...a-9...\n");
-
-			sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/Deliverorder/checkSupplementalPaid","OK",8000);
-			printf("...a-10...\n");
-
-
-
-			//USART2_RX_STA =0;  86
-			// memset(regst_key_post,0,sizeof(regst_key_post));
-			memset(regst_key_post,0,sizeof(regst_key_post));
-			sprintf(regst_key_post,"captcha_id=%d",captcha_id);//
-			uart0_debug_str(regst_key_post,strlen(regst_key_post));
-
-			printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
-
-
-			sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
-			// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
-
-			// sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
-			printf("...a-11...\n");
-
-			// delay_ms(1000); //500
-			// delay_ms(1000); //500
-			// delay_ms(1000); //500
-			delay_ms(200); //500
-
-
-
-
-			// #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
-			uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-			sim900a_send_cmd_go_at(regst_key_post,"OK",15000);
-			// sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
-			
-			printf("...a-12...\n");
-
-			
-			// delay_ms(1000); //500
-			delay_ms(1200); //500
-			// delay_xs(30);
-
-			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-			if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
-			{ 
+		// 		// #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
+		// 		uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+		// 		sim900a_send_cmd_go_at(regst_key_post,"OK",15000);
+		// 		// sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
 				
-				// cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
-				cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
-				USART2_RX_STA=0;
+		// 		printf("...a-12...\n");
 
-				// cJSON_Delete(root);
-				// return reg_status;
-			} 
+				
+		// 		// delay_ms(1000); //500
+		// 		delay_ms(1200); //500
+		// 		// delay_xs(30);
 
-			// delay_ms(1000); //500
-			// sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
-			sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
+		// 		//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+		// 		if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		// 		{ 
+					
+		// 			// cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+		// 			//cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
+		// 			USART2_RX_STA=0;
+
+		// 			// cJSON_Delete(root);
+		// 			// return reg_status;
+		// 		} 
+
+
+
+
+
+		// 	}
+
+
+	
+
+		// 	// delay_ms(1000); //500
+		// 	// sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+		// 	sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
 
 		}
 		else
@@ -1064,6 +1084,8 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
                 sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
                 printf("...a-9...\n");
 
+
+				//2-4
                 sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/order/getOvertimeQrcodeByCaptchaId","OK",8000);
                 printf("...a-10...\n");
 
