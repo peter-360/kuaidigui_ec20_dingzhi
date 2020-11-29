@@ -521,7 +521,9 @@ u16 cjson_to_struct_info_opendoor(char *text)
 			else if(reg_status == 2)
 			{
 				printf("-2-reg_status=%d---\n", reg_status);
-				send_cmd_to_lcd_pic(0x0007);
+				// send_cmd_to_lcd_pic(0x0007);
+                //-----------
+
 			}
 
 		
@@ -605,6 +607,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
        // // sim900a_send_cmd("ATO","CONNECT",3000);//touchuan
 
+
+        //--------http----------------
 		printf("...a-0-0...\n");
 		// delay_ms(1000); //500
 		delay_ms(1000); //500

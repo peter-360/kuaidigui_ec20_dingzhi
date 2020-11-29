@@ -644,13 +644,289 @@ u16 sim_at_response_https(u8 mode)
 
 
 
+
+int captcha_id=0;
+
+
+u16 cjson_to_struct_info_qrcode_outtime(char *text)
+{
+	u8 my_status=0x000f;
+	char *index;
+	cJSON * root = NULL;
+	cJSON * item = NULL;//cjson对象
+
+	cJSON * item2 = NULL;//cjson对象
+	
+	cJSON * item3 = NULL;//cjson对象
+	int i=0;
+
+
+	u32 reg_active_code =0;
+	uint8_t buff_t[256]={0};
+	//uint8_t buff_t2[256]={0};
+
+	char* buff_t3="b5";
+	int my_bl_ts=0;
+	//单片机测试
+	// uint8_t buff_t3[256]={0xb5 ,0xa5 ,0xc6 ,0xac ,0xbb ,0xfa ,0xb2 ,0xe2 ,0xca ,0xd4 ,0x32};
+	
+	int company_id=0;
+	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";
+
+	char qhttp_post_req[150]={0};
+
+	char regst_key_post[300];
+	u16 index_m=0;
+
+	int fee_money=0;
+
+	// const char needle[10] = "\r\n";
+	// char *ret;
+	
+	// //设备注册成功,请激活柜子
+	// char* str_tmp="{\"status\":0,\"msg\":\"abc\",\"result\":{\"active_code\":87993541}}";
+	
+	
+    if( text == NULL)
+    {
+        printf("\n----1 err----text=\n%s\n",text);
+        return 0xffff;
+    }
+    // cJSON *root,*psub;
+
+    // cJSON *arrayItem;
+
+    //截取有效json
+    printf("\n----1----text=\n%s\n",text);
+    index=strchr(text,'{');
+    // char *index=strstr(text,"{\"post_data\":{");
+    // bzero(text, sizeof(text));
+    if(NULL == index)
+    {
+        printf("------NULL----4444----------\n");
+        return 0xffff;
+    }
+    strcpy(text,index);
+	// 	memset(text,0,89);
+	// 	memcpy(text,index,89);
+	// 	text[89]='\0';
+
+	// printf("---strlen(text)= %d\n", strlen(text));
+	// printf("---89= %02x\n", text[89]);
+	// printf("---90= %02x\n", text[90]);
+ 
+	// for(i=89;i<strlen(text);i++)
+	// {
+	// 	text[i]=0;
+	// }
+
+
+//    ret = strstr(text, needle);
+	printf("\n----2----text=\n%s\n",text);
+
+
+
+
+
+
+
+
+
+
+	// printf("str_tmp=%s",str_tmp);
+
+
+    root = cJSON_Parse(text);     
+    if (!root) 
+    {
+        printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+    }
+    else
+    {
+        printf("%s\n", "有格式的方式打印Json:");           
+        // printf("%s\n\n", cJSON_Print(root));
+        // printf("%s\n", "无格式方式打印json：");
+        // printf("%s\n\n", cJSON_PrintUnformatted(root));
+
+
+
+
+
+		printf("%s\n", "获取money fee 下的cjson对象");
+		item = cJSON_GetObjectItem(root, "status");
+		DB_PR("-----------%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+		DB_PR("%d\n", item->valueint);
+		my_status = item->valueint;
+
+		if(my_status ==0)
+		{
+			//-----------company------------
+			printf("%s\n", "获取result下的cjson对象:");
+			item2 = cJSON_GetObjectItem(root, "result");//
+			// printf("%s\n", cJSON_Print(item));
+
+			printf("%s\n", "获取 qrcode 下的cjson对象");
+			item = cJSON_GetObjectItem(item2, "qrcode");
+			DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+			DB_PR("%s\n", item->valuestring);
+			
+
+
+			memset(buff_t,0,256);
+			strcpy(buff_t,item->valuestring);
+			// sprintf(buff_t,"%s%d",url_t,company_id);
+
+			index_m = strlen(buff_t);
+			printf("--index_m=%d--\n", index_m);
+			buff_t[index_m]=0xff;
+			buff_t[index_m+1]=0xff;
+
+			
+			uart0_debug_data_h(buff_t,256);
+
+
+			send_cmd_to_lcd_bl_len(0x4000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+
+
+
+
+
+
+			printf("%s\n", "获取money fee 下的cjson对象");
+			item = cJSON_GetObjectItem(item2, "fee");
+			DB_PR("-----------%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+			DB_PR("%d\n", item->valueint);
+			fee_money = item->valueint;
+
+
+			memset(buff_t,0,256);
+			itoa((int)(fee_money),(char*)(buff_t) ,10);
+
+			send_cmd_to_lcd_bl_len(0x1960,(uint8_t*)buff_t,32+4);//gekou 33 +3
+
+			
+
+
+
+			send_cmd_to_lcd_pic(0x0007);//---------------
+
+
+
+			//--------http----------------
+			printf("...a-0-0...\n");
+			// delay_ms(1000); //500
+			delay_ms(1000); //500
+			sim900a_send_cmd_go_at("+++",0,0);//AT
+			// sim900a_send_cmd("+++\r\n","OK",3000);//AT
+			printf("...a-0-1...\n");
+			delay_ms(1000); //500
+			// delay_ms(1000); //500
+
+
+
+
+			//----------------------------
+			sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			printf("...a-9...\n");
+
+			sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/Deliverorder/checkSupplementalPaid","OK",8000);
+			printf("...a-10...\n");
+
+
+
+			//USART2_RX_STA =0;  86
+			// memset(regst_key_post,0,sizeof(regst_key_post));
+			memset(regst_key_post,0,sizeof(regst_key_post));
+			sprintf(regst_key_post,"captcha_id=%d",captcha_id);//
+			uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+			printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+
+			sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
+			// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
+
+			// sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
+			printf("...a-11...\n");
+
+			// delay_ms(1000); //500
+			// delay_ms(1000); //500
+			// delay_ms(1000); //500
+			delay_ms(200); //500
+
+
+
+
+			// #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
+			uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+			sim900a_send_cmd_go_at(regst_key_post,"OK",15000);
+			// sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
+			
+			printf("...a-12...\n");
+
+			
+			// delay_ms(1000); //500
+			delay_ms(1200); //500
+			// delay_xs(30);
+
+			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+			if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+			{ 
+				
+				// cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+				cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
+				USART2_RX_STA=0;
+
+				// cJSON_Delete(root);
+				// return reg_status;
+			} 
+
+			// delay_ms(1000); //500
+			// sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+			sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
+
+		}
+		else
+		{
+			send_cmd_to_lcd_pic(0x0005);
+		}
+		
+		
+
+                        
+
+        
+        // printf("\n%s\n", "打印json所有最内层键值对:");
+        // printJson(root);
+    }
+
+
+
+    cJSON_Delete(root);
+    return my_status;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 u16 cjson_to_struct_info_opendoor_2(char *text)
 {
 	u8 reg_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson???ó
-
+	char regst_key_post[300];
 //	cJSON * item2 = NULL;//cjson???ó
 //	cJSON * item3 = NULL;//cjson???ó
 	uint8_t buff_t[256]={0};
@@ -661,6 +937,7 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 	
 	int size=0;
 
+	char qhttp_post_req[150]={0};
 
 	
     if( text == NULL)
@@ -755,6 +1032,96 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 
 				
 			}
+			else if(0==strcmp("stc:overtime_pay",item->valuestring))
+			{
+
+
+				DB_PR("%s\n", "获取 captcha_id 下的cjson对象");
+				item = cJSON_GetObjectItem(root, "captcha_id");
+				// DB_PR("%s\n", cJSON_Print(item));
+				DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+				DB_PR("%d\n", item->valueint);
+				captcha_id = item->valueint;
+				DB_PR("-----captcha_id=%d\n", captcha_id);
+
+
+
+
+                //--------http----------------
+                printf("...a-0-0...\n");
+                // delay_ms(1000); //500
+                delay_ms(1000); //500
+                sim900a_send_cmd_go_at("+++",0,0);//AT
+                // sim900a_send_cmd("+++\r\n","OK",3000);//AT
+                printf("...a-0-1...\n");
+                delay_ms(1000); //500
+                // delay_ms(1000); //500
+
+
+
+
+                //----------------------------
+                sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                printf("...a-9...\n");
+
+                sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/order/getOvertimeQrcodeByCaptchaId","OK",8000);
+                printf("...a-10...\n");
+
+
+
+                //USART2_RX_STA =0;  86
+                // memset(regst_key_post,0,sizeof(regst_key_post));
+                memset(regst_key_post,0,sizeof(regst_key_post));
+                sprintf(regst_key_post,"captcha_id=%d&register_key=%s",captcha_id,regst_key);//
+                uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+                printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+
+                sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
+                // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
+
+                // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
+                printf("...a-11...\n");
+
+                // delay_ms(1000); //500
+                // delay_ms(1000); //500
+                // delay_ms(1000); //500
+                delay_ms(200); //500
+
+
+
+
+                // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
+                uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+                sim900a_send_cmd_go_at(regst_key_post,"OK",15000);
+                // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
+                
+                printf("...a-12...\n");
+
+                
+                // delay_ms(1000); //500
+                delay_ms(1200); //500
+                // delay_xs(30);
+
+                //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+                if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+                { 
+                    
+                    // cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+					cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
+                    USART2_RX_STA=0;
+
+                    // cJSON_Delete(root);
+                    // return reg_status;
+                } 
+
+                // delay_ms(1000); //500
+                // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
+                sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
+			}
+			
 
 
 			
