@@ -541,21 +541,21 @@ u16 cjson_to_struct_info(char *text)
 			// USART2_RX_STA=0;
 			// printf("...a-9-1...\n");
 
-			sim900a_send_cmd("AT+QHTTPURL=52,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd("AT+QHTTPURL=52,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-9...\n");
 
-			sim900a_send_cmd("https://iot.xintiangui.com/web_wechat/deliver/qrcode","OK",8000);
+			sim900a_send_cmd("https://iot.xintiangui.com/web_wechat/deliver/qrcode","OK",800);
 			printf("...a-10...\n");
 
 
 			//USART2_RX_STA =0;
-			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",1250);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11-1...\n");
 
 			//USART2_RX_STA =0;  86
 			memset(regst_key_post,0,sizeof(regst_key_post));
 			sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80\r\n",46+strlen(regst_key));
-			sim900a_send_cmd(regst_key_post,"CONNECT",125000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd(regst_key_post,"CONNECT",1250);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11...\n");
 
 			delay_ms(1000); //500
@@ -574,7 +574,7 @@ u16 cjson_to_struct_info(char *text)
 			// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 			uart0_debug_str(regst_key_post,strlen(regst_key_post));
 			// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-			sim900a_send_cmd(regst_key_post,"OK",25000);
+			sim900a_send_cmd(regst_key_post,"OK",1500);
 			// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
 			printf("...a-12...\n");
 
@@ -584,7 +584,7 @@ u16 cjson_to_struct_info(char *text)
 			// delay_xs(30);
 
 			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-			if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+			if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 			{ 
 				cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
 				USART2_RX_STA=0;
@@ -990,12 +990,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
                 //----------------------------
-                sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                sim900a_send_cmd("AT+QHTTPURL=74,80\r\n","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
                 printf("...a-9...\n");
 
 
 				//2-4
-                sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/order/getOvertimeQrcodeByCaptchaId","OK",8000);
+                sim900a_send_cmd("http://xintian.modoubox.com/api_cabinet/order/getOvertimeQrcodeByCaptchaId","OK",1000);
                 printf("...a-10...\n");
 
 
@@ -1011,14 +1011,14 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
                 sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
                 // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-                sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
+                sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
 
                 // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
                 printf("...a-11...\n");
 
                 // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
                 uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-                if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",15000))
+                if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",1000))
 				{
 					printf("...a-11-1...\n");
 					USART2_RX_STA =0;
@@ -1037,7 +1037,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					}
 
 				}
-                // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
+                // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
                 
                 printf("...a-12...\n");
 
@@ -1047,7 +1047,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 // delay_xs(30);
 
                 //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-                if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+                if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
                 { 
                     
                     // cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
@@ -1992,16 +1992,19 @@ u8 sim900a_gprs_test(void)
 
 
 
-	//GSM_CLEAN_RX();  SIM READY?
-	if(0==sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 5000) )//!= GSM_TRUE) return GSM_FALSE;
+	//GSM_CLEAN_RX();  SIM READY?    2s
+	if(0==sim900a_send_cmd("AT+CPIN?\r\n","+CPIN: READY", 200) )//!= GSM_TRUE) return GSM_FALSE;
 	{
 		printf("...a1-1...\n");
 	}
 	else
 	{
-		send_cmd_to_lcd_pic(0x000a);
+		send_cmd_to_lcd_pic(0x0001);
 		printf("...a1-2 err...\n");		
 		// return;
+		delay_ms(1000); //500
+		delay_ms(1000); //500
+		delay_ms(1000); //500
 		Soft_Reset();
 	}
 
@@ -2016,7 +2019,7 @@ u8 sim900a_gprs_test(void)
 	
 	//
 	//GSM_CLEAN_RX();
-	if(0==sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 5000))// != GSM_TRUE) return GSM_FALSE;
+	if(0==sim900a_send_cmd("AT+CREG?\r\n","+CREG: 0,1", 200))// != GSM_TRUE) return GSM_FALSE;
 	{
 		printf("...a2-1...\n");
 	}
@@ -2041,7 +2044,7 @@ u8 sim900a_gprs_test(void)
 	}
 	
 	
-	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",3000))
+	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express_tcp.xintiangui.com\"\r\n","OK",300))
 	{
 		printf("...a4-1...\n");
 	}
@@ -2057,7 +2060,7 @@ u8 sim900a_gprs_test(void)
 
 
 	//imei
-	if(sim900a_send_cmd("AT+CGSN","OK",500)==0)//查询产品序列号
+	if(sim900a_send_cmd("AT+CGSN","OK",300)==0)//查询产品序列号
 	{ 
 		// p1=(u8*)strstr((const char*)(USART2_RX_BUF+2),"\r\n");//查找回车
 		// p1[0]=0;//加入结束符 
@@ -2143,7 +2146,7 @@ u8 sim900a_gprs_test(void)
 	// sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-1...\n");
 	
-	sim900a_send_cmd("AT+QIACT?\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-2...\n");
 
 	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);
@@ -2151,10 +2154,10 @@ u8 sim900a_gprs_test(void)
 	printf("...a-3...\n");
 
 
-	sim900a_send_cmd("AT+QIACT=1\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT=1","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-4...\n");
 	
-	sim900a_send_cmd("AT+QIACT?\r\n","OK",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+	sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-4-2...\n");
 
 
@@ -2214,20 +2217,20 @@ u8 sim900a_gprs_test(void)
 
 	while(1)
 	{
-		sim900a_send_cmd("AT+QHTTPURL=49,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		sim900a_send_cmd("AT+QHTTPURL=49,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		printf("...a-9...\n");
 
-		sim900a_send_cmd("https://iot.xintiangui.com/api/control_app/status","OK",8000);
+		sim900a_send_cmd("https://iot.xintiangui.com/api/control_app/status","OK",800);
 		printf("...a-10...\n");
 
 
 
 		//USART2_RX_STA =0;
-		sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		printf("...a-11...\n");
 
 
-		sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",12000);
+		sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000);
 		// sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
 		printf("...a-12...\n");
 
@@ -2239,7 +2242,7 @@ u8 sim900a_gprs_test(void)
 		delay_ms(1000); //500
 		delay_ms(1000); //500
 
-		sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",12000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
 
 		if(reg_status3 == 2)
@@ -2268,11 +2271,11 @@ u8 sim900a_gprs_test(void)
 	//TCP 2
 	//UNINET CMNET
 	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 20);// != GSM_TRUE) return GSM_FALSE;
+	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);// != GSM_TRUE) return GSM_FALSE;
 	printf("...1...\n");
 	
 	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QIACT=1\r\n","OK", 1000);// != GSM_TRUE) return GSM_FALSE;
+	sim900a_send_cmd("AT+QIACT=1","OK", 1000);// != GSM_TRUE) return GSM_FALSE;
 	printf("...2...\n");
 	
 	
@@ -2284,7 +2287,7 @@ u8 sim900a_gprs_test(void)
 	//if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8088,0,2\r\n","CONNECT", 800) == 0)//touchuan116.247.104.27
 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1500)==0)//192.168.10.111
 	// express_tcp.xintiangui.com
-	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 3500)==0)
+	if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2\r\n","CONNECT", 1000)==0)
 		// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,1\r\n","CONNECT", 5500)==0)
 	{
 		printf("----conn-----\r\n");

@@ -616,10 +616,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // delay_ms(1000); //500
 
         //----------------------------
-        sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-9...\n");
 
-        sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",8000);
+        sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",800);
         printf("...a-10...\n");
 
 
@@ -635,7 +635,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
         sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
         // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-        sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);
+        sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
 
         // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
         printf("...a-11...\n");
@@ -645,7 +645,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
         // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
         uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-        if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",15000))
+        if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",1000))
         {
             printf("...a-11-1...\n");
             USART2_RX_STA =0;
@@ -664,7 +664,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             }
 
         }
-        // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
+        // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
         
         printf("...a-12...\n");
 
@@ -674,7 +674,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // delay_xs(30);
 
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",15000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
         { 
             
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
