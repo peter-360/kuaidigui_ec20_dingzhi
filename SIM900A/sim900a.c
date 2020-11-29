@@ -813,7 +813,7 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 
 		}
 
-		
+
     }
 
 
@@ -835,7 +835,7 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 
 
 
-u16 cjson_to_struct_info_opendoor_2(char *text)
+u16 cjson_to_struct_info_tcp_rcv(char *text)
 {
 	u8 reg_status=0x000f;
 	char *index;
@@ -1077,7 +1077,7 @@ void sim_at_response(u8 mode)
 		printf("%s",USART2_RX_BUF);	//·¢ËÍµ½´®¿Ú
 
 
-		cjson_to_struct_info_opendoor_2((char*)USART2_RX_BUF);
+		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
 
 
 

@@ -18,13 +18,14 @@
 #include "usart4.h"	
 #include "lcd_u4.h"
  #include "md5.h"
+ #include "timer.h"
 //ALIENTEK Mini STM32开发板扩展实验14
 //ATK-SIM900A GSM模块测试实验-库函数版本
 //技术支持：www.openedv.com
 //广州市星翼电子科技有限公司  
  
  
- void uart0_debug_str(uint8_t* str,uint16_t len)//str8
+void uart0_debug_str(uint8_t* str,uint16_t len)//str8
 {
 	int i;
     DB_PR("--1str---debug_str:\n");
@@ -105,22 +106,8 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
  int main(void)
  { 
 	u8 key,fontok=0;  
-
-// int n;
-// char *str = "b5";//"12345.67";
-
-// char tab[4]={0xf1,0x22,0x33,0x44};
-// char tab1[4]={0};
-// char a[16];
-// char i;
-
-
-
 	// int i;
-	// unsigned char encrypt[] = "admin";//21232f297a57a5a743894a0e4a801fc3  
-	// unsigned char decrypt[16];
 
-	// MD5_CTX md5;
 
 
 	delay_init();	    	 //延时函数初始化	
@@ -135,57 +122,28 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 	printf("\r\n-0-野火WF-GSM模块TCP收发例程\r\n");
 	//Usart_SendString( UART4,"abcde\n");
 
-// HexToStr(a,tab,4);
-// printf("The str:%s\n",a);
 
-// StrToHex(tab1,a,4);
-// for(i=0;i<4;i++)
-// {
-// 	printf("%x",tab1[i]);
-// }
-// printf("\n");
-// // n = atoi(str);
-// // printf("n=%02x\n",n);
-
-
-	// MD5Init(&md5);
-	// MD5Update(&md5, encrypt, strlen((char *)encrypt));
-	// MD5Final(&md5, decrypt);
-
-	// // //Md5加密后的32位结果
-	// // printf("加密前:%s\n加密后16位:", encrypt);
-	// // for (i = 4; i<12; i++)//8*2
-	// // {
-	// // 	printf("%02x", decrypt[i]);  
-	// // }
-
-	// //Md5加密后的32位结果
-	// printf("\n加密前:%s\n加密后32位:", encrypt);
-	// for (i = 0; i<16; i++)
-	// {
-	// 	printf("%02x", decrypt[i]);  
-	// }
-
-
-
-
-
-
-
-
-
+	delay_ms(100); //500
 	send_cmd_to_lcd_pic(0x0000);
-	 
-	 
+
+	TIM5_Int_Init(9999,7199);
+	TIM5_Set(0);
+
+
+
+
+
+
+
 	delay_ms(500); //500
 	
-	/* 关闭所有led灯	*/
+	/* 4G重启	*/
 	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
 	delay_ms(580); //500
 	/* 关闭所有led灯	*/
 	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
 
-
+	//todo  RDY\r\n
 	delay_ms(1000); //500
 	delay_ms(1000); //500
 	delay_ms(1000); //500
