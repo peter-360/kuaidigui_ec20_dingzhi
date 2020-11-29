@@ -758,7 +758,7 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 		DB_PR("%d\n", item->valueint);
 		my_status = item->valueint;
 
-		if(my_status ==0)
+		//////if(my_status ==0)
 		{
 			//-----------company------------
 			printf("%s\n", "获取result下的cjson对象:");
@@ -907,10 +907,10 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 		// 	sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
 
 		}
-		else
-		{
-			send_cmd_to_lcd_pic(0x0005);
-		}
+		// else
+		// {
+		// 	send_cmd_to_lcd_pic(0x0005);
+		// }
 		
 		
 
@@ -1054,7 +1054,7 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
 			}
 			else if(0==strcmp("stc:overtime_pay",item->valuestring))
 			{
-
+				send_cmd_to_lcd_pic(0x000a); //------------------
 
 				DB_PR("%s\n", "获取 captcha_id 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "captcha_id");
@@ -1110,21 +1110,39 @@ u16 cjson_to_struct_info_opendoor_2(char *text)
                 // delay_ms(1000); //500
                 // delay_ms(1000); //500
                 // delay_ms(1000); //500
-                delay_ms(200); //500
+                // delay_ms(50); //500
 
 
 
 
                 // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
                 uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-                sim900a_send_cmd_go_at(regst_key_post,"OK",15000);
+                if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",15000))
+				{
+					printf("...a-11-1...\n");
+					USART2_RX_STA =0;
+					while(1)
+					{
+						if(USART2_RX_STA&0X8000)		//接收到一次数据了
+						{ 
+
+							if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
+							{
+								printf("...a-11-2...\n");
+								break;
+							}
+
+						}
+					}
+
+				}
                 // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
                 
                 printf("...a-12...\n");
 
                 
                 // delay_ms(1000); //500
-                delay_ms(1200); //500
+                // delay_ms(500); //500
                 // delay_xs(30);
 
                 //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
