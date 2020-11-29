@@ -29,6 +29,7 @@
 void TIM5_Int_Init(u16 arr,u16 psc);
 void TIM5_Set(u8 sta);
 extern u8 daojishi_time;
+extern u8 mtimer_flag;
 #endif
 
 

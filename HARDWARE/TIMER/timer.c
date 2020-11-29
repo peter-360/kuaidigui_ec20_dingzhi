@@ -201,7 +201,8 @@ void TIM5_Int_Init(u16 arr,u16 psc)//uart
 	TIM_ClearITPendingBit(TIM5, TIM_IT_Update  );	
 }
 
-u8 daojishi_time =25;
+u8 daojishi_time =35;
+u8 mtimer_flag=0;
 //定时器5中断服务程序
 void TIM5_IRQHandler(void)   //TIM5中断
 {
@@ -217,23 +218,27 @@ void TIM5_IRQHandler(void)   //TIM5中断
 		daojishi_time--;
 
 		printf("-------daojishi_time=%d--------\n",daojishi_time);
-		if(daojishi_time ==24)
+		if(daojishi_time ==34)
 		{
 			//kaiji 
 			TIM5_Set(0);
 
 		}
-		else if(daojishi_time <20)
+		else if(daojishi_time <30)
 		{
 
 			sprintf((char*)number_buffer, "%d", daojishi_time);
 			printf("-------number_buffer=%s--------\n",number_buffer);
-			send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
+
+			if(mtimer_flag == 1)
+				send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
+			else if(mtimer_flag == 2)
+                send_cmd_to_lcd_bl_len(0x1950,number_buffer,10+4);
 			if(0==daojishi_time)
 			{
 				printf("-------zhuye--------\n");
 				send_cmd_to_lcd_pic(0x0003);
-				daojishi_time=20;
+				daojishi_time=30;
 				TIM5_Set(0);
 			}
 

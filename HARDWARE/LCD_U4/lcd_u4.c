@@ -10,7 +10,7 @@
 
 #include "usart2.h"
 #include "cJSON.h"
-#include "timer.h"
+//#include "timer.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32开发板
@@ -755,7 +755,8 @@ void lcd_at_response(u8 mode)
                     {
                     case 0x1200://
                         DB_PR("\n---------qujianma qujian--------\r\n");
-                        daojishi_time=20;
+                        mtimer_flag =1;
+                        daojishi_time=30;
                         TIM5_Set(1);
                         sprintf((char*)number_buffer, "%d", daojishi_time);
                         printf("-------number_buffer=%s--------\n",number_buffer);
@@ -796,12 +797,12 @@ void lcd_at_response(u8 mode)
                         send_cmd_to_lcd_pic(0x0003);
 
 
-                        daojishi_time=20;
+                        daojishi_time=30;
                         TIM5_Set(0);
 
-                        sprintf((char*)number_buffer, "%d", daojishi_time);
-                        printf("-------number_buffer=%s--------\n",number_buffer);
-                        send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
+                        // sprintf((char*)number_buffer, "%d", daojishi_time);
+                        // printf("-------number_buffer=%s--------\n",number_buffer);
+                        // send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
 
                         break;
                     case 0x1340://

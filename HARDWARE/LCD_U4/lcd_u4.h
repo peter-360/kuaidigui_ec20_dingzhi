@@ -23,7 +23,7 @@
 #define DB_PR(...) 
 #endif
 
-
+#include "timer.h"
 
 extern char regst_key[];
 

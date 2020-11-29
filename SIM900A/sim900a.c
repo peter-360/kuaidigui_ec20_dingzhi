@@ -809,6 +809,15 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 
 			
 
+			memset(buff_t,0,256);
+			mtimer_flag =2;
+			daojishi_time=30;
+			TIM5_Set(1);
+			sprintf((char*)buff_t, "%d", daojishi_time);
+			printf("-------daojishi_time  buff_t=%s--------\n",buff_t);
+			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
+
+
 			send_cmd_to_lcd_pic(0x0007);//---------------
 
 		}
