@@ -540,16 +540,37 @@ u16 cjson_to_struct_info_opendoor(char *text)
 
 }
 
+
+
+
+void reset_qujianma_timeout()
+{
+    u8 number_buffer[10]={0};
+    mtimer_flag =1;
+    daojishi_time=30;
+    TIM5_Set(1);
+    sprintf((char*)number_buffer, "%d", daojishi_time);
+    printf("-------number_buffer=%s--------\n",number_buffer);
+    send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
+
+}
+
+
+
+
+
+
 // uint8_t data_rx_t[USART4_MAX_RECV_LEN] = {0};
 u8 qujian_num[8]={0};  
 u8 qujian_num_input_len;
 void shangping_exe(u16 qujian_num_one_lcd)
 {
-		u32 qujian_num_int=0;  
-		char regst_key_post[300]={0};
-		char qhttp_post_req[150]={0};
+    u32 qujian_num_int=0;  
+    char regst_key_post[300]={0};
+    char qhttp_post_req[150]={0};
     DB_PR("\n\n-----------------------shangping_exe=%8u---.\r\n",qujian_num_int);
 
+    reset_qujianma_timeout();
     
     switch (qujian_num_input_len)
     {
@@ -707,6 +728,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 }
 
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
@@ -723,7 +746,7 @@ void lcd_at_response(u8 mode)
 	// int32_t guimen_gk_temp =0;
 	//uint32_t qujian_num_int=0;  //
 	int i=0;
-    u8 number_buffer[10]={0};
+
 
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
@@ -755,13 +778,7 @@ void lcd_at_response(u8 mode)
                     {
                     case 0x1200://
                         DB_PR("\n---------qujianma qujian--------\r\n");
-                        mtimer_flag =1;
-                        daojishi_time=30;
-                        TIM5_Set(1);
-                        sprintf((char*)number_buffer, "%d", daojishi_time);
-                        printf("-------number_buffer=%s--------\n",number_buffer);
-                        send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
-
+                        reset_qujianma_timeout();
 
                         qujian_num_input_len =0;
                         //开始计时-------------------------
@@ -807,6 +824,7 @@ void lcd_at_response(u8 mode)
                         break;
                     case 0x1340://
                         DB_PR("\n------------qujianma clear--\r\n");
+                        reset_qujianma_timeout();
                         qujian_num_input_len =0;
                         send_cmd_to_lcd_bl(0x1220,0x0000);
                         send_cmd_to_lcd_bl(0x1230,0x0000);
@@ -820,7 +838,7 @@ void lcd_at_response(u8 mode)
                     case 0x1350://
                         DB_PR("\n-----------qujianma del one--\r\n");
 
-
+                        reset_qujianma_timeout();
                         switch (qujian_num_input_len)
                         {
                         case 1:/* constant-expression */
@@ -1093,7 +1111,7 @@ void lcd_at_response(u8 mode)
                 }
             }
 
-        printf("USART4_RX_BUF=eeeeeeeeeeeeee\n");
+        printf("USART4_RX_BUF=eeeeeeeeeeeeee-lcd\n\n");
 
 	} 
 }

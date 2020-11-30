@@ -214,7 +214,7 @@ void lock_at_response(u8 mode)
 			USART3_RX_STA=0;		
 		}
 
-		printf("USART3_RX_BUF=eeeeeeeeeeeeeee\n");
+		printf("USART3_RX_BUF=eeeeeeeeeeeeeee-lock\n\n");
 
 	} 
 }

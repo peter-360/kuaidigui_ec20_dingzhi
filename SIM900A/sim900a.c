@@ -200,31 +200,15 @@ u16 cjson_to_struct_info_qrcode(char *text)
 		
 		uart0_debug_data_h(buff_t,256);
 
-
 		send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
 
 
 
 
 
-
-
-
-
-
-
-
-
 		// send_cmd_to_lcd_pic(0x0003);
-
-
-
-		
-
-                        
+    
     }
-
-
 
     cJSON_Delete(root);
     return reg_status;
@@ -318,28 +302,28 @@ u16 cjson_to_struct_info(char *text)
 	// printf("str_tmp=%s",str_tmp);
 
 
-    root = cJSON_Parse(text);     
-    if (!root) 
-    {
-        printf("Error before: [%s]\n",cJSON_GetErrorPtr());
-    }
-    else
-    {
-        printf("%s\n", "有格式的方式打印Json:");           
-        // printf("%s\n\n", cJSON_Print(root));
-        // printf("%s\n", "无格式方式打印json：");
-        // printf("%s\n\n", cJSON_PrintUnformatted(root));
+	root = cJSON_Parse(text);     
+	if (!root) 
+	{
+		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+	}
+	else
+	{
+		printf("%s\n", "有格式的方式打印Json:");           
+		// printf("%s\n\n", cJSON_Print(root));
+		// printf("%s\n", "无格式方式打印json：");
+		// printf("%s\n\n", cJSON_PrintUnformatted(root));
 
 
 
 
-        printf("%s\n", "获取status下的cjson对象");
-        item = cJSON_GetObjectItem(root, "status");
-        // printf("%s\n", cJSON_Print(item));
-        printf("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
-        printf("%d\n", item->valueint);
-        reg_status = item->valueint;
-        printf("reg_status=%d\n", reg_status);
+		printf("%s\n", "获取status下的cjson对象");
+		item = cJSON_GetObjectItem(root, "status");
+		// printf("%s\n", cJSON_Print(item));
+		printf("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
+		printf("%d\n", item->valueint);
+		reg_status = item->valueint;
+		printf("reg_status=%d\n", reg_status);
 
 
 
@@ -558,10 +542,8 @@ u16 cjson_to_struct_info(char *text)
 			sim900a_send_cmd(regst_key_post,"CONNECT",1250);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11...\n");
 
-			delay_ms(1000); //500
-			delay_ms(1000); //500
-			delay_ms(1000); //500
-			delay_ms(1000); //500
+			//delay_ms(1000); //500
+
 
 
 
@@ -574,13 +556,32 @@ u16 cjson_to_struct_info(char *text)
 			// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 			uart0_debug_str(regst_key_post,strlen(regst_key_post));
 			// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-			sim900a_send_cmd(regst_key_post,"OK",1500);
+			//sim900a_send_cmd(regst_key_post,"OK",1500);
 			// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
+			if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",1000))
+			{
+				printf("...a-11-1...\n");
+				USART2_RX_STA =0;
+				while(1)
+				{
+					if(USART2_RX_STA&0X8000)		//接收到一次数据了
+					{ 
+
+						if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
+						{
+							printf("...a-11-2...\n");
+							break;
+						}
+
+					}
+				}
+
+			}
 			printf("...a-12...\n");
 
 			
-			delay_ms(1000); //500
-			delay_ms(1000); //500
+			//delay_ms(1000); //500
+			//delay_ms(1000); //500
 			// delay_xs(30);
 
 			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
@@ -601,19 +602,12 @@ u16 cjson_to_struct_info(char *text)
 			// send_cmd_to_lcd_pic(0x0003);//---------------
 
 		}
-		
-
-                        
-
-        
-        // printf("\n%s\n", "打印json所有最内层键值对:");
-        // printJson(root);
-    }
 
 
+	}
 
-    cJSON_Delete(root);
-    return reg_status;
+	cJSON_Delete(root);
+	return reg_status;
 
 }
 
@@ -623,24 +617,24 @@ u16 cjson_to_struct_info(char *text)
 
 
 
-u16 sim_at_response_https(u8 mode)
-{
-	u16 reg_status2=0x000f;
-	if(USART2_RX_STA&0X8000)		//接收到一次数据了
-	{ 
-		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-		printf("%s",USART2_RX_BUF);	//发送到串口
+// u16 sim_at_response_https(u8 mode)
+// {
+// 	u16 reg_status2=0x000f;
+// 	if(USART2_RX_STA&0X8000)		//接收到一次数据了
+// 	{ 
+// 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+// 		printf("%s",USART2_RX_BUF);	//发送到串口
 
 
-		reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
+// 		reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
 		
-		//cjson_dbg();
+// 		//cjson_dbg();
 
-		if(mode)
-			USART2_RX_STA=0;
-	} 
-	return reg_status2;
-}
+// 		if(mode)
+// 			USART2_RX_STA=0;
+// 	} 
+// 	return reg_status2;
+// }
 
 
 
@@ -1115,7 +1109,7 @@ void sim_at_response(u8 mode)
 
 		if(mode)USART2_RX_STA=0;
 
-		printf("USART2_RX_BUF=eeeeeeeeeeeee\n");
+		printf("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
 	} 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
@@ -2026,7 +2020,7 @@ void tcp_http_init()
 	// sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	// printf("...a-2...\n");
 
-	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);
+	sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 200);
 	//sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\","" ,"" ,1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-3...\n");
 
@@ -2078,9 +2072,9 @@ void tcp_http_init()
 
 
 	//TCP 2
-	//UNINET CMNET
+	//CMNET CMNET
 	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);// != GSM_TRUE) return GSM_FALSE;
+	sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 200);// != GSM_TRUE) return GSM_FALSE;
 	printf("...1...\n");
 	
 	//GSM_CLEAN_RX();
@@ -2341,7 +2335,7 @@ u8 sim900a_gprs_test(void)
 	// sim900a_send_cmd("AT+QIACT?\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	// printf("...a-2...\n");
 
-	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);
+	sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 200);
 	//sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\","" ,"" ,1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	printf("...a-3...\n");
 
@@ -2437,31 +2431,67 @@ u8 sim900a_gprs_test(void)
 		printf("...a-11...\n");
 
 
-		sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000);
-		// sim900a_send_cmd(deviceid_decrypt_c2,"OK",12000);
+		// sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000);//test
+		//sim900a_send_cmd_go_at(deviceid_decrypt_c2,"OK",1000);
+		if(0==sim900a_send_cmd_go_at(deviceid_decrypt_c2,"OK",1000))
+		{
+			printf("...a-11-1...\n");
+			USART2_RX_STA =0;
+			while(1)
+			{
+				if(USART2_RX_STA&0X8000)		//接收到一次数据了
+				{ 
+
+					if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
+					{
+						printf("...a-11-2...\n");
+						break;
+					}
+
+				}
+			}
+
+		}
 		printf("...a-12...\n");
 
 
 
 
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-
-		sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-		reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-
-		if(reg_status3 == 2)
+		if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
 		{
-			printf("...a-14   reg ok...\n");
-			break;
+		
+			if(USART2_RX_STA&0X8000)		//接收到一次数据了
+			{ 
+				USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+				printf("%s",USART2_RX_BUF);	//发送到串口
+
+
+				reg_status3 = cjson_to_struct_info((char*)USART2_RX_BUF);
+				if(reg_status3 == 2)
+				{
+					printf("...a-14   reg ok...\n");
+					break;
+				}
+				//cjson_dbg();
+
+				if(mode)
+					USART2_RX_STA=0;
+			} 
+		
+		
+
 		}
 
 		delay_ms(1000); //500
 		delay_ms(1000); //500
 		delay_ms(1000); //500
 		delay_ms(1000); //500
+		delay_ms(1000); //500
+		delay_ms(1000); //500
+		delay_ms(1000); //500
+		delay_ms(1000); //500
+	
 	}
 
 
@@ -2478,12 +2508,13 @@ u8 sim900a_gprs_test(void)
 	//TCP 2
 	//UNINET CMNET
 	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QICSGP=1,1,\"UNINET\",\"\",\"\",1\r\n","OK", 200);// != GSM_TRUE) return GSM_FALSE;
-	printf("...1...\n");
+	//--------
+	// sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 100);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...1...\n");
 	
-	//GSM_CLEAN_RX();
-	sim900a_send_cmd("AT+QIACT=1","OK", 1000);// != GSM_TRUE) return GSM_FALSE;
-	printf("...2...\n");
+	// //GSM_CLEAN_RX();
+	// sim900a_send_cmd("AT+QIACT=1","OK", 100);// != GSM_TRUE) return GSM_FALSE;
+	// printf("...2...\n");
 	
 	
 	
@@ -2497,15 +2528,18 @@ u8 sim900a_gprs_test(void)
 		printf("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
 		delay_ms(500); //500
-			// delay_ms(1000); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-		
 		sim900a_send_cmd_go_at(regst_key,0,0) ;
 		// sim900a_send_cmd("register:43981c0ecf4dfadb2d9cc878c874ab8",0,0) ;
-		// sim900a_send_cmd("touchuan",0,0) ;
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 
 	}
+	else
+	{
+		sim900a_send_cmd("AT+QICLOSE=0\r\n","OK",200);
+		
+	}
+	
 
 	//	//检测是否建立连接
 	//	while(gsm_cmd_check("CONNECT") != GSM_TRUE)//OK
@@ -2521,7 +2555,6 @@ u8 sim900a_gprs_test(void)
 	delay_ms(500); //500
 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 	sim900a_send_cmd_go_at("cabinet_heartbeat",0,0);	
-	// sim900a_send_cmd("123",0,0);	
 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 	
 
@@ -2568,12 +2601,15 @@ u8 sim900a_gprs_test(void)
 			printf("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);
 			if(0==heart_beart_idx)
 			{
-				// printf("---------ec20 will rst-----------\n");
+				printf("2-xintiao err\r\n");
 				send_cmd_to_lcd_pic(0x0001);
 				power_down_reset_ec20();
 				at_mode_go();
 				tcp_http_init();
-				// printf("---------ec20 rst  ok--------------\n");	
+			}
+			else
+			{
+				printf("2-xintiao ok\r\n");
 			}
 			heart_beart_idx =0;
 		}
@@ -2581,8 +2617,8 @@ u8 sim900a_gprs_test(void)
 		delay_ms(10);
 		
 
-		sim_at_response(1);//检查GSM模块发送过来的数据,及时上传给电脑
-		lcd_at_response(1);
+		sim_at_response(1);//2 检查GSM模块发送过来的数据,及时上传给电脑
+		lcd_at_response(1);//4
 
 		lock_at_response(1);
 	}
