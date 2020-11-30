@@ -637,7 +637,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // delay_ms(1000); //500
 
         //----------------------------
-        sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-9...\n");
 
         sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",800);
@@ -655,15 +655,15 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         //USART2_RX_STA =0;
-        sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-11-1...\n");
 
         // delay_ms(100); //500
-        sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
+        sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
         // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
         sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
 
-        // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
+        // sim900a_send_cmd("AT+QHTTPPOST=99,80,80","CONNECT",12000);
         printf("...a-11...\n");
 
 
@@ -700,7 +700,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // delay_xs(30);
 
         //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+        if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
         { 
             
             cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
@@ -709,8 +709,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
         } 
 
         // delay_ms(1000); //500
-        // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
-        sim900a_send_cmd("AT+QISWTMD=0,2\r\n",0,0);
+        // sim900a_send_cmd("AT+QISWTMD=0,2","OK",2000);
+        sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
 
 
 
@@ -1047,7 +1047,7 @@ void lcd_at_response(u8 mode)
 
 
 //                        //----------------------------
-//                        sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+//                        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 //                        printf("...a-9...\n");
 
 //                        sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",8000);

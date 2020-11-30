@@ -179,7 +179,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 
 	// delay_ms(500); //500
 	
-
+// chengxu_start_1:
 
 	reset_ec20();
 
