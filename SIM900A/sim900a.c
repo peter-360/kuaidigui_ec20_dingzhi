@@ -973,6 +973,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			else if(0==strcmp("stc:overtime_pay",item->valuestring))
 			{
 				send_cmd_to_lcd_pic(0x000a); //------------------
+				daojishi_ongo_flag =0;
 
 				DB_PR("%s\n", "获取 captcha_id 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "captcha_id");

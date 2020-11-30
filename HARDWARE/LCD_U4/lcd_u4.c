@@ -517,7 +517,7 @@ u16 cjson_to_struct_info_opendoor(char *text)
 			else if(reg_status == 1)
 			{
 				printf("-1-reg_status=%d---\n", reg_status);
-				send_cmd_to_lcd_pic(0x0005);
+				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
 			}
 			else if(reg_status == 2)
 			{
@@ -570,7 +570,9 @@ void shangping_exe(u16 qujian_num_one_lcd)
     char qhttp_post_req[150]={0};
     DB_PR("\n\n-----------------------shangping_exe=%8u---.\r\n",qujian_num_int);
 
-    reset_qujianma_timeout();
+    // reset_qujianma_timeout();
+    mtimer_flag =1;
+    daojishi_time=30;
     
     switch (qujian_num_input_len)
     {
@@ -597,6 +599,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         break;
     case 8:/* constant-expression */
         send_cmd_to_lcd_pic(0x000a);//-----------
+        daojishi_ongo_flag =0;
         send_cmd_to_lcd_bl(0x1290,qujian_num_one_lcd);
         DB_PR("--qujian_num  buff =---\r\n");
         uart0_debug_data_h(qujian_num, 8);
