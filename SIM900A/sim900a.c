@@ -974,6 +974,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			{
 				send_cmd_to_lcd_pic(0x000a); //------------------
 				daojishi_ongo_flag =0;
+                daojishi_time=30;
+                TIM5_Set(0);
+
 
 				DB_PR("%s\n", "获取 captcha_id 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "captcha_id");
@@ -2684,6 +2687,9 @@ chengxu_start_2:
 		printf("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
 		daojishi_ongo_flag =0;
+		daojishi_time=30;
+		TIM5_Set(0);
+
 		delay_ms(500); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 		sim900a_send_cmd_tou_data(regst_key,0,0) ;

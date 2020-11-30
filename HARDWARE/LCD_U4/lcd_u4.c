@@ -518,6 +518,10 @@ u16 cjson_to_struct_info_opendoor(char *text)
 			{
 				printf("-1-reg_status=%d---\n", reg_status);
 				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
+                daojishi_ongo_flag =0;
+                daojishi_time=30;
+                TIM5_Set(0);
+
 			}
 			else if(reg_status == 2)
 			{
@@ -600,6 +604,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
     case 8:/* constant-expression */
         send_cmd_to_lcd_pic(0x000a);//-----------
         daojishi_ongo_flag =0;
+        daojishi_time=30;
+        TIM5_Set(0);
         send_cmd_to_lcd_bl(0x1290,qujian_num_one_lcd);
         DB_PR("--qujian_num  buff =---\r\n");
         uart0_debug_data_h(qujian_num, 8);
@@ -836,8 +842,6 @@ void lcd_at_response(u8 mode)
 
                         send_cmd_to_lcd_pic(0x0003);
                         daojishi_ongo_flag =0;
-
-
                         daojishi_time=30;
                         TIM5_Set(0);
 
