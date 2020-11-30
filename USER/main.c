@@ -100,7 +100,7 @@ void at_mode_go()
 {
 	printf("...at_mode_go...\n");
 	delay_ms(1000); //500
-	sim900a_send_cmd_go_at("+++",0,0);//AT
+	sim900a_send_cmd_tou_data("+++",0,0);//AT
 	printf("...a-0-1...\n");
 	delay_ms(1000); //500
 }

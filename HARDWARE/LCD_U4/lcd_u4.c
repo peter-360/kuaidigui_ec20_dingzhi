@@ -630,7 +630,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         printf("...a-0-0...\n");
         // delay_ms(1000); //500
         delay_ms(1000); //500
-        sim900a_send_cmd_go_at("+++",0,0);//AT
+        sim900a_send_cmd_tou_data("+++",0,0);//AT
         // sim900a_send_cmd("+++\r\n","OK",3000);//AT
         printf("...a-0-1...\n");
         delay_ms(1000); //500
@@ -640,7 +640,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         sim900a_send_cmd("AT+QHTTPURL=44,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-9...\n");
 
-        sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",800);
+        sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",800);
         printf("...a-10...\n");
 
 
@@ -658,6 +658,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-11-1...\n");
 
+        // delay_ms(100); //500
         sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
         // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
         sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
@@ -670,7 +671,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
         // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
         uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-        if(0==sim900a_send_cmd_go_at(regst_key_post,"OK",1000))
+        if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
         {
             printf("...a-11-1...\n");
             USART2_RX_STA =0;
