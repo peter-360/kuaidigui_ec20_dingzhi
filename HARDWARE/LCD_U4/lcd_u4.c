@@ -735,6 +735,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
+u8 daojishi_ongo_flag=0;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
@@ -781,9 +783,22 @@ void lcd_at_response(u8 mode)
                 case 0x83:
                     switch (bl_addr)
                     {
+
+
+                    case 0x1970://
+                        DB_PR("\n---------chaoshi fanhui--------\r\n");
+                        send_cmd_to_lcd_pic(0x0003);
+                        daojishi_ongo_flag =0;
+                        daojishi_time=30;
+                        TIM5_Set(0);
+
+                        break;
+
                     case 0x1200://
                         DB_PR("\n---------qujianma qujian--------\r\n");
                         reset_qujianma_timeout();
+
+                        daojishi_ongo_flag =1;
 
                         qujian_num_input_len =0;
                         //开始计时-------------------------
@@ -817,6 +832,7 @@ void lcd_at_response(u8 mode)
 
 
                         send_cmd_to_lcd_pic(0x0003);
+                        daojishi_ongo_flag =0;
 
 
                         daojishi_time=30;
@@ -825,8 +841,8 @@ void lcd_at_response(u8 mode)
                         // sprintf((char*)number_buffer, "%d", daojishi_time);
                         // printf("-------number_buffer=%s--------\n",number_buffer);
                         // send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
-
                         break;
+												
                     case 0x1340://
                         DB_PR("\n------------qujianma clear--\r\n");
                         reset_qujianma_timeout();

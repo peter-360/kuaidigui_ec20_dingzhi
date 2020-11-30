@@ -1,6 +1,7 @@
 #ifndef __TIMER_H
 #define __TIMER_H
 #include "sys.h"
+#include "lcd_u4.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK Mini STM32开发板
@@ -30,6 +31,7 @@ void TIM5_Int_Init(u16 arr,u16 psc);
 void TIM5_Set(u8 sta);
 extern u8 daojishi_time;
 extern u8 mtimer_flag;
+
 #endif
 
 

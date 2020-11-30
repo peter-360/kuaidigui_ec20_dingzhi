@@ -27,7 +27,7 @@
 
 extern char regst_key[];
 
-
+extern u8 daojishi_ongo_flag;
 
 
 

@@ -813,8 +813,8 @@ u16 cjson_to_struct_info_qrcode_outtime(char *text)
 			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
 
 
-			send_cmd_to_lcd_pic(0x0007);//---------------
-
+			send_cmd_to_lcd_pic(0x0007);//-------chaoshsi yemian--------
+			daojishi_ongo_flag =1;
 		}
 
 
@@ -951,10 +951,22 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				// buff_t2[2] = guimen_gk_temp%10 +0x30;
 
 
-				itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
-				// send_cmd_to_lcd_bl(0x1650,buff_t2);
-				send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
-				send_cmd_to_lcd_pic(0x0006); 
+
+
+				if(0==daojishi_ongo_flag)
+				{
+					DB_PR("\n----------no daojishi yemian-----------\n");  
+					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
+					// send_cmd_to_lcd_bl(0x1650,buff_t2);
+					send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
+					send_cmd_to_lcd_pic(0x0006); 
+				}
+				else
+				{
+					DB_PR("\n----------zhengzai daojishi-----------\n");  
+				}
+				
+
 
 				
 			}
@@ -2109,6 +2121,7 @@ void tcp_http_init()
 	{
 		printf("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
+		daojishi_ongo_flag =0;
 		delay_ms(500); //500
 			// delay_ms(1000); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
@@ -2187,6 +2200,8 @@ u8 sim900a_gprs_test(void)
 // 	sim900a_send_cmd("AT+QIDEACT=1\r\n","OK",400) ;//!= GSM_TRUE) return GSM_FALSE;//"OK"
 // 	printf("...a0...\n");
 	printf("\r\n-1-ÐÄÌðÖÇÄÜ¹ñ\r\n");
+
+chengxu_start_1:
 	while(1)
 	{
 		delay_ms(1000); //500
@@ -2592,6 +2607,7 @@ chengxu_start_2:
 	{
 		printf("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
+		daojishi_ongo_flag =0;
 		delay_ms(500); //500
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 		sim900a_send_cmd_tou_data(regst_key,0,0) ;
@@ -2680,7 +2696,8 @@ chengxu_start_2:
 				send_cmd_to_lcd_pic(0x0001);
 				power_down_reset_ec20();
 				at_mode_go();
-				tcp_http_init();
+				// tcp_http_init();
+				goto chengxu_start_1;
 			}
 			else
 			{

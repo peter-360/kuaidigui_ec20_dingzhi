@@ -238,6 +238,7 @@ void TIM5_IRQHandler(void)   //TIM5ÖÐ¶Ï
 			{
 				printf("-------zhuye--------\n");
 				send_cmd_to_lcd_pic(0x0003);
+				daojishi_ongo_flag =0;
 				daojishi_time=30;
 				TIM5_Set(0);
 			}

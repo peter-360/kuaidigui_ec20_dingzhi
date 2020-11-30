@@ -165,7 +165,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
  	USART2_Init(115200);	//初始化串口 4g
 	USART3_Init(9600);		//初始化串口 lock
 	USART4_Init(115200);	//初始化串口 lcd
-	printf("\r\n-0-野火WF-GSM模块TCP收发例程\r\n");
+	printf("\r\n-0-心甜智能柜\r\n");
 	//Usart_SendString( UART4,"abcde\n");
 
 
@@ -179,7 +179,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 
 	// delay_ms(500); //500
 	
-// chengxu_start_1:
+// chengxu_start_0:
 
 	reset_ec20();
 
