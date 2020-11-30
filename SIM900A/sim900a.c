@@ -533,7 +533,7 @@ u16 cjson_to_struct_info(char *text)
 
 
 			//USART2_RX_STA =0;
-			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",1250);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			printf("...a-11-1...\n");
 
 			//USART2_RX_STA =0;  86
@@ -1002,7 +1002,10 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
                 printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
-
+				//USART2_RX_STA =0;
+				sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+				printf("...a-11-1...\n");
+				
                 sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
                 // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
                 sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
@@ -1147,7 +1150,13 @@ u8 sim900a_send_cmd_go_at(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
 		USART2->DR=(u32)cmd;
-	}else u2_printf("%s",cmd);//发送命令
+	}
+	else 
+	{
+		u2_printf("%s",cmd);//发送命令
+		printf("ctl 4G cmd=\n%s\n-------\r\n",cmd);
+	}
+
 	if(ack&&waittime)		//需要等待应答
 	{
 		while(--waittime)	//等待倒计时
@@ -1179,7 +1188,13 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
 		USART2->DR=(u32)cmd;
-	}else u2_printf("%s\r\n",cmd);//发送命令
+	}
+	else 
+	{
+		u2_printf("%s\r\n",cmd);//发送命令		
+		printf("ctl 4G cmd=\n%s\n-------\r\n",cmd);
+	}
+
 	if(ack&&waittime)		//需要等待应答
 	{
 		while(--waittime)	//等待倒计时
@@ -2425,15 +2440,17 @@ u8 sim900a_gprs_test(void)
 		printf("...a-10...\n");
 
 
+		//USART2_RX_STA =0;
+		sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		printf("...a-11-1...\n");
 
 		//USART2_RX_STA =0;
 		sim900a_send_cmd("AT+QHTTPPOST=42,80,80\r\n","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		printf("...a-11...\n");
 
 
-		// sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000);//test
-		//sim900a_send_cmd_go_at(deviceid_decrypt_c2,"OK",1000);
-		if(0==sim900a_send_cmd_go_at(deviceid_decrypt_c2,"OK",1000))
+		if(0==sim900a_send_cmd("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000))//test
+		// if(0==sim900a_send_cmd_go_at(deviceid_decrypt_c2,"OK",1000))
 		{
 			printf("...a-11-1...\n");
 			USART2_RX_STA =0;
@@ -2467,7 +2484,7 @@ u8 sim900a_gprs_test(void)
 				printf("%s",USART2_RX_BUF);	//发送到串口
 
 
-				reg_status3 = cjson_to_struct_info((char*)USART2_RX_BUF);
+				reg_status3 = cjson_to_struct_info((char*)USART2_RX_BUF);//http2
 				if(reg_status3 == 2)
 				{
 					printf("...a-14   reg ok...\n");

@@ -654,6 +654,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
         printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
 
+        //USART2_RX_STA =0;
+        sim900a_send_cmd("AT+QHTTPPOST=?\r\n","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        printf("...a-11-1...\n");
+
         sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
         // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
         sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
