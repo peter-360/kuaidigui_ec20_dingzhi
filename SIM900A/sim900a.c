@@ -543,6 +543,7 @@ u16 cjson_to_struct_info_register(char *text)
 			{
 				// delay_ms(100); //500
 				//USART2_RX_STA =0;  86
+				DB_PR("-------i=%d---------\n",i);
 				memset(regst_key_post,0,sizeof(regst_key_post));
 				sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
 				//sim900a_send_cmd(regst_key_post,"CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
@@ -1108,7 +1109,18 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					}
 				}
 
-
+				DB_PR("----zhifu timeout?---i=%d---------\n",i);
+				if(i==3)
+				{
+					DB_PR("...b-http timeout...\n");
+					send_cmd_to_lcd_pic(0x0001);
+					delay_ms(1000); 
+					send_cmd_to_lcd_pic(0x0003);
+				}
+				else
+				{
+					DB_PR("...b-ok...\n");
+				}
 
 
 
@@ -2815,7 +2827,7 @@ chengxu_start_2:
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			DB_PR("-----------------------\n");	
 		}
-		if(timex_t2==30000)//5min  30000/60=500=5min
+		if(timex_t2==12000)//2min  30000/60=500=5min
 		{
 			timex_t2 =0;
 			DB_PR("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);

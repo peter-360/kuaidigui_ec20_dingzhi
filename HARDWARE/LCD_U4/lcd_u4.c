@@ -742,6 +742,20 @@ void shangping_exe(u16 qujian_num_one_lcd)
             
         }
 
+        DB_PR("-------i=%d---------\n",i);
+        if(i==3)
+        {
+            DB_PR("...b-http timeout...\n");
+            send_cmd_to_lcd_pic(0x0001);
+            delay_ms(1000); 
+            send_cmd_to_lcd_pic(0x0003);
+        }
+        else
+        {
+            DB_PR("...b-ok...\n");
+        }
+        
+
 
 
 
