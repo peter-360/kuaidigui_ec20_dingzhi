@@ -180,9 +180,9 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 	// delay_ms(500); //500
 	
 // chengxu_start_0:
-
+	power_down_reset_ec20();
 	reset_ec20();
-
+	at_mode_go();
 	 
 //	tp_dev.init();			//触摸屏初始化
 // 	mem_init();				//初始化内存池	    

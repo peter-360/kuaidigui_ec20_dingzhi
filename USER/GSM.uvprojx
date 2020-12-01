@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\HARDWARE\LCD;..\HARDWARE\KEY;..\HARDWARE\SPI;..\HARDWARE\SD;..\MALLOC;..\USMART;..\HARDWARE\FLASH;..\FATFS\src;..\FATFS\exfuns;..\TEXT;..\HARDWARE\24CXX;..\HARDWARE\TIMER;..\HARDWARE\TOUCH;..\HARDWARE\USART2;..\SIM900A;..\HARDWARE\IIC;..\HARDWARE\USART3;..\HARDWARE\USART4;..\HARDWARE\CJSON;..\HARDWARE\LCD_U4</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\HARDWARE\LCD;..\HARDWARE\KEY;..\HARDWARE\SPI;..\HARDWARE\SD;..\MALLOC;..\USMART;..\HARDWARE\FLASH;..\FATFS\src;..\FATFS\exfuns;..\TEXT;..\HARDWARE\24CXX;..\HARDWARE\TIMER;..\HARDWARE\TOUCH;..\HARDWARE\USART2;..\SIM900A;..\HARDWARE\IIC;..\HARDWARE\USART3;..\HARDWARE\USART4;..\HARDWARE\CJSON;..\HARDWARE\LCD_U4;..\HARDWARE\IWDG</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -502,6 +502,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\TIMER\timer.c</FilePath>
             </File>
+            <File>
+              <FileName>iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IWDG\iwdg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -581,6 +586,11 @@
               <FileName>stm32f10x_exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_iwdg.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -17,7 +17,7 @@
 
 #include "cJSON.h"
 #include "md5.h"
-
+#include "iwdg.h"
 
 #include "stdlib.h"
 //////////////////////////////////////////////////////////////////////////////////	 
@@ -2227,6 +2227,7 @@ u8 sim900a_gprs_test(void)
 	u8 timex=0; 
 	long timex_t=0; 
 	long timex_t2=0; 
+	u16 timex_t3=0; 
 	// u8 ipbuf[16]; 		//IP缓存
 	u8 iplen=0;			//IP长度 
 
@@ -2835,7 +2836,7 @@ chengxu_start_3:
 	DB_PR2("\r\n-3-心甜智能柜\r\n");
 
 
-
+	IWDG_Init(4,6250*2);    //与分频数为64,重载值为625,溢出时间为20s	 
 
 
 // //  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
@@ -2861,13 +2862,21 @@ chengxu_start_3:
 			timex=0;
 			LED0=!LED0;
 		}
+
+		if(timex_t3==400)
+		{
+			timex_t3=0;
+			IWDG_Feed();
+			DB_PR("------------feed dog-----------\n");	
+		}
+
 		if(timex_t==6000)//1min   6000
 		{
 			timex_t =0;
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
 			sim900a_send_cmd_tou_data("iot",0,0);	
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
-			DB_PR("-----------------------\n");	
+			DB_PR("------------heart-----------\n");	
 		}
 		if(timex_t2==12000)//2min  30000/60=500=5min
 		{
@@ -2878,7 +2887,7 @@ chengxu_start_3:
 				DB_PR("2-xintiao err\r\n");
 				send_cmd_to_lcd_pic(0x0001);
 				power_down_reset_ec20();
-				at_mode_go();
+				// at_mode_go();
 				// tcp_http_init();
 				goto chengxu_start_1;
 			}
