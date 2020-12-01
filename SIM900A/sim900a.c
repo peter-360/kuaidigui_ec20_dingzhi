@@ -2009,14 +2009,14 @@ typedef enum{
 //    其他,错误代码
 
 
-void uart0_debug_data_h2(uint8_t* data,uint16_t len)//hex8
-{
-	int i;
-    DB_PR("---2----debug_data:");
-    for(i=0;i<len;i++)
-        DB_PR("date[%d]=%02x \n",i,data[i]);
-    DB_PR("\r\n");
-}
+// void uart0_debug_data_h2(uint8_t* data,uint16_t len)//hex8
+// {
+// 	int i;
+//     DB_PR("---2----debug_data:");
+//     for(i=0;i<len;i++)
+//         DB_PR("date[%d]=%02x \n",i,data[i]);
+//     DB_PR("\r\n");
+// }
 
 
 
@@ -2234,7 +2234,8 @@ u8 sim900a_gprs_test(void)
 	char tcp_ip2[16]={0};
 	char at_tcp_ip[64]={0};
 	char *ptr =NULL;
-
+	const char needle[10] = "AT+CGSN\r\r\n";
+	char *ret;
 
 
 	int i;
@@ -2520,62 +2521,103 @@ chengxu_start_2:
 
 
 
-
+chengxu_start_3:
 
 	DB_PR("...a-12...\n");
+	USART2_RX_STA =0;
 	//imei
-	if(sim900a_send_cmd("AT+CGSN","OK",300)==0)//查询产品序列号
+	if(sim900a_send_cmd("AT+CGSN","OK",500)==0)//查询产品序列号
 	{ 
+		delay_ms(100);
 		// p1=(u8*)strstr((const char*)(USART2_RX_BUF+2),"\r\n");//查找回车
 		// p1[0]=0;//加入结束符 
 		// sprintf((char*)p,"序列号:%s",USART2_RX_BUF+2);
  		DB_PR("---USART2_RX_BUF+2=%s\n", USART2_RX_BUF+2); 
 
+		if(USART2_RX_STA&0X8000)		//接收到一次数据了
+		{ 
+			// DB_PR("USART2_RX_BUF=sssssssssssss\n");
+			USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+			DB_PR("--4G_UART_RCV=--\r\n");
+			// uart0_debug_data_h(data_rx_t,len_rx_t);
+			DB_PR("---%s----\n",USART2_RX_BUF);	//发送到串口
+			DB_PR("---USART2_RX_STA&0x7FFF = %d----\n",USART2_RX_STA&0x7FFF); //33
+        	uart0_debug_data_h(USART2_RX_BUF,USART2_RX_STA&0x7FFF);
 
-		memset(IMEI_cRes,0,sizeof(IMEI_cRes));
-		uart0_debug_data_h2(USART2_RX_BUF,strlen(USART2_RX_BUF));
-		// str_test(USART2_RX_BUF+2, IMEI_cRes);
-		memcpy(IMEI_cRes,USART2_RX_BUF+10,15);
-		DB_PR("---111----%s\n", IMEI_cRes); 
+			// USART2_RX_STA=0;
+			// DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
+
+			if((USART2_RX_STA&0x7FFF) !=33)
+			{
+				DB_PR("--IMEI chongxinhuoqu 1=--\r\n");
+				goto chengxu_start_3;
+			}
+
+
+
+			
+			ret = strstr(USART2_RX_BUF, needle);
+			printf("子字符串是： ----%s---\n", ret);
+			if(ret == NULL)
+			{
+				DB_PR("--IMEI chongxinhuoqu 2=--\r\n");
+				goto chengxu_start_3;
+			}
+
+
+			memset(IMEI_cRes,0,sizeof(IMEI_cRes));
+			// uart0_debug_data_h2(USART2_RX_BUF,strlen(USART2_RX_BUF));
+			// str_test(USART2_RX_BUF+2, IMEI_cRes);
+			// memcpy(IMEI_cRes,USART2_RX_BUF+10,15);
+
+			memcpy(IMEI_cRes,ret+10,15);
+			DB_PR("---111----%s------\n", IMEI_cRes); 
 
 
 
 
-		MD5Init(&md5);
-		MD5Update(&md5, IMEI_cRes, strlen((char *)IMEI_cRes));
-		MD5Final(&md5, deviceid_decrypt);
+			MD5Init(&md5);
+			MD5Update(&md5, IMEI_cRes, strlen((char *)IMEI_cRes));
+			MD5Final(&md5, deviceid_decrypt);
 
-		// //Md5加密后的32位结果
-		// DB_PR("加密前:%s\n加密后16位:", IMEI_cRes);
-		// for (i = 4; i<12; i++)//8*2
-		// {
-		// 	DB_PR("%02x", deviceid_decrypt[i]);  
-		// }
+			// //Md5加密后的32位结果
+			// DB_PR("加密前:%s\n加密后16位:", IMEI_cRes);
+			// for (i = 4; i<12; i++)//8*2
+			// {
+			// 	DB_PR("%02x", deviceid_decrypt[i]);  
+			// }
 
-		//Md5加密后的32位结果
-		DB_PR("\n加密前:%s\n加密后32位:", IMEI_cRes);
+			//Md5加密后的32位结果
+			DB_PR("\n加密前:%s\n加密后32位:", IMEI_cRes);
 
-		memset(deviceid_decrypt_c,0,sizeof(deviceid_decrypt_c));
-		for (i = 0; i<16; i++)
+			memset(deviceid_decrypt_c,0,sizeof(deviceid_decrypt_c));
+			for (i = 0; i<16; i++)
+			{
+				DB_PR("%02x", deviceid_decrypt[i]); 
+				// ltoa((int)(deviceid_decrypt[i]),(char*)(deviceid_decrypt_c+2*i) ,16);
+				
+				itoa((int)(deviceid_decrypt[i]/16),(char*)(deviceid_decrypt_c+i*2) ,16);
+				itoa((int)(deviceid_decrypt[i]%16),(char*)(deviceid_decrypt_c+i*2+1) ,16);
+				
+			}
+			DB_PR("\n-----------deviceid_decrypt_c=%s\n",deviceid_decrypt_c);
+			deviceid_decrypt_c[32]=0;
+			// uart0_debug_data_h2(deviceid_decrypt_c,32);
+
+		} 
+		else
 		{
-			DB_PR("%02x", deviceid_decrypt[i]); 
-			// ltoa((int)(deviceid_decrypt[i]),(char*)(deviceid_decrypt_c+2*i) ,16);
-			
-			itoa((int)(deviceid_decrypt[i]/16),(char*)(deviceid_decrypt_c+i*2) ,16);
-			itoa((int)(deviceid_decrypt[i]%16),(char*)(deviceid_decrypt_c+i*2+1) ,16);
-			
+			DB_PR("...a-12-2 err...\n");
 		}
-		DB_PR("\n-----------deviceid_decrypt_c=%s\n",deviceid_decrypt_c);
-		deviceid_decrypt_c[32]=0;
-		// uart0_debug_data_h2(deviceid_decrypt_c,32);
-
-
+		
 		// Show_Str(x,y+150,200,16,p,16,0);
 		USART2_RX_STA=0;		
 	}
 	else
 	{
-		DB_PR("---USART2_RX_BUF+2=%s\n", USART2_RX_BUF+2); 
+		DB_PR("...a-12-3 err...\n");
+		DB_PR("---USART2_RX_BUF=%s---\n", USART2_RX_BUF); 
+		DB_PR("--IMEI chongxinhuoqu=--\r\n");
 	}
 	
 	// if(sim900a_send_cmd("AT+CNUM","+CNUM",500)==0)			//查询本机号码
@@ -2611,7 +2653,7 @@ chengxu_start_2:
 	DB_PR("...a-13...\n");
 
 	sprintf(deviceid_decrypt_c2,"device_id=%s",deviceid_decrypt_c);
-	DB_PR("deviceid_decrypt_c2=%s\n",deviceid_decrypt_c2);
+	DB_PR("--------------------deviceid_decrypt_c2=%s----------------------\n",deviceid_decrypt_c2);
 
 	while(1)
 	{
