@@ -10,6 +10,7 @@
 
 #include "usart2.h"
 #include "cJSON.h"
+#include "usart.h"
 //#include "timer.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -458,7 +459,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 	
     if( text == NULL)
     {
-        printf("\n----1 err----text=\n%s\n",text);
+        DB_PR("\n----1 err----text=\n%s\n",text);
         return 0xffff;
     }
     // cJSON *root,*psub;
@@ -466,57 +467,57 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
     // cJSON *arrayItem;
 
     //???????§json
-    printf("\n----1----text=\n%s\n",text);
+    DB_PR("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
 
     if(NULL == index)
     {
-        printf("------NULL----4444----------\n");
+        DB_PR("------NULL----4444----------\n");
         return 0xffff;
     }
     strcpy(text,index);
 
-	printf("\n----2----text=\n%s\n",text);
+	DB_PR("\n----2----text=\n%s\n",text);
 
 
     root = cJSON_Parse(text);     
-    printf("\n----3----\n");
+    DB_PR("\n----3----\n");
 
     if (!root) 
     {
-        printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+        DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
     }
     else
     {
 
 			//---------------------
-			printf("%s\n", "----获取status下的cjson对象---");
+			DB_PR("%s\n", "----获取status下的cjson对象---");
 			item = cJSON_GetObjectItem(root, "status");//
-			printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-			printf("--2--%d\n", item->valueint);
+			DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+			DB_PR("--2--%d\n", item->valueint);
 			reg_status = item->valueint;
-			// printf("%s\n", cJSON_Print(item));
+			// DB_PR("%s\n", cJSON_Print(item));
 			
-			printf("--reg_status=%d---\n", reg_status);
+			DB_PR("--reg_status=%d---\n", reg_status);
 			if(reg_status == 0)
 			{
-				printf("-0-reg_status=%d---\n", reg_status);
-				printf("%s\n", "获取 result 下的cjson对象");
+				DB_PR("-0-reg_status=%d---\n", reg_status);
+				DB_PR("%s\n", "获取 result 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "result");//
-				printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-				printf("--2--%s\n", item->valuestring);
+				DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+				DB_PR("--2--%s\n", item->valuestring);
 				
-				printf("%s\n", "获取 door_number 下的cjson对象");
+				DB_PR("%s\n", "获取 door_number 下的cjson对象");
 				item = cJSON_GetObjectItem(item, "door_number");//
-				printf("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-				printf("--2--%s\n", item->valuestring);
-				printf("--door---\n");
+				DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+				DB_PR("--2--%s\n", item->valuestring);
+				DB_PR("--door---\n");
 				
 				// send_cmd_to_lcd_pic(0x0006);
 			}
 			else if(reg_status == 1)
 			{
-				printf("-1-reg_status=%d---\n", reg_status);
+				DB_PR("-1-reg_status=%d---\n", reg_status);
 				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
                 daojishi_ongo_flag =0;
                 daojishi_time=30;
@@ -525,7 +526,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 			}
 			else if(reg_status == 2)
 			{
-				printf("-2-reg_status=%d---\n", reg_status);
+				DB_PR("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
                 //-----------  TCP中接受   stc:overtime_pay
 
@@ -554,7 +555,7 @@ void reset_qujianma_timeout()
     daojishi_time=30;
     TIM5_Set(1);
     sprintf((char*)number_buffer, "%d", daojishi_time);
-    printf("-------number_buffer=%s--------\n",number_buffer);
+    DB_PR("-------number_buffer=%s--------\n",number_buffer);
     send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
 
 }
@@ -637,12 +638,12 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         //--------http----------------
-        printf("...a-0-0...\n");
+        DB_PR("...a-0-0...\n");
         // delay_ms(1000); //500
         delay_ms(1000); //500
         sim900a_send_cmd_tou_data("+++",0,0);//AT
         // sim900a_send_cmd("+++\r\n","OK",3000);//AT
-        printf("...a-0-1...\n");
+        DB_PR("...a-0-1...\n");
         delay_ms(1000); //500
         // delay_ms(1000); //500
 
@@ -651,10 +652,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
         //----------------------------
         sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
-        printf("...a-9...\n");
+        DB_PR("...a-9...\n");
 
         sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",500);
-        printf("...a-10...\n");
+        DB_PR("...a-10...\n");
 
 
 
@@ -663,30 +664,30 @@ void shangping_exe(u16 qujian_num_one_lcd)
         sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
         uart0_debug_str(regst_key_post,strlen(regst_key_post));
 
-        printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+        DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
 
 
 
         // delay_ms(1000); //500
-        for(i=0;i<2;i++)
+        for(i=0;i<3;i++)
         {
-            printf("-------i=%d---------\n",i);
+            DB_PR("-------i=%d---------\n",i);
             sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
             // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
             if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",800))
             {
-                printf("...a-10-1...\n");
+                DB_PR("...a-10-1...\n");
             }
             else
             {
-                printf("...a-10-2 err...\n");
+                DB_PR("...a-10-2 err...\n");
                 continue;
             }
             
 
             // sim900a_send_cmd("AT+QHTTPPOST=99,80,80","CONNECT",12000);
-            printf("...a-11...\n");
+            DB_PR("...a-11...\n");
 
 
             // delay_ms(1000); //500
@@ -695,19 +696,19 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
             if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
             {
-                printf("...a-11-1...\n");
+                DB_PR("...a-11-1...\n");
                 // if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
 
             }
             else
             {
-                printf("...a-11-2  err...\n");
+                DB_PR("...a-11-2  err...\n");
                 continue;
             }
             
             // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
             
-            printf("...a-12...\n");
+            DB_PR("...a-12...\n");
 
             
             // delay_ms(200); //500
@@ -719,11 +720,11 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))
             if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
-                printf("...a-13...\n");
+                DB_PR("...a-13...\n");
                 if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    printf("%s",USART2_RX_BUF);	//发送到串口
+                    DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 
                     cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
@@ -734,7 +735,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             }
             else
             {
-                printf("...a-13-2 err...\n");
+                DB_PR("...a-13-2 err...\n");
                 continue;
             }
             
@@ -798,11 +799,11 @@ void lcd_at_response(u8 mode)
 
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
-        printf("USART4_RX_BUF=sssssssssssss\n");
+        DB_PR("USART4_RX_BUF=sssssssssssss\n");
         USART4_RX_BUF[USART4_RX_STA&0X7FFF]=0;//添加结束符 -------------
-        // printf("USART4_RX_BUF=%s\n",USART4_RX_BUF);	//发送到串口
+        // DB_PR("USART4_RX_BUF=%s\n",USART4_RX_BUF);	//发送到串口
         len_rx_t=USART4_RX_STA&0x7FFF;
-        printf("len_rx_t=%x",len_rx_t);	//asdUSART4_RX_STA=8003
+        DB_PR("len_rx_t=%x",len_rx_t);	//asdUSART4_RX_STA=8003
 
         //Usart_SendByte
         memcpy(data_rx_t,USART4_RX_BUF,len_rx_t);
@@ -878,7 +879,7 @@ void lcd_at_response(u8 mode)
                         TIM5_Set(0);
 
                         // sprintf((char*)number_buffer, "%d", daojishi_time);
-                        // printf("-------number_buffer=%s--------\n",number_buffer);
+                        // DB_PR("-------number_buffer=%s--------\n",number_buffer);
                         // send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
                         break;
 												
@@ -942,7 +943,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x00;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3000;
 
@@ -956,7 +957,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x01;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3100;
                         shangping_exe(qujian_num_one_lcd);
@@ -968,7 +969,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x02;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3200;
                         shangping_exe(qujian_num_one_lcd);
@@ -980,7 +981,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x03;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3300;
                         shangping_exe(qujian_num_one_lcd);
@@ -992,7 +993,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x04;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3400;
                         shangping_exe(qujian_num_one_lcd);
@@ -1004,7 +1005,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x05;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3500;
                         shangping_exe(qujian_num_one_lcd);
@@ -1016,7 +1017,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x06;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3600;
                         shangping_exe(qujian_num_one_lcd);
@@ -1028,7 +1029,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x07;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3700;
                         shangping_exe(qujian_num_one_lcd);
@@ -1040,7 +1041,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x08;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3800;
                         shangping_exe(qujian_num_one_lcd);
@@ -1052,7 +1053,7 @@ void lcd_at_response(u8 mode)
                         qujian_num[qujian_num_input_len]=0x09;
                         uart0_debug_data_h(qujian_num, 8);
                         qujian_num_input_len++;
-                        printf("qujian_num_input_len=%d\n",qujian_num_input_len);
+                        DB_PR("qujian_num_input_len=%d\n",qujian_num_input_len);
 
                         qujian_num_one_lcd =0x3900;
                         shangping_exe(qujian_num_one_lcd);
@@ -1096,17 +1097,17 @@ void lcd_at_response(u8 mode)
 //                        // delay_ms(1000); //500
 //                        // delay_ms(1000); //500
 //                        // sim900a_send_cmd("+++","OK",3000);
-//                        // printf("...a-0-1...\n");
+//                        // DB_PR("...a-0-1...\n");
 //                        // delay_ms(1000); //500
 //                        // delay_ms(1000); //500
 
 
 //                        //----------------------------
 //                        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",8000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-//                        printf("...a-9...\n");
+//                        DB_PR("...a-9...\n");
 
 //                        sim900a_send_cmd("https://iot.xintiangui.com/cabinet/open_door","OK",8000);
-//                        printf("...a-10...\n");
+//                        DB_PR("...a-10...\n");
 
 
 
@@ -1116,7 +1117,7 @@ void lcd_at_response(u8 mode)
 //                        sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
 //                        uart0_debug_str(regst_key_post,strlen(regst_key_post));
 
-//                        printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+//                        DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
 
 //                        sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80\r\n",strlen(regst_key_post));
@@ -1124,7 +1125,7 @@ void lcd_at_response(u8 mode)
 
 
 //                        // sim900a_send_cmd("AT+QHTTPPOST=99,80,80\r\n","CONNECT",125000);
-//                        printf("...a-11...\n");
+//                        DB_PR("...a-11...\n");
 
 //                        delay_ms(1000); //500
 //                        delay_ms(1000); //500
@@ -1139,7 +1140,7 @@ void lcd_at_response(u8 mode)
 //                        sim900a_send_cmd(regst_key_post,"OK",25000);
 //                        // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",12000);
 //                        
-//                        printf("...a-12...\n");
+//                        DB_PR("...a-12...\n");
 
 //                        
 //                        delay_ms(1000); //500
@@ -1171,7 +1172,7 @@ void lcd_at_response(u8 mode)
                 }
             }
 
-        printf("USART4_RX_BUF=eeeeeeeeeeeeee-lcd\n\n");
+        DB_PR("USART4_RX_BUF=eeeeeeeeeeeeee-lcd\n\n");
 
 	} 
 }
@@ -1190,7 +1191,7 @@ void send_cmd_to_lcd_pic(uint16_t temp)//图片
     uint8_t tx_Buffer[50]={0};  
     uint16_t crc16_temp=0;
 
-    printf("-----pic-----.\r\n");
+    DB_PR("-----pic-----.\r\n");
     tx_Buffer[0] = 0x5A;
     tx_Buffer[1] = 0xA5;
 
@@ -1206,11 +1207,11 @@ void send_cmd_to_lcd_pic(uint16_t temp)//图片
         
     tx_Buffer[8] = temp/256;
     tx_Buffer[9] = temp%256;
-    printf("temp-pic:0x%04x\r\n",temp);
+    DB_PR("temp-pic:0x%04x\r\n",temp);
 
     // //crc
     // crc16_temp = CRC16(tx_Buffer+3, TX4_PIC_LEN - 5);
-    // printf("tx CRC16 result:0x%04X\r\n",crc16_temp);
+    // DB_PR("tx CRC16 result:0x%04X\r\n",crc16_temp);
 
     // tx_Buffer[10] = crc16_temp&0xff;
     // tx_Buffer[11] = (crc16_temp>>8)&0xff;

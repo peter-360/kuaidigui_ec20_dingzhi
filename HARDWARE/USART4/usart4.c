@@ -2,7 +2,8 @@
 #include "usart4.h"
 #include "stdarg.h"	 	 
 #include "stdio.h"	 	 
-#include "string.h"	   
+#include "string.h"	 
+#include "usart.h"  
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32开发板
@@ -43,7 +44,7 @@ if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)//接收到数据
 			if(USART4_RX_STA==0)TIM2_Set(1);	 	//使能定时器4的中断 
 			USART4_RX_BUF[USART4_RX_STA++]=res;		//记录接收到的值	 
 			// USART_SendData(UART4, res);
-			// printf("res=%d",res);
+			// DB_PR("res=%d",res);
 		}else 
 		{
 			USART4_RX_STA|=1<<15;					//强制标记接收完成
@@ -166,29 +167,29 @@ void TIM2_Init(u16 arr,u16 psc)
 
 void spear_uart_send_datas(uint8_t* str, uint16_t len)
 {
-	printf("\r\n");
+	DB_PR("\r\n");
 	while(len--)
 	{
 //		USART_SendData(USART1, *str);
 //		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); 
 //		str++;
 		//UartSend(*str++);
-		printf("%02x",*str++);
+		DB_PR("%02x",*str++);
 	}
-	printf("\r\n");
+	DB_PR("\r\n");
 }
 
 void debug_uart4_send_datas(uint8_t* str, uint16_t len)
 {
-	printf("----u4 rcv-----\r\n");
+	DB_PR("----u4 rcv-----\r\n");
 	while(len--)
 	{
 //		USART_SendData(USART1, *str);
 //		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); 
 //		str++;
-		printf("%02x",*str++);
+		DB_PR("%02x",*str++);
 	}
-	printf("-----u4 end----\r\n");
+	DB_PR("-----u4 end----\r\n");
 }
 
 

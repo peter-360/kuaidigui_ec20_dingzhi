@@ -4,6 +4,7 @@
 #include "stdio.h"	 	 
 #include "string.h"	  
 #include "led.h"
+#include "usart.h"
 
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -165,15 +166,15 @@ void TIM3_Init(u16 arr,u16 psc)
 
 //void debug_uart3_send_datas(uint8_t* str, uint16_t len)
 //{
-//	printf("----u3 rcv-----\r\n");
+//	DB_PR("----u3 rcv-----\r\n");
 //	while(len--)
 //	{
 //		USART_SendData(USART3, *str++);
 //		while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET); 
 //		str++;
-//		//printf("%c",*str++);
+//		//DB_PR("%c",*str++);
 //	}
-//	printf("-----u3 end----\r\n");
+//	DB_PR("-----u3 end----\r\n");
 //}
 
 //1
@@ -200,11 +201,11 @@ void lock_at_response(u8 mode)
 {
 	if(USART3_RX_STA&0X8000)		//接收到一次数据了
 	{ 
-		printf("USART3_RX_BUF=sssssssssssss\n");
+		DB_PR("USART3_RX_BUF=sssssssssssss\n");
 		RS485_TX_EN();
 		USART3_RX_BUF[USART3_RX_STA&0X7FFF]=0;//添加结束符
-			printf("USART3_RX_BUF=%s\n",USART3_RX_BUF);	//发送到串口-----to
-			printf("USART3_RX_STA=%x",USART3_RX_STA);	
+			DB_PR("USART3_RX_BUF=%s\n",USART3_RX_BUF);	//发送到串口-----to
+			DB_PR("USART3_RX_STA=%x",USART3_RX_STA);	
 			// spear_uart3_send_datas(USART3_RX_BUF,USART3_RX_STA);
 		//Usart_SendByte
 		// uart0_debug_data_h(USART3_RX_BUF,USART3_RX_STA);
@@ -214,7 +215,7 @@ void lock_at_response(u8 mode)
 			USART3_RX_STA=0;		
 		}
 
-		printf("USART3_RX_BUF=eeeeeeeeeeeeeee-lock\n\n");
+		DB_PR("USART3_RX_BUF=eeeeeeeeeeeeeee-lock\n\n");
 
 	} 
 }

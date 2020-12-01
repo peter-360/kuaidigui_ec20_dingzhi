@@ -1,5 +1,6 @@
 #include "timer.h"
 #include "led.h"
+#include "usart.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK Mini STM32开发板
@@ -227,7 +228,7 @@ void TIM5_IRQHandler(void)   //TIM5中断
 		else if(daojishi_time <30)
 		{
 
-			sprintf((char*)number_buffer, "%d", daojishi_time);
+			DB_PR((char*)number_buffer, "%d", daojishi_time);
 			// printf("-------number_buffer=%s--------\n",number_buffer);
 
 			if(mtimer_flag == 1)

@@ -33,6 +33,28 @@ extern u8  USART_RX_BUF[USART_REC_LEN]; //½ÓÊÕ»º³å,×î´óUSART_REC_LEN¸ö×Ö½Ú.Ä©×Ö½
 extern u16 USART_RX_STA;         		//½ÓÊÕ×´Ì¬±ê¼Ç	
 //Èç¹ûÏë´®¿ÚÖĞ¶Ï½ÓÊÕ£¬Çë²»Òª×¢ÊÍÒÔÏÂºê¶¨Òå
 void uart_init(u32 bound);
+
+
+//log ctl 1
+#define _DEBUG_ 0
+
+#if _DEBUG_
+#define DB_PR(...) printf(__VA_ARGS__)
+#else
+#define DB_PR(...) 
+#endif
+
+
+//log ctl 2
+#define _DEBUG2_ 1
+
+#if _DEBUG2_
+#define DB_PR2(...) printf(__VA_ARGS__)
+#else
+#define DB_PR2(...) 
+#endif
+
+
 #endif
 
 

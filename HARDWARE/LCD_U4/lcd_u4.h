@@ -16,12 +16,12 @@
 #define TX4_PIC_LEN 10//12 tupian
 #define TX4_BL_LEN 8//12 tupian
 
-#define _DEBUG_ 1
-#if _DEBUG_
-#define DB_PR(...) printf(__VA_ARGS__)
-#else
-#define DB_PR(...) 
-#endif
+//#define _DEBUG_ 1
+//#if _DEBUG_
+//#define DB_PR(...) printf(__VA_ARGS__)
+//#else
+//#define DB_PR(...) 
+//#endif
 
 #include "timer.h"
 

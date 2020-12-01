@@ -1,7 +1,7 @@
 #include "led.h"
 #include "delay.h"
 #include "sys.h"
-#include "usart.h"
+#include "usart.h"//log
 #include "lcd.h"
 #include "key.h"
 #include "usmart.h" 
@@ -69,13 +69,13 @@ void power_down_reset_ec20()
 
 
 
-	printf("---------ec20 will rst-----------\n");
+	DB_PR("---------ec20 will rst-----------\n");
 	/* 4G重启	*/
 	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
 	delay_ms(580); //500
 	/* 关闭所有led灯	*/
 	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
-	printf("---------ec20 rst  ok--------------\n");	
+	DB_PR("---------ec20 rst  ok--------------\n");	
 
 }
 
@@ -87,21 +87,21 @@ void reset_ec20()
 
 
 
-	printf("---------ec20 will rst-----------\n");
+	DB_PR("---------ec20 will rst-----------\n");
 	/* 4G重启	*/
 	GPIO_ResetBits(GPIOB,GPIO_Pin_0);	 
 	delay_ms(580); //500
 	/* 关闭所有led灯	*/
 	GPIO_SetBits(GPIOB,GPIO_Pin_0);	 
-	printf("---------ec20 rst  ok--------------\n");	
+	DB_PR("---------ec20 rst  ok--------------\n");	
 
 }
 void at_mode_go()
 {
-	printf("...at_mode_go...\n");
+	DB_PR("...at_mode_go...\n");
 	delay_ms(1000); //500
 	sim900a_send_cmd_tou_data("+++",0,0);//AT
-	printf("...a-0-1...\n");
+	DB_PR("...a-0-1...\n");
 	delay_ms(1000); //500
 }
 
@@ -165,7 +165,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
  	USART2_Init(115200);	//初始化串口 4g
 	USART3_Init(9600);		//初始化串口 lock
 	USART4_Init(115200);	//初始化串口 lcd
-	printf("\r\n-0-心甜智能柜\r\n");
+	DB_PR2("\r\n-0-心甜智能柜\r\n");
 	//Usart_SendString( UART4,"abcde\n");
 
 
