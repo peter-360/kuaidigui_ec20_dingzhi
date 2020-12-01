@@ -441,7 +441,7 @@ pbDest[i] = s1*16 + s2;
 
 
 
-u16 cjson_to_struct_info_opendoor(char *text)
+u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 {
 	u8 reg_status=0x000f;
 	char *index;
@@ -674,7 +674,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             printf("-------i=%d---------\n",i);
             sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
             // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-            if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",500))
+            if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",800))
             {
                 printf("...a-10-1...\n");
             }
@@ -720,8 +720,16 @@ void shangping_exe(u16 qujian_num_one_lcd)
             if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
                 printf("...a-13...\n");
-                cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
-                USART2_RX_STA=0;
+                if(USART2_RX_STA&0X8000)		//接收到一次数据了
+                { 
+                    USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+                    printf("%s",USART2_RX_BUF);	//发送到串口
+
+
+                    cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
+                    USART2_RX_STA=0;
+                }
+
                 break;
             }
             else
@@ -1141,7 +1149,7 @@ void lcd_at_response(u8 mode)
 //                        //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
 //                        if(0==sim900a_send_cmd("AT+QHTTPREAD=80\r\n","CONNECT",25000))// != GSM_TRUE) return GSM_FALSE;//"OK"
 //                        { 
-//                            cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+//                            cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
 //                            USART2_RX_STA=0;
 
 //                            // cJSON_Delete(root);

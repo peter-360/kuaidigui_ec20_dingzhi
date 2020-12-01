@@ -128,7 +128,7 @@ u8 UTF8toUnicode(u8 *ch, u16 *_unicode)
 
 
 
-u16 cjson_to_struct_info_qrcode(char *text)
+u16 cjson_to_struct_info_qrcode(char *text)//kaiji
 {
 	u8 reg_status=0x000f;
 	char *index;
@@ -217,7 +217,7 @@ u16 cjson_to_struct_info_qrcode(char *text)
 
 char regst_key[60]={0};
 
-u16 cjson_to_struct_info(char *text)
+u16 cjson_to_struct_info_register(char *text)
 {
 	u8 reg_status=0x000f;
 	char *index;
@@ -538,7 +538,7 @@ u16 cjson_to_struct_info(char *text)
 
 
 
-
+			// delay_ms(1000); //500
 			for(i=0;i<2;i++)
 			{
 				// delay_ms(100); //500
@@ -546,7 +546,7 @@ u16 cjson_to_struct_info(char *text)
 				memset(regst_key_post,0,sizeof(regst_key_post));
 				sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
 				//sim900a_send_cmd(regst_key_post,"CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
-				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",500))
+				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",800))
 				{
 					printf("...a-10-1...\n");
 				}
@@ -596,8 +596,16 @@ u16 cjson_to_struct_info(char *text)
 				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 				{ 
 					printf("...a-13...\n");
-					cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
-					USART2_RX_STA=0;
+					if(USART2_RX_STA&0X8000)		//接收到一次数据了
+					{ 
+						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+						printf("%s",USART2_RX_BUF);	//发送到串口
+
+						cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
+						USART2_RX_STA=0;
+					}
+
+
 
 					// cJSON_Delete(root);
 					// return reg_status;
@@ -636,7 +644,7 @@ u16 cjson_to_struct_info(char *text)
 // 		printf("%s",USART2_RX_BUF);	//发送到串口
 
 
-// 		reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
+// 		reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 		
 // 		//cjson_dbg();
 
@@ -652,7 +660,7 @@ u16 cjson_to_struct_info(char *text)
 int captcha_id=0;
 
 
-u16 cjson_to_struct_info_qrcode_outtime(char *text)
+u16 cjson_to_struct_info_overtime_pay(char *text)
 {
 	u8 my_status=0x000f;
 	char *index;
@@ -1044,7 +1052,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					printf("-------i=%d---------\n",i);
 					sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
 					// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-					if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",500))
+					if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",800))
 					{
 						printf("...a-10-1...\n");
 					}
@@ -1082,10 +1090,14 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 					{ 
 						printf("...a-13...\n");
-						// cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
-						cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
-						USART2_RX_STA=0;
+						if(USART2_RX_STA&0X8000)		//接收到一次数据了
+						{ 
+							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+							printf("%s",USART2_RX_BUF);	//发送到串口
 
+							cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF);
+							USART2_RX_STA=0;
+						}
 						// cJSON_Delete(root);
 						// return reg_status;
 					} 
@@ -1152,7 +1164,7 @@ void sim_at_response(u8 mode)
 
 
 
-		// reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
+		// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 		
 		//cjson_dbg();
 
@@ -2418,7 +2430,7 @@ chengxu_start_2:
 			// ret_string_ip = strstr(haystack, needle);
 			// cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
 			// printf("tcp ip=\n%s\n");
-			// reg_status2 = cjson_to_struct_info((char*)USART2_RX_BUF);
+			// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 			//cjson_dbg();
 
 			if(mode)
@@ -2606,7 +2618,7 @@ chengxu_start_2:
 
 
 		//USART2_RX_STA =0;
-		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",800))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
 			printf("...a-10-1...\n");
 		}
@@ -2643,8 +2655,8 @@ chengxu_start_2:
 				USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 				printf("%s",USART2_RX_BUF);	//发送到串口
 
-
-				reg_status3 = cjson_to_struct_info((char*)USART2_RX_BUF);//http2
+				printf("...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...\n");
+				reg_status3 = cjson_to_struct_info_register((char*)USART2_RX_BUF);//http2
 				if(reg_status3 == 2)
 				{
 					printf("...a-14   reg ok...\n");
@@ -2652,8 +2664,8 @@ chengxu_start_2:
 				}
 				//cjson_dbg();
 
-				if(mode)
-					USART2_RX_STA=0;
+				// if(mode)
+				USART2_RX_STA=0;
 			} 
 		
 		
