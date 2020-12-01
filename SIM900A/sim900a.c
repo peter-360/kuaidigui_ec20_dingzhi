@@ -2402,6 +2402,8 @@ chengxu_start_2:
 	//---------287e9v3367.zicp.vip---------
 	// AT+QIDNSGIP=1,"www.baidu.com" iot.dev.modoubox.com   express_tcp.xintiangui.com
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"www.baidu.com\"","+QIURC:",2000))//300
+	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"287e9v3367.zicp.vip\"","+QIURC:",800))
+
 	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express.tcp.xintiangui.com\"","+QIURC:",800))
 	{
 		DB_PR("...a4-3-1...\n");
@@ -2433,8 +2435,8 @@ chengxu_start_2:
 			// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 			//cjson_dbg();
 
-			if(mode)
-				USART2_RX_STA=0;
+			// if(mode)
+			USART2_RX_STA=0;
 
 			DB_PR("eeeeeeeeeeeee-4G\n\n");
 		} 
@@ -2701,21 +2703,31 @@ chengxu_start_2:
 	// sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1\r\n","OK", 100);// != GSM_TRUE) return GSM_FALSE;
 	// DB_PR("...1...\n");
 	
-	// //GSM_CLEAN_RX();
-	// sim900a_send_cmd("AT+QIACT=1","OK", 100);// != GSM_TRUE) return GSM_FALSE;
-	// DB_PR("...2...\n");
+	//GSM_CLEAN_RX();
+	// if(0==sim900a_send_cmd("AT+QIACT=1","OK", 100))// != GSM_TRUE) return GSM_FALSE;
+	// {
+	// 	DB_PR("...a-4-1-1 aa...\n");
+	// }
+	// else
+	// {
+	// 	DB_PR("...a-4-1-2 bb err...\n");
+	// }
+
+	DB_PR("...2...\n");
 	
 	
 	
 	
 	USART2_RX_STA =0;
 	//GSM_CLEAN_RX();register:53988b31ffdb2e7db9c9429b84f0f84  register:6ef6d30c49a08134897c6f2cc297063
-	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2\r\n","CONNECT", 1000)==0)//192.168.10.111
+	
 	// express_tcp.xintiangui.com
 
-
+	// sprintf(at_tcp_ip,"AT+QIOPEN=1,0,\"TCP\",%s,12310,0,2",tcp_ip2);
 	sprintf(at_tcp_ip,"AT+QIOPEN=1,0,\"TCP\",%s,8091,0,2",tcp_ip2);
-	DB_PR("-----------at_tcp_ip =%s--------------\r\n",at_tcp_ip);
+	DB_PR("-----------at_tcp_ip =%s--------------\r\n",at_tcp_ip);	
+	
+	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
 	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2",  "CONNECT", 1000)==0)
 	if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
 	{
@@ -2762,7 +2774,7 @@ chengxu_start_2:
 
 	delay_ms(500); //500
 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-	sim900a_send_cmd_tou_data("cabinet_heartbeat",0,0);	
+	sim900a_send_cmd_tou_data("cabinet_heartbeat",0,0);	//iot
 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 	
 
@@ -2803,7 +2815,7 @@ chengxu_start_2:
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			DB_PR("-----------------------\n");	
 		}
-		if(timex_t2==30000)//5min
+		if(timex_t2==30000)//5min  30000/60=500=5min
 		{
 			timex_t2 =0;
 			DB_PR("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);
