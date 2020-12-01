@@ -1,6 +1,6 @@
 #include "timer.h"
 #include "led.h"
-#include "usart.h"
+#include "usart.h"//log
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK Mini STM32开发板
@@ -218,18 +218,18 @@ void TIM5_IRQHandler(void)   //TIM5中断
 
 		daojishi_time--;
 
-		printf("-------daojishi_time=%d--------\n",daojishi_time);
+		DB_PR("-------daojishi_time=%d--------\n",daojishi_time);
 		if(daojishi_time ==34)
 		{
-			//kaiji 
+			//kaiji jinru yici INT
 			TIM5_Set(0);
 
 		}
 		else if(daojishi_time <30)
 		{
 
-			DB_PR((char*)number_buffer, "%d", daojishi_time);
-			// printf("-------number_buffer=%s--------\n",number_buffer);
+			sprintf((char*)number_buffer, "%d", daojishi_time);
+			// DB_PR("-------number_buffer=%s--------\n",number_buffer);
 
 			if(mtimer_flag == 1)
 				send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
@@ -237,7 +237,7 @@ void TIM5_IRQHandler(void)   //TIM5中断
                 send_cmd_to_lcd_bl_len(0x1950,number_buffer,10+4);
 			if(0==daojishi_time)
 			{
-				printf("-------zhuye--------\n");
+				DB_PR("-------zhuye--------\n");
 				send_cmd_to_lcd_pic(0x0003);
 				daojishi_ongo_flag =0;
 				daojishi_time=30;
