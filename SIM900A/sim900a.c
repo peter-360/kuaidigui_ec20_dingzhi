@@ -1172,7 +1172,7 @@ u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime)
 	else 
 	{
 		u2_printf("%s",cmd);//发送命令
-		printf("ctl 4G cmd=\n%s\n-------\r\n",cmd);
+		printf("send to 4G data=\n%s\n-------\r\n",cmd);
 	}
 
 	if(ack&&waittime)		//需要等待应答
@@ -1210,7 +1210,7 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	else 
 	{
 		u2_printf("%s\r\n",cmd);//发送命令		
-		printf("ctl 4G cmd=\n%s\n-------\r\n",cmd);
+		printf("sendto 4G cmd=\n%s\n-------\r\n",cmd);
 	}
 
 	if(ack&&waittime)		//需要等待应答
@@ -2251,9 +2251,9 @@ chengxu_start_2:
 
 	
 
-	delay_ms(1000); //500
-	delay_ms(1000); //500
-	delay_ms(1000); //500
+	delay_ms(1000); //500-------------------------todo   CREG
+	delay_ms(1000); //500-------------------------todo   CREG
+	delay_ms(1000);
 
 
 	// //GSM_CLEAN_RX();

@@ -228,7 +228,7 @@ void TIM5_IRQHandler(void)   //TIM5ÖÐ¶Ï
 		{
 
 			sprintf((char*)number_buffer, "%d", daojishi_time);
-			printf("-------number_buffer=%s--------\n",number_buffer);
+			// printf("-------number_buffer=%s--------\n",number_buffer);
 
 			if(mtimer_flag == 1)
 				send_cmd_to_lcd_bl_len(0x1900,number_buffer,10+4);
