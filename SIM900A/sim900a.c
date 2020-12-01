@@ -532,75 +532,84 @@ u16 cjson_to_struct_info(char *text)
 			printf("...a-10...\n");
 
 
-			//USART2_RX_STA =0;
-			sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			printf("...a-11-1...\n");
-
-			// delay_ms(100); //500
-			//USART2_RX_STA =0;  86
-			memset(regst_key_post,0,sizeof(regst_key_post));
-			sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
-			sim900a_send_cmd(regst_key_post,"CONNECT",1250);// != GSM_TRUE) return GSM_FALSE;//"OK"
-			printf("...a-11...\n");
-
-			//delay_ms(1000); //500
+			// //USART2_RX_STA =0;
+			// sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			// printf("...a-11-1...\n");
 
 
 
 
-			memset(regst_key_post,0,sizeof(regst_key_post));
-			//Content-Type:application/x-www-form-urlencoded\r\n
-			//Content-Type=application/x-www-form-urlencoded
-			sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);//
-
-			// sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);
-			// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
-			uart0_debug_str(regst_key_post,strlen(regst_key_post));
-			// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-			//sim900a_send_cmd(regst_key_post,"OK",1500);
-			// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
-			if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
+			for(i=0;i<2;i++)
 			{
-				printf("...a-11-1...\n");
-				USART2_RX_STA =0;
-				while(1)
+				// delay_ms(100); //500
+				//USART2_RX_STA =0;  86
+				memset(regst_key_post,0,sizeof(regst_key_post));
+				sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
+				//sim900a_send_cmd(regst_key_post,"CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
+				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",500))
 				{
-					if(USART2_RX_STA&0X8000)		//接收到一次数据了
-					{ 
+					printf("...a-10-1...\n");
+				}
+				else
+				{
+					printf("...a-10-2 err...\n");
+					continue;
+				}
+				
+				
+				printf("...a-11...\n");
 
-						if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
-						{
-							printf("...a-11-2...\n");
-							break;
-						}
+				//delay_ms(1000); //500
 
-					}
+
+
+
+				memset(regst_key_post,0,sizeof(regst_key_post));
+				//Content-Type:application/x-www-form-urlencoded\r\n
+				//Content-Type=application/x-www-form-urlencoded
+				sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);//
+
+				// sprintf(regst_key_post,"from=cabinet&register_key=%s&type=qrcode_content",regst_key);
+				// printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+				uart0_debug_str(regst_key_post,strlen(regst_key_post));
+				// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+				//sim900a_send_cmd(regst_key_post,"OK",1500);
+				// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
+				if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
+				{
+					printf("...a-11-1...\n");
+
+				}
+				else
+				{
+					printf("...a-11-2  err...\n");
+					continue;
+				}
+				printf("...a-12...\n");
+
+				
+				//delay_ms(1000); //500
+				//delay_ms(1000); //500
+				// delay_xs(30);
+
+				//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+				{ 
+					printf("...a-13...\n");
+					cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
+					USART2_RX_STA=0;
+
+					// cJSON_Delete(root);
+					// return reg_status;
+				} 
+				else
+				{
+					printf("...a-13-2 err...\n");
+					continue;
 				}
 
+				// send_cmd_to_lcd_pic(0x0003);//---------------
 			}
-			printf("...a-12...\n");
-
-			
-			//delay_ms(1000); //500
-			//delay_ms(1000); //500
-			// delay_xs(30);
-
-			//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-			if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1500))// != GSM_TRUE) return GSM_FALSE;//"OK"
-			{ 
-				cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
-				USART2_RX_STA=0;
-
-				// cJSON_Delete(root);
-    			// return reg_status;
-			} 
-
-
-
-
-
-
-			// send_cmd_to_lcd_pic(0x0003);//---------------
 
 		}
 
@@ -990,10 +999,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
                 //--------http----------------
+				//-----------add  panduan qujianma pingbi?  todo
                 printf("...a-0-0...\n");
                 // delay_ms(1000); //500
                 delay_ms(1000); //500
-                sim900a_send_cmd_tou_data("+++",0,0);//AT
+                sim900a_send_cmd_tou_data("+++",0,0);//AT  
                 // sim900a_send_cmd("+++","OK",3000);//AT
                 printf("...a-0-1...\n");
                 delay_ms(1000); //500
@@ -1019,59 +1029,77 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
                 printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
-				//USART2_RX_STA =0;
-				sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
-				printf("...a-11-1...\n");
+				// //USART2_RX_STA =0;
+				// sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+				// printf("...a-11-1...\n");
+
+
+
+
 
 				// delay_ms(100); //500
-                sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
-                // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-                sim900a_send_cmd(qhttp_post_req,"CONNECT",1000);
 
-                // sim900a_send_cmd("AT+QHTTPPOST=99,80,80","CONNECT",125000);
-                printf("...a-11...\n");
-
-                // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
-                uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
-                if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
+				for(i=0;i<2;i++)
 				{
-					printf("...a-11-1...\n");
-					USART2_RX_STA =0;
-					while(1)
+					printf("-------i=%d---------\n",i);
+					sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
+					// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+					if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",500))
 					{
-						if(USART2_RX_STA&0X8000)		//接收到一次数据了
-						{ 
-
-							if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
-							{
-								printf("...a-11-2...\n");
-								break;
-							}
-
-						}
+						printf("...a-10-1...\n");
 					}
+					else
+					{
+						printf("...a-10-2 err...\n");
+						continue;
+					}
+					// sim900a_send_cmd("AT+QHTTPPOST=99,80,80","CONNECT",125000);
+					printf("...a-11...\n");
 
+					// #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
+					uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
+					if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
+					{
+						printf("...a-11-1...\n");
+						// if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
+
+					}
+					else
+					{
+						printf("...a-11-2  err...\n");
+						continue;
+					}
+					// sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
+					
+					printf("...a-12...\n");
+
+					
+					// delay_ms(1000); //500
+					// delay_ms(500); //500
+					// delay_xs(30);
+
+					//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+					{ 
+						printf("...a-13...\n");
+						// cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
+						cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
+						USART2_RX_STA=0;
+
+						// cJSON_Delete(root);
+						// return reg_status;
+					} 
+					else
+					{
+						printf("...a-13-2 err...\n");
+						continue;
+					}
 				}
-                // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
-                
-                printf("...a-12...\n");
 
-                
-                // delay_ms(1000); //500
-                // delay_ms(500); //500
-                // delay_xs(30);
 
-                //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-                if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
-                { 
-                    
-                    // cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
-					cjson_to_struct_info_qrcode_outtime((char*)USART2_RX_BUF);
-                    USART2_RX_STA=0;
 
-                    // cJSON_Delete(root);
-                    // return reg_status;
-                } 
+
+
 
                 // delay_ms(1000); //500
                 // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
@@ -2569,50 +2597,45 @@ chengxu_start_2:
 		printf("...a-10...\n");
 
 
-		//USART2_RX_STA =0;
-		sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
-		printf("...a-11-1...\n");
+		// //USART2_RX_STA =0;
+		// sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+		// printf("...a-11-1...\n");
 
 		// delay_ms(100); //500
+
+
+
 		//USART2_RX_STA =0;
-		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
-			printf("...a-11-2...\n");
-		}	
+			printf("...a-10-1...\n");
+		}
 		else
 		{
-			printf("...a-11-3 err...\n");
+			printf("...a-10-2 err...\n");
+			continue;
 		}
 		
 
 		// delay_ms(100); //500
 		// if(0==sim900a_send_cmd_tou_data("device_id=00e5c9c6e22e66e2d32c22ef2cdb2a42","OK",1000))//test
-		if(0==sim900a_send_cmd_tou_data(deviceid_decrypt_c2,"OK",1000))
+		if(0==sim900a_send_cmd_tou_data(deviceid_decrypt_c2,"+QHTTPPOST:",500))
 		{
 			printf("...a-11-1...\n");
-			USART2_RX_STA =0;
-			while(1)
-			{
-				if(USART2_RX_STA&0X8000)		//接收到一次数据了
-				{ 
+			// if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
 
-					if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
-					{
-						printf("...a-11-2...\n");
-						break;
-					}
-
-				}
-			}
-
+		}
+		else
+		{
+			printf("...a-11-2  err...\n");
+			continue;
 		}
 		printf("...a-12...\n");
 
 
 
-
-		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
+		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
 		
 			if(USART2_RX_STA&0X8000)		//接收到一次数据了

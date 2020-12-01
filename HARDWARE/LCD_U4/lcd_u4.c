@@ -646,17 +646,19 @@ void shangping_exe(u16 qujian_num_one_lcd)
         delay_ms(1000); //500
         // delay_ms(1000); //500
 
+
+
+
         //----------------------------
-        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
         printf("...a-9...\n");
 
-        sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",800);
+        sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",500);
         printf("...a-10...\n");
 
 
 
         //USART2_RX_STA =0;  86
-        // memset(regst_key_post,0,sizeof(regst_key_post));
         memset(regst_key_post,0,sizeof(regst_key_post));
         sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
         uart0_debug_str(regst_key_post,strlen(regst_key_post));
@@ -664,25 +666,22 @@ void shangping_exe(u16 qujian_num_one_lcd)
         printf("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
 
 
-        // //USART2_RX_STA =0;
-        // sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
-        // printf("...a-11-1-0...\n");
-
 
 
         // delay_ms(1000); //500
-        // for(i=0;i<2;i++)
+        for(i=0;i<2;i++)
         {
             printf("-------i=%d---------\n",i);
             sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
             // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-            if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",1000))
+            if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",500))
             {
                 printf("...a-10-1...\n");
             }
             else
             {
                 printf("...a-10-2 err...\n");
+                continue;
             }
             
 
@@ -694,29 +693,16 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
             uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
             // if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
-            if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",1000))
+            if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
             {
                 printf("...a-11-1...\n");
-                // // if(USART2_RX_STA&0X8000)		//接收到一次数据了
-                // { 
-
-                //     if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
-                //     {
-                //         printf("...a-11-2...\n");
-                //         // break;
-                //     }
-                //     else
-                //     {
-                //         printf("...a-11-3  err...\n");
-                //         // continue;
-                //     } 
-                // }
-                
+                // if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
 
             }
             else
             {
-                printf("...a-11-3  err...\n");
+                printf("...a-11-2  err...\n");
+                continue;
             }
             
             // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
@@ -726,22 +712,22 @@ void shangping_exe(u16 qujian_num_one_lcd)
             
             // delay_ms(200); //500
             // delay_xs(30);
-            
             // delay_ms(1000); //500
 
             //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
             
             // if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))
-            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD: 0",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
                 printf("...a-13...\n");
                 cjson_to_struct_info_opendoor((char*)USART2_RX_BUF);
                 USART2_RX_STA=0;
-
+                break;
             }
             else
             {
-                printf("...a-14...\n");
+                printf("...a-13-2 err...\n");
+                continue;
             }
             
             
