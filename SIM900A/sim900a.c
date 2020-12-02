@@ -240,7 +240,7 @@ u16 cjson_to_struct_info_register(char *text)
 	// uint8_t buff_t3[256]={0xb5 ,0xa5 ,0xc6 ,0xac ,0xbb ,0xfa ,0xb2 ,0xe2 ,0xca ,0xd4 ,0x32};
 	
 	int company_id=0;
-	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";
+	char* url_t="https://iot.xintiangui.com/web_wechat/download_app?cid=";//guding
 
 
 
@@ -922,22 +922,33 @@ u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 		DB_PR("%s\n", "获取type下的cjson对象");
 		item = cJSON_GetObjectItem(root, "type");//
 		DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-		DB_PR("--2--%d\n", item->valuestring);
+		DB_PR("--2--%s\n", item->valuestring);
 		// reg_status = item->valueint;
 		// DB_PR("%s\n", cJSON_Print(item));
 		
 
-		if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
+
+
+
+		daojishi_ongo_flag =0;
+		// if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
+		if(0==strcmp("stc:overtime_pay_success",item->valuestring))
 		{
-			daojishi_ongo_flag =0;
 			send_cmd_to_lcd_pic(0x0008);
-			daojishi_time=2;
-			TIM5_Set(1);
+			// daojishi_time=2;
+			// TIM5_Set(1);
 
 			ret_status =1;
 			DB_PR("...stc:overtime_pay_success...\n");
 		}
+		else
+		{
+			DB_PR("...stc:overtime_pay_    fail...\n");
+		}
+		
 
+
+		printf("ret_status=%d\n",ret_status);
 		
 		
             //  uart0_debug_data_h(buff_t,256);
@@ -1011,7 +1022,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			DB_PR("%s\n", "获取type下的cjson对象");
 			item = cJSON_GetObjectItem(root, "type");//
 			DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-			DB_PR("--2--%d\n", item->valuestring);
+			DB_PR("--2--%s\n", item->valuestring);
 			// reg_status = item->valueint;
 			// DB_PR("%s\n", cJSON_Print(item));
 			
@@ -1037,12 +1048,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
 
-				for(i=0;i<25;i++)
+				for(i=0;i<30;i++)
 				{
 					DB_PR("------i=%d----\n",i);   
+					delay_ms(100); //500
 					if(USART2_RX_STA&0X8000)		//接收到一次数据了
 					{
-						delay_ms(100); //500
 						// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
 						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 						DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
@@ -1057,6 +1068,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							// USART2_RX_STA=0;
 							break;
 						}
+						else
+						{
+							DB_PR("--------timeout dbg3 err---------------------\r\n");
+						}
+						
 
 
 
@@ -1072,7 +1088,13 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 				
 				DB_PR("----my dbg-----i=%d---------\n",i);   
-
+				if(i==30)
+				{
+					DB_PR("----my dbg3 timeout-----i=%d---------\n",i);   
+					daojishi_time=30;
+					TIM5_Set(1);					
+				}
+				delay_ms(500); //500
 
 
 
