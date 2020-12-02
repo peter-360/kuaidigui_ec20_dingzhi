@@ -520,7 +520,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				DB_PR("-1-reg_status=%d---\n", reg_status);
 				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
                 daojishi_ongo_flag =0;
-                daojishi_time=30;
+                daojishi_time=5;
                 TIM5_Set(1);
 
 			}

@@ -1151,7 +1151,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					send_cmd_to_lcd_pic(0x0006); //kaimen ok
 
 					daojishi_ongo_flag =0;
-					daojishi_time=30;
+					daojishi_time=5;
 					TIM5_Set(1);
 				}
 				// else
