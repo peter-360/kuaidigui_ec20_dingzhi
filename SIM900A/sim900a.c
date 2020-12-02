@@ -548,7 +548,7 @@ u16 cjson_to_struct_info_register(char *text)
 				memset(regst_key_post,0,sizeof(regst_key_post));
 				sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
 				//sim900a_send_cmd(regst_key_post,"CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
-				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",800))
+				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",1000))
 				{
 					DB_PR("...a-10-1...\n");
 				}
@@ -577,7 +577,7 @@ u16 cjson_to_struct_info_register(char *text)
 				// uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
 				//sim900a_send_cmd(regst_key_post,"OK",1500);
 				// sim900a_send_cmd("from=cabinet&register_key=register:7c772404a1fda38b4f0a42b8f013ae2&type=qrcode_content","OK",12000);
-				if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
+				if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",900))
 				{
 					DB_PR("...a-11-1...\n");
 
@@ -595,7 +595,7 @@ u16 cjson_to_struct_info_register(char *text)
 				// delay_xs(30);
 
 				//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",900))// != GSM_TRUE) return GSM_FALSE;//"OK"
 				{ 
 					DB_PR("...a-13...\n");
 					if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -827,9 +827,9 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 			mtimer_flag =2;
 			daojishi_time=30;
 			TIM5_Set(1);
-			sprintf((char*)buff_t, "%d", daojishi_time);
-			DB_PR("-------daojishi_time  buff_t=%s--------\n",buff_t);
-			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
+			// sprintf((char*)buff_t, "%d", daojishi_time);
+			// DB_PR("-------daojishi_time  buff_t=%s--------\n",buff_t);
+			// send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
 
 
 			send_cmd_to_lcd_pic(0x0007);//-------chaoshsi yemian--------
@@ -961,7 +961,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("buff_t=");
 				uart0_debug_data_h(buff_t, size);
 				// uart_write_bytes(UART_NUM_LOCK, (const char *) tx_Buffer2, 11);
-				Usart_SendArray( USART3,buff_t, size);
+				Usart_SendArray( USART3,buff_t, size);//open door
 				RS485_RX_EN();
 
 				DB_PR("\n----------lock open-----------\n");  
@@ -971,19 +971,25 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
 
-
-				if(0==daojishi_ongo_flag)
+				printf("-----daojishi_time=%d-----\n",daojishi_time);
+				printf("-----daojishi_ongo_flag=%d-----\n",daojishi_ongo_flag);
+				// if( (0==daojishi_ongo_flag) 
+				// 	||((1==daojishi_ongo_flag)&&(daojishi_time<27))  )
 				{
 					DB_PR("\n----------no daojishi yemian-----------\n");  
 					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
 					// send_cmd_to_lcd_bl(0x1650,buff_t2);
 					send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
-					send_cmd_to_lcd_pic(0x0006); 
+					send_cmd_to_lcd_pic(0x0006); //kaimen ok
+
+					daojishi_ongo_flag =0;
+					daojishi_time=30;
+					TIM5_Set(1);
 				}
-				else
-				{
-					DB_PR("\n----------zhengzai daojishi-----------\n");  
-				}
+				// else
+				// {
+				// 	DB_PR("\n----------zhengzai daojishi-----------\n");  
+				// }
 				
 
 
@@ -1111,17 +1117,17 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 
 				DB_PR("----zhifu timeout?---i=%d---------\n",i);
-				if(i==3)
-				{
-					DB_PR("...b-http timeout...\n");
-					send_cmd_to_lcd_pic(0x0001);
-					delay_ms(1000); 
-					send_cmd_to_lcd_pic(0x0003);
-				}
-				else
-				{
-					DB_PR("...b-ok...\n");
-				}
+				// if(i==3)
+				// {
+				// 	DB_PR("...b-http timeout...\n");
+				// 	send_cmd_to_lcd_pic(0x0001);
+				// 	delay_ms(1000); 
+				// 	send_cmd_to_lcd_pic(0x0003);
+				// }
+				// else
+				// {
+				// 	DB_PR("...b-ok...\n");
+				// }
 
 
 
@@ -2281,6 +2287,8 @@ chengxu_start_1:
 			DB_PR("...a0-2 wait...\n");		
 		}
 	}
+
+	
 	DB_PR2("\r\n-2-心甜智能柜\r\n");
 
 
@@ -2304,7 +2312,8 @@ chengxu_start_2:
 
 	
 
-	delay_xs(3); 
+	delay_xs(4); 
+	DB_PR("\r\n-2-1-心甜智能柜\r\n");
 
 
 	// //GSM_CLEAN_RX();
@@ -2354,7 +2363,7 @@ chengxu_start_2:
 	DB_PR("...a-3...\n");
 
 
-	if(0==sim900a_send_cmd("AT+QIACT=1","OK",200))// != GSM_TRUE) return GSM_FALSE;//"OK"
+	if(0==sim900a_send_cmd("AT+QIACT=1","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 	{
 		DB_PR("...a-4-1-1...\n");
 	}

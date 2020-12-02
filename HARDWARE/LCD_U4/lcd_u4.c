@@ -499,7 +499,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 			// DB_PR("%s\n", cJSON_Print(item));
 			
 			DB_PR("--reg_status=%d---\n", reg_status);
-			if(reg_status == 0)
+			if(reg_status == 0)//TCP  "stc:opendoor"
 			{
 				DB_PR("-0-reg_status=%d---\n", reg_status);
 				DB_PR("%s\n", "获取 result 下的cjson对象");
@@ -521,11 +521,12 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
                 daojishi_ongo_flag =0;
                 daojishi_time=30;
-                TIM5_Set(0);
+                TIM5_Set(1);
 
 			}
 			else if(reg_status == 2)
 			{
+                daojishi_ongo_flag =0;
 				DB_PR("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
                 //-----------  TCP中接受   stc:overtime_pay
@@ -743,17 +744,17 @@ void shangping_exe(u16 qujian_num_one_lcd)
         }
 
         DB_PR("-------i=%d---------\n",i);
-        if(i==3)
-        {
-            DB_PR("...b-http timeout...\n");
-            send_cmd_to_lcd_pic(0x0001);
-            delay_ms(1000); 
-            send_cmd_to_lcd_pic(0x0003);
-        }
-        else
-        {
-            DB_PR("...b-ok...\n");
-        }
+        // if(i==3)
+        // {
+        //     DB_PR("...b-http timeout...\n");
+        //     send_cmd_to_lcd_pic(0x0001);
+        //     delay_ms(1000); 
+        //     send_cmd_to_lcd_pic(0x0003);
+        // }
+        // else
+        // {
+        //     DB_PR("...b-ok...\n");
+        // }
         
 
 
@@ -854,7 +855,7 @@ void lcd_at_response(u8 mode)
                         DB_PR("\n---------qujianma qujian--------\r\n");
                         reset_qujianma_timeout();
 
-                        daojishi_ongo_flag =1;
+
 
                         qujian_num_input_len =0;
                         //开始计时-------------------------
@@ -867,7 +868,8 @@ void lcd_at_response(u8 mode)
                         send_cmd_to_lcd_bl(0x1280,0x0000);
                         send_cmd_to_lcd_bl(0x1290,0x0000);
 
-                        send_cmd_to_lcd_pic(0x0004);
+                        send_cmd_to_lcd_pic(0x0004);//qujianma qujian
+                        daojishi_ongo_flag =1;
 
 
                         
