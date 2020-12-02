@@ -607,7 +607,7 @@ u16 cjson_to_struct_info_register(char *text)
 						USART2_RX_STA=0;
 					}
 
-
+					break;
 
 					// cJSON_Delete(root);
 					// return reg_status;
@@ -827,9 +827,9 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 			mtimer_flag =2;
 			daojishi_time=30;
 			TIM5_Set(1);
-			// sprintf((char*)buff_t, "%d", daojishi_time);
-			// DB_PR("-------daojishi_time  buff_t=%s--------\n",buff_t);
-			// send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
+			sprintf((char*)buff_t, "%d", daojishi_time);
+			DB_PR("-------daojishi_time  buff_t=%s--------\n",buff_t);
+			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
 
 
 			send_cmd_to_lcd_pic(0x0007);//-------chaoshsi yemian--------
@@ -1108,6 +1108,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						}
 						// cJSON_Delete(root);
 						// return reg_status;
+						break;
 					} 
 					else
 					{
