@@ -926,6 +926,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------tcp will restart---------\n");   
 				Soft_Reset();//
 			}
+			else if(0==strcmp("stc:overtime_pay_success",item->valuestring))
+			{
+				daojishi_ongo_flag =0;
+				DB_PR("...stc:overtime_pay_success...\n");
+			}
 			else if(0==strcmp("stc:opendoor",item->valuestring))
 			{
 				//---------------------
@@ -973,8 +978,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 				printf("-----daojishi_time=%d-----\n",daojishi_time);
 				printf("-----daojishi_ongo_flag=%d-----\n",daojishi_ongo_flag);
-				// if( (0==daojishi_ongo_flag) 
-				// 	||((1==daojishi_ongo_flag)&&(daojishi_time<27))  )
+				if(0==daojishi_ongo_flag) 
 				{
 					DB_PR("\n----------no daojishi yemian-----------\n");  
 					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
@@ -1118,17 +1122,17 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 
 				DB_PR("----zhifu timeout?---i=%d---------\n",i);
-				// if(i==3)
-				// {
-				// 	DB_PR("...b-http timeout...\n");
-				// 	send_cmd_to_lcd_pic(0x0001);
-				// 	delay_ms(1000); 
-				// 	send_cmd_to_lcd_pic(0x0003);
-				// }
-				// else
-				// {
-				// 	DB_PR("...b-ok...\n");
-				// }
+				if(i==3)
+				{
+					DB_PR("...b-http timeout...\n");
+					send_cmd_to_lcd_pic(0x0001);
+					delay_ms(1000); 
+					send_cmd_to_lcd_pic(0x0003);
+				}
+				else
+				{
+					DB_PR("...b-ok...\n");
+				}
 
 
 
@@ -2424,7 +2428,7 @@ chengxu_start_2:
 	// AT+QIDNSGIP=1,"www.baidu.com" iot.dev.modoubox.com   express_tcp.xintiangui.com
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"www.baidu.com\"","+QIURC:",2000))//300
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"287e9v3367.zicp.vip\"","+QIURC:",800))
-
+	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"iot.dev.modoubox.com\"","+QIURC:",800))
 	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express.tcp.xintiangui.com\"","+QIURC:",800))
 	{
 		DB_PR("...a4-3-1...\n");
@@ -2785,6 +2789,7 @@ chengxu_start_3:
 	
 	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
 	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2",  "CONNECT", 1000)==0)
+	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8091,0,2",  "CONNECT", 1000)==0)
 	if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
 	{
 		DB_PR("----conn-----\r\n");
