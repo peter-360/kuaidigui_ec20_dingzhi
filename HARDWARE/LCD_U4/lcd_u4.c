@@ -728,11 +728,19 @@ void shangping_exe(u16 qujian_num_one_lcd)
                     DB_PR("%s",USART2_RX_BUF);	//·¢ËÍµ½´®¿Ú
 
 
-                    cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
+                    if(0x000f!=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF))
+                    {  
+                        DB_PR("...a-13...\n");
+                        break;
+                    }
+                    else
+                    {
+                        DB_PR("...a-13  -1...\n");
+                    }
+                    
                     USART2_RX_STA=0;
                 }
 
-                break;
             }
             else
             {

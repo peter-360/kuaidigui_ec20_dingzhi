@@ -1037,12 +1037,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
 
-				for(i=0;i<10;i++)
+				for(i=0;i<25;i++)
 				{
-
+					DB_PR("------i=%d----\n",i);   
 					if(USART2_RX_STA&0X8000)		//接收到一次数据了
 					{
-						delay_ms(50); //500
+						delay_ms(100); //500
 						// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
 						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 						DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
@@ -1249,8 +1249,17 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
-							cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF);
-							USART2_RX_STA=0;
+							if(0x000f!=cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF))
+							{
+								DB_PR("...a-13-1-1 err...\n");
+								break;
+							}
+							else
+							{
+								DB_PR("...a-13-2-2 err...\n");
+							}
+							
+							// USART2_RX_STA=0;
 						}
 						// cJSON_Delete(root);
 						// return reg_status;
@@ -1325,7 +1334,7 @@ void sim_at_response(u8 mode)
         // uart0_debug_data_h(data_rx_t,len_rx_t);
 		DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
-
+		USART2_RX_STA =0;
 		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
 
 
@@ -1334,8 +1343,8 @@ void sim_at_response(u8 mode)
 		
 		//cjson_dbg();
 
-		if(mode)
-			USART2_RX_STA=0;
+		// if(mode)
+		// 	USART2_RX_STA=0;
 
 		DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
 	} 
