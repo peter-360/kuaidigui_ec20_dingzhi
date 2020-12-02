@@ -2555,7 +2555,7 @@ chengxu_start_3:
 
 			
 			ret = strstr(USART2_RX_BUF, needle);
-			printf("子字符串是： ----%s---\n", ret);
+			DB_PR("子字符串是： ----%s---\n", ret);
 			if(ret == NULL)
 			{
 				DB_PR("--IMEI chongxinhuoqu 2=--\r\n");
@@ -2569,7 +2569,7 @@ chengxu_start_3:
 			// memcpy(IMEI_cRes,USART2_RX_BUF+10,15);
 
 			memcpy(IMEI_cRes,ret+10,15);
-			DB_PR("---111----%s------\n", IMEI_cRes); 
+			DB_PR2("---111----%s------\n", IMEI_cRes); 
 
 
 
