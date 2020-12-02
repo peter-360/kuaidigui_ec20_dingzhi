@@ -181,7 +181,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 	
 // chengxu_start_0:
 	power_down_reset_ec20();
-	reset_ec20();
+	// reset_ec20();
 	at_mode_go();
 	 
 //	tp_dev.init();			//´¥ÃþÆÁ³õÊ¼»¯

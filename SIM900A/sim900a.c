@@ -44,11 +44,12 @@
 void delay_xs(u16 xms)
 {	 	
 	int i=0;
-	for(i=0; i<xms; i++);
+	for(i=0; i<xms; i++)
 	{
    		delay_ms(1000);
-		DB_PR("-----------\n");
+		// DB_PR("-----------\n");
 	}
+	DB_PR("-----delay_xs =%d------\n",xms);
 
 }
 
@@ -2297,17 +2298,13 @@ chengxu_start_2:
 	{
 		send_cmd_to_lcd_pic(0x0001);
 		DB_PR("...a1-2 err...\n");		
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
+		delay_xs(3); 
 		Soft_Reset();
 	}
 
 	
 
-	delay_ms(1000); //500-------------------------todo   CREG
-	delay_ms(1000); //500-------------------------todo   CREG
-	delay_ms(1000);
+	delay_xs(3); 
 
 
 	// //GSM_CLEAN_RX();
@@ -2459,7 +2456,7 @@ chengxu_start_2:
 	{
 		// send_cmd_to_lcd_pic(0x0001);
 		DB_PR("...a4-3-2 err...\n");		
-		// return;
+		goto chengxu_start_2;
 	}
 
 
@@ -2619,6 +2616,7 @@ chengxu_start_3:
 		DB_PR("...a-12-3 err...\n");
 		DB_PR("---USART2_RX_BUF=%s---\n", USART2_RX_BUF); 
 		DB_PR("--IMEI chongxinhuoqu=--\r\n");
+		goto chengxu_start_3;
 	}
 	
 	// if(sim900a_send_cmd("AT+CNUM","+CNUM",500)==0)			//查询本机号码
@@ -2729,14 +2727,7 @@ chengxu_start_3:
 
 		}
 
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
-		delay_ms(1000); //500
+		delay_xs(10); 
 	
 	}
 
@@ -2836,8 +2827,8 @@ chengxu_start_3:
 	DB_PR2("\r\n-3-心甜智能柜\r\n");
 
 
-	IWDG_Init(4,6250*2);    //与分频数为64,重载值为625,溢出时间为20s	 
-
+	// IWDG_Init((4*4),(625*4));    //与分频数为64,重载值为625,溢出时间为  =64s	 
+	IWDG_Init(7,4094);//26s 
 
 // //  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
 // // 	// sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
@@ -2857,13 +2848,14 @@ chengxu_start_3:
 		timex++;
 		timex_t++;
 		timex_t2++;
+		timex_t3++;
 		if(timex==20)
 		{
 			timex=0;
 			LED0=!LED0;
 		}
 
-		if(timex_t3==400)
+		if(timex_t3==500)//5s
 		{
 			timex_t3=0;
 			IWDG_Feed();
