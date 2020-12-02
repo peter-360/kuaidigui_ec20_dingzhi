@@ -861,6 +861,99 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 
 int  heart_beart_idx =0;
 
+
+
+
+
+u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
+{
+	u8 ret_status=0x000f;
+	char *index;
+	cJSON * root = NULL;
+	cJSON * item = NULL;//cjson???ó
+	char regst_key_post[300];
+//	cJSON * item2 = NULL;//cjson???ó
+//	cJSON * item3 = NULL;//cjson???ó
+	uint8_t buff_t[256]={0};
+	uint8_t buff_t2[40]={0};
+	int i=0;
+	u16 index_m=0;
+	int16_t guimen_gk_temp =0;
+	
+	int size=0;
+
+	char qhttp_post_req[150]={0};
+
+	
+    if( text == NULL)
+    {
+        DB_PR("\n----1 err----text=\n%s\n",text);
+        return 0xffff;
+    }
+    // cJSON *root,*psub;
+
+    // cJSON *arrayItem;
+
+    //???????§json
+    DB_PR("\n----1----text=\n%s\n",text);
+    index=strchr(text,'{');
+
+    if(NULL == index)
+    {
+        DB_PR("------NULL----4444----------\n");
+        return 0xffff;
+    }
+    strcpy(text,index);
+
+	DB_PR("\n----2----text=\n%s\n",text);
+
+
+    root = cJSON_Parse(text);     
+    DB_PR("\n----3----\n");
+
+    if (!root) 
+    {
+        DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
+    }
+    else
+    {
+
+		//---------------------
+		DB_PR("%s\n", "获取type下的cjson对象");
+		item = cJSON_GetObjectItem(root, "type");//
+		DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+		DB_PR("--2--%d\n", item->valuestring);
+		// reg_status = item->valueint;
+		// DB_PR("%s\n", cJSON_Print(item));
+		
+
+		if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
+		{
+			daojishi_ongo_flag =0;
+			send_cmd_to_lcd_pic(0x0008);
+			daojishi_time=2;
+			TIM5_Set(1);
+
+			ret_status =1;
+			DB_PR("...stc:overtime_pay_success...\n");
+		}
+
+		
+		
+            //  uart0_debug_data_h(buff_t,256);
+            // send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+
+    }
+
+
+
+    cJSON_Delete(root);
+    return ret_status;
+
+}
+
+
+
 u16 cjson_to_struct_info_tcp_rcv(char *text)
 {
 	u8 reg_status=0x000f;
@@ -929,20 +1022,60 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------tcp will restart---------\n");   
 				Soft_Reset();//
 			}
-			else if(0==strcmp("stc:overtime_pay_success",item->valuestring))
-			{
-				daojishi_ongo_flag =0;
-				send_cmd_to_lcd_pic(0x0008);
-				daojishi_time=2;
-				TIM5_Set(1);
+			// else if(0==strcmp("stc:overtime_pay_success",item->valuestring))
+			// {
+			// 	daojishi_ongo_flag =0;
+			// 	send_cmd_to_lcd_pic(0x0008);
+			// 	daojishi_time=2;
+			// 	TIM5_Set(1);
 
-				DB_PR("...stc:overtime_pay_success...\n");
-			}
+			// 	DB_PR("...stc:overtime_pay_success...\n");
+			// }
 			else if(0==strcmp("stc:opendoor",item->valuestring))
 			{
 				//---------------------
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
+
+				for(i=0;i<10;i++)
+				{
+
+					if(USART2_RX_STA&0X8000)		//接收到一次数据了
+					{
+						delay_ms(50); //500
+						// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
+						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+						DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
+						// uart0_debug_data_h(data_rx_t,len_rx_t);
+						DB_PR("%s",USART2_RX_BUF);	//发送到串口
+
+
+						if(1==cjson_to_struct_info_tcp_rcv_overtime_pay_success((char*)USART2_RX_BUF))
+						{
+							daojishi_ongo_flag =0;
+							DB_PR("--------timeout dbg2---------------------\r\n");
+							// USART2_RX_STA=0;
+							break;
+						}
+
+
+
+						// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
+						
+						//cjson_dbg();
+
+						
+
+						DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
+					} 
+
+				}
+				
+				DB_PR("----my dbg-----i=%d---------\n",i);   
+
+
+
+
 
 				DB_PR("%s\n", "获取 door_number 下的cjson对象");
 				item = cJSON_GetObjectItem(root, "door_number");
@@ -968,6 +1101,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					DB_PR("buff_t[%d]=%02x\n",i, buff_t[i]);
 				}
 
+
+				
 
 				RS485_TX_EN();
 				DB_PR("buff_t=");
@@ -1038,12 +1173,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
                 //----------------------------
-                sim900a_send_cmd("AT+QHTTPURL=81,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                sim900a_send_cmd("AT+QHTTPURL=76,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
                 DB_PR("...a-9...\n");
 
 
 				//2-4
-                sim900a_send_cmd_tou_data("http://express.admin.modoubox.com//api_cabinet/Deliverorder/checkSupplementalPaid","OK",1000);
+                sim900a_send_cmd_tou_data("http://express.admin.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
                 DB_PR("...a-10...\n");
 
 
@@ -1199,7 +1334,8 @@ void sim_at_response(u8 mode)
 		
 		//cjson_dbg();
 
-		if(mode)USART2_RX_STA=0;
+		if(mode)
+			USART2_RX_STA=0;
 
 		DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
 	} 
