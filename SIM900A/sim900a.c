@@ -526,13 +526,13 @@ u16 cjson_to_struct_info_register(char *text)
 			// USART2_RX_STA=0;
 			// DB_PR("...a-9-1...\n");
 			//52
-			sim900a_send_cmd("AT+QHTTPURL=59,80","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
+			sim900a_send_cmd("AT+QHTTPURL=52,80","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
 			DB_PR("...a-9...\n");
 
 
 			
-			sim900a_send_cmd_tou_data("http://express.admin.modoubox.com/web_wechat/deliver/qrcode","OK",800);
-			// sim900a_send_cmd_tou_data("https://iot.xintiangui.com/web_wechat/deliver/qrcode","OK",800);
+			// sim900a_send_cmd_tou_data("http://express.admin.modoubox.com/web_wechat/deliver/qrcode","OK",800);
+			sim900a_send_cmd_tou_data("https://iot.xintiangui.com/web_wechat/deliver/qrcode","OK",800);
 			DB_PR("...a-10...\n");
 
 
@@ -1195,12 +1195,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
                 //----------------------------
-                sim900a_send_cmd("AT+QHTTPURL=76,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+                sim900a_send_cmd("AT+QHTTPURL=70,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
                 DB_PR("...a-9...\n");
 
 
 				//2-4
-                sim900a_send_cmd_tou_data("http://express.admin.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
+                sim900a_send_cmd_tou_data("http://xintian.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
                 DB_PR("...a-10...\n");
 
 
@@ -2602,8 +2602,8 @@ chengxu_start_2:
 	// AT+QIDNSGIP=1,"www.baidu.com" iot.dev.modoubox.com   express_tcp.xintiangui.com
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"www.baidu.com\"","+QIURC:",2000))//300
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"287e9v3367.zicp.vip\"","+QIURC:",800))
-	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"iot.dev.modoubox.com\"","+QIURC:",800))
-	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express.tcp.xintiangui.com\"","+QIURC:",800))
+	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"iot.dev.modoubox.com\"","+QIURC:",800))
+	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express.tcp.xintiangui.com\"","+QIURC:",800))
 	{
 		DB_PR("...a4-3-1...\n");
 		if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -2844,14 +2844,13 @@ chengxu_start_3:
 
 	while(1)
 	{
-		sim900a_send_cmd("AT+QHTTPURL=51,80","CONNECT",800);
-		// sim900a_send_cmd("AT+QHTTPURL=49,80","CONNECT",800);
+		sim900a_send_cmd("AT+QHTTPURL=49,80","CONNECT",800);
 		// sim900a_send_cmd("AT+QHTTPURL=49,80\r\n","CONNECT",800);// != GSM_TRUE) return GSM_FALSE;//"OK"
 		DB_PR("...a-9...\n");
 
 		
-		sim900a_send_cmd_tou_data("https://iot.dev.modoubox.com/api/control_app/status","OK",800);
-		// sim900a_send_cmd_tou_data("https://iot.xintiangui.com/api/control_app/status","OK",800);
+		// sim900a_send_cmd_tou_data("https://iot.dev.modoubox.com/api/control_app/status","OK",800);
+		sim900a_send_cmd_tou_data("https://iot.xintiangui.com/api/control_app/status","OK",800);
 		DB_PR("...a-10...\n");
 
 

@@ -652,10 +652,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         //----------------------------
-        sim900a_send_cmd("AT+QHTTPURL=46,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
+        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
         DB_PR("...a-9...\n");
 
-        sim900a_send_cmd_tou_data("https://iot.dev.modoubox.com/cabinet/open_door","OK",500);
+        sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",500);
         DB_PR("...a-10...\n");
 
 
