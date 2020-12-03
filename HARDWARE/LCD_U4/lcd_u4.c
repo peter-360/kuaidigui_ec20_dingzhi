@@ -780,7 +780,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // sim900a_send_cmd("AT+QISWTMD=0,2","OK",2000);
         sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
 
-
+        USART2_RX_STA=0;
 
 
 

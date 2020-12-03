@@ -986,6 +986,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 	char qhttp_post_req[150]={0};
 
+	char* temp_cjson=NULL;
+
 	
     if( text == NULL)
     {
@@ -1010,7 +1012,14 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 	DB_PR("\n----2----text=\n%s\n",text);
 
 
+
+
+
+
+
     root = cJSON_Parse(text);     
+
+
     DB_PR("\n----3----\n");
 
     if (!root) 
@@ -1020,6 +1029,29 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     else
     {
 
+			temp_cjson =cJSON_PrintUnformatted(root);
+			DB_PR("%s\n", "无格式方式打印json：");
+			DB_PR("---------\n%s\n------------\n\n",temp_cjson );
+			DB_PR("strlen(temp_cjson)= %d \n\n",strlen(temp_cjson) );
+			DB_PR("strlen(text)= %d \n\n",strlen(text) );
+
+			//{"type":"stc:heartbeat","time":1606975970061}
+			if(strlen(text)==strlen(temp_cjson))
+			{
+				DB_PR("\n----1-1==   always----\n");
+			}
+			else//>
+			{
+				DB_PR("\n----1-2!=----\n");
+				// cJSON_Delete(root);
+				// cjson_to_struct_info_tcp_rcv(text);
+				cjson_to_struct_info_tcp_rcv(text+strlen(temp_cjson));
+				
+				DB_PR("\n----2----strlen(text+strlen(temp_cjson))=%d\n",strlen(text+strlen(temp_cjson)));
+				DB_PR("\n----2----text+strlen(temp_cjson)=\n%s\n",text+strlen(temp_cjson));
+			}
+			
+			
 			//---------------------
 			DB_PR("%s\n", "获取type下的cjson对象");
 			item = cJSON_GetObjectItem(root, "type");//
@@ -1324,6 +1356,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 // delay_ms(1000); //500
                 // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
                 sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+				USART2_RX_STA=0;
 			}
 			else if(0==strcmp("stc:heartbeat",item->valuestring))
 			{
@@ -3073,7 +3106,7 @@ chengxu_start_3:
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			DB_PR("------------heart-----------\n");	
 		}
-		if(timex_t2==65000)//1min  30000/60=500=5min
+		if(timex_t2==6500)//1min  30000/60=500=5min
 		{
 			timex_t2 =0;
 			DB_PR("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);
