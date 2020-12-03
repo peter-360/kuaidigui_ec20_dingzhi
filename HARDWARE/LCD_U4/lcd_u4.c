@@ -520,6 +520,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				DB_PR("-1-reg_status=%d---\n", reg_status);
 				send_cmd_to_lcd_pic(0x0005);//qujianma cuo
                 daojishi_ongo_flag =0;
+                DB_PR("----1-1c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
                 daojishi_time=5;
                 TIM5_Set(1);
 
@@ -527,6 +528,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 			else if(reg_status == 2)
 			{
                 daojishi_ongo_flag =0;
+                DB_PR("----1-2c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				DB_PR("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
                 //-----------  TCP÷–Ω” ‹   stc:overtime_pay
@@ -607,6 +609,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
     case 8:/* constant-expression */
         send_cmd_to_lcd_pic(0x000a);//-----------
         daojishi_ongo_flag =0;
+        DB_PR("----1-3c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
         daojishi_time=30;
         TIM5_Set(0);
         send_cmd_to_lcd_bl(0x1290,qujian_num_one_lcd);
@@ -854,6 +857,7 @@ void lcd_at_response(u8 mode)
                         DB_PR("\n---------chaoshi fanhui--------\r\n");
                         send_cmd_to_lcd_pic(0x0003);
                         daojishi_ongo_flag =0;
+                        DB_PR("----1-4c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
                         daojishi_time=30;
                         TIM5_Set(0);
 
@@ -878,7 +882,7 @@ void lcd_at_response(u8 mode)
 
                         send_cmd_to_lcd_pic(0x0004);//qujianma qujian
                         daojishi_ongo_flag =1;
-
+                        DB_PR("----1-5s---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 
                         
                         break;
@@ -899,6 +903,7 @@ void lcd_at_response(u8 mode)
 
                         send_cmd_to_lcd_pic(0x0003);
                         daojishi_ongo_flag =0;
+                        DB_PR("----1-6c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
                         daojishi_time=30;
                         TIM5_Set(0);
 

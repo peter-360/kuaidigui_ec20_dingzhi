@@ -829,7 +829,7 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 			memset(buff_t,0,256);
 			mtimer_flag =2;
 			daojishi_time=30;
-			TIM5_Set(1);
+			TIM5_Set(1);//------------------
 			sprintf((char*)buff_t, "%d", daojishi_time);
 			DB_PR("-------daojishi_time  buff_t=%s--------\n",buff_t);
 			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
@@ -837,6 +837,7 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 
 			send_cmd_to_lcd_pic(0x0007);//-------chaoshsi yemian--------
 			daojishi_ongo_flag =1;
+			DB_PR("----1-7---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 		}
 
 
@@ -931,6 +932,7 @@ u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 
 
 		daojishi_ongo_flag =0;
+		DB_PR("----1-8c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 		// if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
 		if(0==strcmp("stc:overtime_pay_success",item->valuestring))
 		{
@@ -1051,7 +1053,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
 
-
+				DB_PR("----2-1---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				if(1== daojishi_ongo_flag)
 				{
 					for(i=0;i<30;i++)
@@ -1070,6 +1072,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							if(1==cjson_to_struct_info_tcp_rcv_overtime_pay_success((char*)USART2_RX_BUF))
 							{
 								daojishi_ongo_flag =0;
+								DB_PR("----1-9c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 								DB_PR("--------timeout dbg2---------------------\r\n");
 								// USART2_RX_STA=0;
 								break;
@@ -1089,9 +1092,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					if(i==30)//没有收到支付成功
 					{
 						DB_PR("----my dbg3 timeout-----i=%d---------\n",i);   
-						daojishi_ongo_flag =0;
-						daojishi_time=30;
-						TIM5_Set(1);					
+						// daojishi_ongo_flag =0;
+						DB_PR("----1-10c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
+						// daojishi_time=30;
+						// TIM5_Set(1);		
+
+						// return //------------	
 					}
 					delay_ms(500); //500
 
@@ -1144,7 +1150,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
 				printf("-----daojishi_time=%d-----\n",daojishi_time);
-				printf("-----daojishi_ongo_flag=%d-----\n",daojishi_ongo_flag);
+				DB_PR("----2-2---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				if(0==daojishi_ongo_flag) 
 				{
 					DB_PR("\n----------no daojishi yemian-----------\n");  
@@ -1154,6 +1160,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					send_cmd_to_lcd_pic(0x0006); //kaimen ok
 
 					daojishi_ongo_flag =0;
+					DB_PR("----1-11c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 					daojishi_time=5;
 					TIM5_Set(1);
 				}
@@ -1170,6 +1177,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			{
 				send_cmd_to_lcd_pic(0x000a); //------------------
 				daojishi_ongo_flag =0;
+				DB_PR("----1-12c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
                 daojishi_time=30;
                 TIM5_Set(0);
 
@@ -1276,7 +1284,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 							if(0x000f!=cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF))
 							{
-								DB_PR("...a-13-1-1 err...\n");
+								DB_PR("...a-13-1-1 ok...\n");
 								break;
 							}
 							else
@@ -2974,6 +2982,7 @@ chengxu_start_3:
 		DB_PR("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
 		daojishi_ongo_flag =0;
+		DB_PR("----1-14c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 		daojishi_time=30;
 		TIM5_Set(0);
 
@@ -3064,7 +3073,7 @@ chengxu_start_3:
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			DB_PR("------------heart-----------\n");	
 		}
-		if(timex_t2==12000)//2min  30000/60=500=5min
+		if(timex_t2==65000)//1min  30000/60=500=5min
 		{
 			timex_t2 =0;
 			DB_PR("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);
