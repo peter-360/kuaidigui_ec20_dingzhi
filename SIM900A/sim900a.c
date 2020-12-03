@@ -1048,53 +1048,56 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
 
-				for(i=0;i<30;i++)
+
+
+
+
+				if(1== daojishi_ongo_flag)
 				{
-					DB_PR("------i=%d----\n",i);   
-					delay_ms(100); //500
-					if(USART2_RX_STA&0X8000)		//接收到一次数据了
+					for(i=0;i<30;i++)
 					{
-						// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
-						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-						DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
-						// uart0_debug_data_h(data_rx_t,len_rx_t);
-						DB_PR("%s",USART2_RX_BUF);	//发送到串口
-
-
-						if(1==cjson_to_struct_info_tcp_rcv_overtime_pay_success((char*)USART2_RX_BUF))
+						DB_PR("------i=%d----\n",i);   
+						delay_ms(100); //500
+						if(USART2_RX_STA&0X8000)		//接收到一次数据了
 						{
-							daojishi_ongo_flag =0;
-							DB_PR("--------timeout dbg2---------------------\r\n");
-							// USART2_RX_STA=0;
-							break;
-						}
-						else
-						{
-							DB_PR("--------timeout dbg3 err---------------------\r\n");
-						}
-						
+							// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
+							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+							DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
+							// uart0_debug_data_h(data_rx_t,len_rx_t);
+							DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 
+							if(1==cjson_to_struct_info_tcp_rcv_overtime_pay_success((char*)USART2_RX_BUF))
+							{
+								daojishi_ongo_flag =0;
+								DB_PR("--------timeout dbg2---------------------\r\n");
+								// USART2_RX_STA=0;
+								break;
+							}
+							else
+							{
+								DB_PR("--------timeout dbg3 err---------------------\r\n");
+							}
+							
 
-						// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
-						
-						//cjson_dbg();
+							DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
+						} 
 
-						
+					}
+					
+					DB_PR("----my dbg-----i=%d---------\n",i);   
+					if(i==30)//没有收到支付成功
+					{
+						DB_PR("----my dbg3 timeout-----i=%d---------\n",i);   
+						daojishi_ongo_flag =0;
+						daojishi_time=30;
+						TIM5_Set(1);					
+					}
+					delay_ms(500); //500
 
-						DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
-					} 
-
+					
 				}
 				
-				DB_PR("----my dbg-----i=%d---------\n",i);   
-				if(i==30)
-				{
-					DB_PR("----my dbg3 timeout-----i=%d---------\n",i);   
-					daojishi_time=30;
-					TIM5_Set(1);					
-				}
-				delay_ms(500); //500
 
 
 
@@ -1130,7 +1133,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("buff_t=");
 				uart0_debug_data_h(buff_t, size);
 				// uart_write_bytes(UART_NUM_LOCK, (const char *) tx_Buffer2, 11);
-				Usart_SendArray( USART3,buff_t, size);//open door
+				Usart_SendArray( USART3,buff_t, size);//open door-------------------------------
 				RS485_RX_EN();
 
 				DB_PR("\n----------lock open-----------\n");  
