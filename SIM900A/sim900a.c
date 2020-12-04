@@ -3016,10 +3016,10 @@ chengxu_start_3:
 	sprintf(at_tcp_ip,"AT+QIOPEN=1,0,\"TCP\",%s,8091,0,2",tcp_ip2);
 	DB_PR("-----------at_tcp_ip =%s--------------\r\n",at_tcp_ip);	
 	
-	 if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
+	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
 	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2",  "CONNECT", 1000)==0)
 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8091,0,2",  "CONNECT", 1000)==0)
-	// if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
+	if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
 	{
 		DB_PR("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
@@ -3065,7 +3065,7 @@ chengxu_start_3:
 
 	delay_ms(500); //500
 	// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
-	sim900a_send_cmd_tou_data("cabinet_heartbeat",0,0);	//iot
+	sim900a_send_cmd_tou_data("iot",0,0);	// cabinet_heartbeat
 	// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 	
 
