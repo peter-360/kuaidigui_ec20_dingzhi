@@ -440,7 +440,7 @@ pbDest[i] = s1*16 + s2;
 
 
 
-
+u8 qujianma_wait_tcp_flag=0;
 
 u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 {
@@ -514,6 +514,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				DB_PR("--door---\n");
 				
 				// send_cmd_to_lcd_pic(0x0006);
+                qujianma_wait_tcp_flag=1;
 			}
 			else if(reg_status == 1)
 			{
@@ -532,7 +533,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				DB_PR("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
                 //-----------  TCP÷–Ω” ‹   stc:overtime_pay
-
+                qujianma_wait_tcp_flag=1;
 			}
 
 		

@@ -773,7 +773,7 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 		item = cJSON_GetObjectItem(root, "status");
 		DB_PR("-----------%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
 		DB_PR("%d\n", item->valueint);
-		my_status = item->valueint;
+		my_status = item->valueint;//status ==0
 
 		//////if(my_status ==0)
 		{
@@ -1185,6 +1185,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----2-2---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				if(0==daojishi_ongo_flag) 
 				{
+					qujianma_wait_tcp_flag =0;
 					DB_PR("\n----------no daojishi yemian-----------\n");  
 					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
 					// send_cmd_to_lcd_bl(0x1650,buff_t2);
@@ -1314,8 +1315,10 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
+							//send_cmd_to_lcd_pic(0x0007);
 							if(0x000f!=cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF))
 							{
+								qujianma_wait_tcp_flag =0;
 								DB_PR("...a-13-1-1 ok...\n");
 								break;
 							}
@@ -2458,6 +2461,7 @@ u8 sim900a_gprs_test(void)
 	long timex_t=0; 
 	long timex_t2=0; 
 	u16 timex_t3=0; 
+	u16 timex_t4=0; 
 	// u8 ipbuf[16]; 		//IP缓存
 	u8 iplen=0;			//IP长度 
 
@@ -2529,7 +2533,7 @@ chengxu_start_2:
 	{
 		send_cmd_to_lcd_pic(0x0001);
 		DB_PR("...a1-2 err...\n");		
-		delay_xs(3); 
+		delay_xs(1); 
 		Soft_Reset();
 	}
 
@@ -2545,6 +2549,7 @@ chengxu_start_2:
 	
 	//
 	//GSM_CLEAN_RX();+CREG: 0,1   todo
+	delay_ms(300);
 	if(0==sim900a_send_cmd("AT+CREG?","OK", 200))// != GSM_TRUE) return GSM_FALSE;
 	{
 		DB_PR("...a2-1...\n");
@@ -2556,6 +2561,7 @@ chengxu_start_2:
 		Soft_Reset();
 	}
 	
+	delay_ms(100);
 	//GSM_CLEAN_RX();+CGREG: 0,1
 	if(0==sim900a_send_cmd("AT+CGREG?","OK", 150))// != GSM_TRUE) return GSM_FALSE;
 	{
@@ -2573,19 +2579,22 @@ chengxu_start_2:
 
 //----------------http-----------------------
 	
-
+	delay_ms(50);
 	sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1","OK",200);
 	// sim900a_send_cmd("AT+QHTTPCFG=\"contextid\",1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	DB_PR("...a-1...\n");
 	
+	delay_ms(50);
 	sim900a_send_cmd("AT+QIACT?","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	DB_PR("...a-2...\n");
-
+	
+	delay_ms(50);
 	sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\",\"\",\"\",1","OK", 200);
 	//sim900a_send_cmd("AT+QICSGP=1,1,\"CMNET\","" ,"" ,1\r\n","OK",200);// != GSM_TRUE) return GSM_FALSE;//"OK"
 	DB_PR("...a-3...\n");
 
 
+	delay_ms(200);
 	if(0==sim900a_send_cmd("AT+QIACT=1","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 	{
 		DB_PR("...a-4-1-1...\n");
@@ -3007,10 +3016,10 @@ chengxu_start_3:
 	sprintf(at_tcp_ip,"AT+QIOPEN=1,0,\"TCP\",%s,8091,0,2",tcp_ip2);
 	DB_PR("-----------at_tcp_ip =%s--------------\r\n",at_tcp_ip);	
 	
-	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
+	 if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"103.46.128.21\",12310,0,2","CONNECT", 1000)==0)//192.168.10.111
 	//  if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"39.98.243.128\",8091,0,2",  "CONNECT", 1000)==0)
 	// if(sim900a_send_cmd("AT+QIOPEN=1,0,\"TCP\",\"47.94.2.173\",8091,0,2",  "CONNECT", 1000)==0)
-	if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
+	// if(sim900a_send_cmd(at_tcp_ip,"CONNECT", 1000)==0)
 	{
 		DB_PR("----conn-----\r\n");
 		send_cmd_to_lcd_pic(0x0003);//---------------kaiji
@@ -3124,6 +3133,23 @@ chengxu_start_3:
 				DB_PR("2-xintiao ok\r\n");
 			}
 			heart_beart_idx =0;
+		}
+
+
+		if(qujianma_wait_tcp_flag!=0)
+		{
+			DB_PR("2-qujianma_wait_tcp_flag wait=%d\r\n",qujianma_wait_tcp_flag);
+			timex_t4++;
+		}
+		
+		if((qujianma_wait_tcp_flag!=0)&&(timex_t4==2000))//30s
+		{
+			DB_PR("2-qujianma_wait_tcp_flag timeout ok\r\n");
+			qujianma_wait_tcp_flag=0;
+			timex_t4 =0;
+			send_cmd_to_lcd_pic(0x0001);
+			delay_ms(500); //500
+			send_cmd_to_lcd_pic(0x0003);
 		}
 
 		delay_ms(10);
