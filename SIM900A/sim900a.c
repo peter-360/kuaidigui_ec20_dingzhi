@@ -2549,7 +2549,7 @@ chengxu_start_2:
 	
 	//
 	//GSM_CLEAN_RX();+CREG: 0,1   todo
-	delay_ms(300);
+	delay_ms(100);
 	if(0==sim900a_send_cmd("AT+CREG?","OK", 200))// != GSM_TRUE) return GSM_FALSE;
 	{
 		DB_PR("...a2-1...\n");
@@ -2597,22 +2597,25 @@ chengxu_start_2:
 	delay_ms(200);
 	if(0==sim900a_send_cmd("AT+QIACT=1","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 	{
-		DB_PR("...a-4-1-1...\n");
+		DB_PR("--1--\n%s\n-----\n",USART2_RX_BUF);
+		DB_PR2("...a-4-1-1...\n");
 	}
 	else
 	{
-		DB_PR("...a-4-1-2 err...\n");
-		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
-		{
-			DB_PR("...a-4-1-2a...\n\n\n\n");
-			goto chengxu_start_2;
+		delay_ms(2000);
+		DB_PR("...a-4-1-2 ...\n");
+//		DB_PR2("--2--\n%s\n-----\n",USART2_RX_BUF);
+//		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
+//		{
+//			DB_PR2("...a-4-1-2a...\n\n\n\n");
+//			goto chengxu_start_2;
 
-		}
-		else
-		{
-			DB_PR("...a-4-1-2b err...\n\n\n\n\n\n\n");
-			Soft_Reset();
-		}
+//		}
+//		else
+//		{
+//			DB_PR2("...a-4-1-2b err...\n\n\n\n\n\n\n");
+//			Soft_Reset();
+//		}
 
 	}
 	
