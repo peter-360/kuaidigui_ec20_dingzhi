@@ -467,17 +467,17 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
     // cJSON *arrayItem;
 
     //???????§json
-    DB_PR("\n----1----text=\n%s\n",text);
+    DB_PR2("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
 
     if(NULL == index)
     {
-        DB_PR("------NULL----4444----------\n");
+        DB_PR2("------NULL----4444----------\n");
         return 0xffff;
     }
     strcpy(text,index);
 
-	DB_PR("\n----2----text=\n%s\n",text);
+	DB_PR2("\n----2----text=\n%s\n",text);
 
 
     root = cJSON_Parse(text);     
@@ -485,13 +485,13 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 
     if (!root) 
     {
-        DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
+        DB_PR2("--3-1--Error before: [%s]\n",cJSON_GetErrorPtr());
     }
     else
     {
 
 			//---------------------
-			DB_PR("%s\n", "----获取status下的cjson对象---");
+			DB_PR2("--3-2--%s\n", "----获取status下的cjson对象---");
 			item = cJSON_GetObjectItem(root, "status");//
 			DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
 			DB_PR("--2--%d\n", item->valueint);
@@ -655,29 +655,29 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
-        //----------------------------
-        sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
-        DB_PR("...a-9...\n");
-
-        sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",500);
-        DB_PR("...a-10...\n");
-
-
-
-        //USART2_RX_STA =0;  86
-        memset(regst_key_post,0,sizeof(regst_key_post));
-        sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
-        uart0_debug_str(regst_key_post,strlen(regst_key_post));
-
-        DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
-
-
-
 
         // delay_ms(1000); //500
         for(i=0;i<3;i++)
         {
             DB_PR("-------i=%d---------\n",i);
+            //----------------------------
+            sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
+            DB_PR("...a-9...\n");
+
+            sim900a_send_cmd_tou_data("https://iot.xintiangui.com/cabinet/open_door","OK",500);
+            DB_PR("...a-10...\n");
+
+
+
+            //USART2_RX_STA =0;  86
+            memset(regst_key_post,0,sizeof(regst_key_post));
+            sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
+            uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+            DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+
+            // DB_PR("-------i=%d---------\n",i);
             sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
             // sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
             if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",800))
@@ -701,13 +701,13 @@ void shangping_exe(u16 qujian_num_one_lcd)
             // if(0==sim900a_send_cmd_tou_data(regst_key_post,"OK",1000))
             if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
             {
-                DB_PR("...a-11-1...\n");
+                DB_PR2("...a-11-1...\n");
                 // if(NULL!=strstr(USART2_RX_BUF,"+QHTTPPOST:"))
 
             }
             else
             {
-                DB_PR("...a-11-2  err...\n");
+                DB_PR2("...a-11-2  err...\n");
                 continue;
             }
             
@@ -715,7 +715,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             
             DB_PR("...a-12...\n");
 
-            delay_ms(50); //500
+            delay_ms(150); //500
             // delay_ms(200); //500
             // delay_xs(30);
             // delay_ms(1000); //500
@@ -731,7 +731,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    DB_PR("%s",USART2_RX_BUF);	//发送到串口
+                    DB_PR2("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 
                     if(0x000f!=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF))

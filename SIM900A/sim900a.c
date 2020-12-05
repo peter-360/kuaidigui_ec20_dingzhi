@@ -1028,7 +1028,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     }
     else
     {
-
+			DB_PR2("\n----TCP JSON IS ON----\n");
 			temp_cjson =cJSON_PrintUnformatted(root);
 			DB_PR("%s\n", "无格式方式打印json：");
 			DB_PR("---------\n%s\n------------\n\n",temp_cjson );
@@ -1238,38 +1238,39 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 // delay_ms(1000); //500
 
 
-                //----------------------------
-                sim900a_send_cmd("AT+QHTTPURL=70,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
-                DB_PR("...a-9...\n");
-
-
-				//2-4
-                sim900a_send_cmd_tou_data("http://xintian.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
-                DB_PR("...a-10...\n");
-
-
-
-                //USART2_RX_STA =0;  86
-                // memset(regst_key_post,0,sizeof(regst_key_post));
-                memset(regst_key_post,0,sizeof(regst_key_post));
-                sprintf(regst_key_post,"captcha_id=%d&register_key=%s",captcha_id,regst_key);//
-                uart0_debug_str(regst_key_post,strlen(regst_key_post));
-
-                DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
-
-				// //USART2_RX_STA =0;
-				// sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
-				// DB_PR("...a-11-1...\n");
-
-
-
-
-
-				// delay_ms(100); //500
-
 				for(i=0;i<3;i++)
 				{
 					DB_PR("-------i=%d---------\n",i);
+					//----------------------------
+					sim900a_send_cmd("AT+QHTTPURL=70,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+					DB_PR("...a-9...\n");
+
+
+					//2-4
+					sim900a_send_cmd_tou_data("http://xintian.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
+					DB_PR("...a-10...\n");
+
+
+
+					//USART2_RX_STA =0;  86
+					// memset(regst_key_post,0,sizeof(regst_key_post));
+					memset(regst_key_post,0,sizeof(regst_key_post));
+					sprintf(regst_key_post,"captcha_id=%d&register_key=%s",captcha_id,regst_key);//
+					uart0_debug_str(regst_key_post,strlen(regst_key_post));
+
+					DB_PR("strlen(regst_key_post)=%d\n",strlen(regst_key_post));
+
+					// //USART2_RX_STA =0;
+					// sim900a_send_cmd("AT+QHTTPPOST=?","OK",550);// != GSM_TRUE) return GSM_FALSE;//"OK"
+					// DB_PR("...a-11-1...\n");
+
+
+
+
+
+					// delay_ms(100); //500
+
+
 					sprintf(qhttp_post_req,"AT+QHTTPPOST=%d,80,80",strlen(regst_key_post));
 					// sim900a_send_cmd(qhttp_post_req,"CONNECT",15000);// != GSM_TRUE) return GSM_FALSE;//"OK"
 					if(0==sim900a_send_cmd(qhttp_post_req,"CONNECT",800))
@@ -1369,7 +1370,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				//---------------------
 				DB_PR("----------stc:heartbeat---------\n");   
 				heart_beart_idx++;
-				DB_PR("heart_beart_idx=%d\r\n",heart_beart_idx);
+				DB_PR2("heart_beart_idx=%d\r\n",heart_beart_idx);
 			}
 			else
 			{
@@ -1404,7 +1405,7 @@ void sim_at_response(u8 mode)
 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");
         // uart0_debug_data_h(data_rx_t,len_rx_t);
-		DB_PR("%s",USART2_RX_BUF);	//发送到串口
+		DB_PR2("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
 
 		USART2_RX_STA =0;
 		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
@@ -1467,12 +1468,13 @@ u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(--waittime)	//等待倒计时
 		{
-			delay_ms(10);
+			
 			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
 			{
 				if(sim900a_check_cmd(ack))break;//得到有效数据 
 				USART2_RX_STA=0;
 			} 
+			delay_ms(10);
 		}
 		if(waittime==0)res=1; 
 	}
@@ -3079,7 +3081,7 @@ chengxu_start_3:
 
 
 	// IWDG_Init((4*4),(625*4));    //与分频数为64,重载值为625,溢出时间为  =64s	 
-	IWDG_Init(7,4094);//26s 
+	// IWDG_Init(7,4094);//26s 
 
 // //  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
 // // 	// sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
@@ -3109,7 +3111,7 @@ chengxu_start_3:
 		if(timex_t3==500)//5s
 		{
 			timex_t3=0;
-			IWDG_Feed();
+			//IWDG_Feed();
 			DB_PR("------------feed dog-----------\n");	
 		}
 
@@ -3121,7 +3123,7 @@ chengxu_start_3:
 			// sim900a_send_cmd("AT+QISEND=0,0\r\n","OK", 500);
 			DB_PR("------------heart-----------\n");	
 		}
-		if(timex_t2==6500)//1min  30000/60=500=5min
+		if(timex_t2==9500)//1min  30000/60=500=5min
 		{
 			timex_t2 =0;
 			DB_PR("2-xintiao jc-heart_beart_idx=%d\r\n",heart_beart_idx);
@@ -3148,7 +3150,7 @@ chengxu_start_3:
 			timex_t4++;
 		}
 		
-		if((qujianma_wait_tcp_flag!=0)&&(timex_t4==2000))//30s
+		if((qujianma_wait_tcp_flag!=0)&&(timex_t4==1500))//30s
 		{
 			DB_PR("2-qujianma_wait_tcp_flag timeout ok\r\n");
 			qujianma_wait_tcp_flag=0;
