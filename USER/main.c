@@ -147,7 +147,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 }
  //V0_0_2C1  log
  //V0_0_2C2 timer time
-#define FIRM_VERSION_EC20 "V0_0_2C2"//V0_0_2C1
+#define FIRM_VERSION_EC20 "V0_0_2C3"//V0_0_2C1
 
  int main(void)
  { 

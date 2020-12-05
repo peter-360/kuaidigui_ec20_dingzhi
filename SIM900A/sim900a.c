@@ -3081,7 +3081,7 @@ chengxu_start_3:
 
 
 	// IWDG_Init((4*4),(625*4));    //与分频数为64,重载值为625,溢出时间为  =64s	 
-	// IWDG_Init(7,4094);//26s 
+	IWDG_Init(7,4094);//26s 
 
 // //  	// sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
 // // 	// sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
@@ -3111,8 +3111,8 @@ chengxu_start_3:
 		if(timex_t3==500)//5s
 		{
 			timex_t3=0;
-			//IWDG_Feed();
-			DB_PR("------------feed dog-----------\n");	
+			IWDG_Feed();
+			DB_PR("------------feed dog ongo-----------\n");	
 		}
 
 		if(timex_t==6000)//1min   6000
