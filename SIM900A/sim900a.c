@@ -1302,15 +1302,18 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					DB_PR("...a-12...\n");
 
 					
+					delay_ms(50);
 					// delay_ms(1000); //500
 					// delay_ms(500); //500
 					// delay_xs(30);
 
 					//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+					// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
+					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 					{ 
+						delay_ms(100);
 						DB_PR("...a-13...\n");
-						if(USART2_RX_STA&0X8000)		//接收到一次数据了
+						// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 						{ 
 							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
@@ -1331,7 +1334,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						}
 						// cJSON_Delete(root);
 						// return reg_status;
-						break;
+						// break;
 					} 
 					else
 					{

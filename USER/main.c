@@ -165,7 +165,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
  	USART2_Init(115200);	//初始化串口 4g
 	USART3_Init(9600);		//初始化串口 lock
 	USART4_Init(115200);	//初始化串口 lcd
-	DB_PR2("\r\n-0-心甜智能柜_V0.0.1\r\n");
+	DB_PR2("\r\n-0-心甜智能柜_V0.0.2a\r\n");
 	//Usart_SendString( UART4,"abcde\n");
 
 

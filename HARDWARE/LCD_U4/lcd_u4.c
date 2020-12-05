@@ -542,7 +542,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 
     }
 
-
+    DB_PR2("-reg_status=%d-\n", reg_status);
 
     cJSON_Delete(root);
     return reg_status;
@@ -715,7 +715,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             
             DB_PR("...a-12...\n");
 
-            
+            delay_ms(50); //500
             // delay_ms(200); //500
             // delay_xs(30);
             // delay_ms(1000); //500
@@ -723,10 +723,12 @@ void shangping_exe(u16 qujian_num_one_lcd)
             //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
             
             // if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))
-            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+						//if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
+            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
-                DB_PR("...a-13...\n");
-                if(USART2_RX_STA&0X8000)		//接收到一次数据了
+                delay_ms(100);
+                DB_PR2("...a-13...\n");
+                //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
                     DB_PR("%s",USART2_RX_BUF);	//发送到串口
@@ -734,12 +736,12 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
                     if(0x000f!=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF))
                     {  
-                        DB_PR("...a-13...\n");
+                        DB_PR2("...a-13 -1-1...\n");
                         break;
                     }
                     else
                     {
-                        DB_PR("...a-13  -1...\n");
+                        DB_PR2("...a-13  -1-e...\n");
                     }
                     
                     USART2_RX_STA=0;
@@ -748,7 +750,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             }
             else
             {
-                DB_PR("...a-13-2 err...\n");
+                DB_PR2("...a-13-2 e...\n");
                 continue;
             }
             
