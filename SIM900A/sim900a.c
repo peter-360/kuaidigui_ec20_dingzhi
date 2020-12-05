@@ -1505,12 +1505,12 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(--waittime)	//等待倒计时
 		{
-			delay_ms(10);
 			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
 			{
 				if(sim900a_check_cmd(ack))break;//得到有效数据 
 				USART2_RX_STA=0;
 			} 
+			delay_ms(10);
 		}
 		if(waittime==0)res=1; 
 	}
@@ -2606,7 +2606,7 @@ chengxu_start_2:
 	else
 	{
 		delay_ms(2000);
-		DB_PR("...a-4-1-2 ...\n");
+		DB_PR2("...a-4-1-2 ...\n");
 //		DB_PR2("--2--\n%s\n-----\n",USART2_RX_BUF);
 //		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
 //		{
