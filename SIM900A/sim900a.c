@@ -988,6 +988,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 	char* temp_cjson=NULL;
 
+	int cjson_len=0;
+
 	
     if( text == NULL)
     {
@@ -1030,13 +1032,19 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     {
 			DB_PR2("\n----TCP JSON IS ON----\n");
 			temp_cjson =cJSON_PrintUnformatted(root);
+			cjson_len = strlen(temp_cjson);
+			// if(temp_cjson)
+			{
+				DB_PR("create js string is %s\n",temp_cjson);
+				free(temp_cjson);
+			}
 			DB_PR("%s\n", "无格式方式打印json：");
 			DB_PR("---------\n%s\n------------\n\n",temp_cjson );
-			DB_PR("strlen(temp_cjson)= %d \n\n",strlen(temp_cjson) );
+			DB_PR("---------cjson_len= %d---------\n\n",cjson_len );
 			DB_PR("strlen(text)= %d \n\n",strlen(text) );
 
 			//{"type":"stc:heartbeat","time":1606975970061}
-			if(strlen(text)==strlen(temp_cjson))
+			if(strlen(text)==cjson_len)
 			{
 				DB_PR("\n----1-1==   always----\n");
 			}
@@ -1045,10 +1053,10 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("\n----1-2!=----\n");
 				// cJSON_Delete(root);
 				// cjson_to_struct_info_tcp_rcv(text);
-				cjson_to_struct_info_tcp_rcv(text+strlen(temp_cjson));
+				cjson_to_struct_info_tcp_rcv(text+cjson_len);
 				
-				DB_PR("\n----2----strlen(text+strlen(temp_cjson))=%d\n",strlen(text+strlen(temp_cjson)));
-				DB_PR("\n----2----text+strlen(temp_cjson)=\n%s\n",text+strlen(temp_cjson));
+				DB_PR("\n----2----strlen(text+cjson_len)=%d\n",strlen(text+cjson_len));
+				DB_PR("\n----2----text+cjson_len=\n%s\n",text+cjson_len);
 			}
 			
 			
