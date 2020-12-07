@@ -1030,6 +1030,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     }
     else
     {
+			IWDG_Feed();
 			DB_PR2("\n----TCP JSON IS ON----\n");
 			temp_cjson =cJSON_PrintUnformatted(root);
 			cjson_len = strlen(temp_cjson);
@@ -1144,7 +1145,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					
 				}
 				
-
+				IWDG_Feed();
 
 
 
@@ -1246,19 +1247,20 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 // delay_ms(1000); //500
 
 
-				for(i=0;i<3;i++)
+				for(i=0;i<2;i++)
 				{
+					IWDG_Feed();
 					DB_PR("-------i=%d---------\n",i);
 					//----------------------------
-					sim900a_send_cmd("AT+QHTTPURL=70,80","CONNECT",1000);// != GSM_TRUE) return GSM_FALSE;//"OK"
+					sim900a_send_cmd("AT+QHTTPURL=70,80","CONNECT",600);// != GSM_TRUE) return GSM_FALSE;//"OK"
 					DB_PR("...a-9...\n");
 
 
 					//2-4
-					sim900a_send_cmd_tou_data("http://xintian.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",1000);
+					sim900a_send_cmd_tou_data("http://xintian.modoubox.com/api_cabinet/Deliverorder/getOvertimeQrcode","OK",600);
 					DB_PR("...a-10...\n");
 
-
+					IWDG_Feed();
 
 					//USART2_RX_STA =0;  86
 					// memset(regst_key_post,0,sizeof(regst_key_post));
@@ -1310,7 +1312,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					
 					DB_PR("...a-12...\n");
 
-					
+					IWDG_Feed();
 					delay_ms(50);
 					// delay_ms(1000); //500
 					// delay_ms(500); //500
@@ -1353,7 +1355,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 
 				DB_PR("----zhifu timeout?---i=%d---------\n",i);
-				if(i==3)
+				if(i==2)
 				{
 					DB_PR("...b-http timeout...\n");
 					send_cmd_to_lcd_pic(0x0001);
@@ -1413,7 +1415,7 @@ void sim_at_response(u8 mode)
 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");
         // uart0_debug_data_h(data_rx_t,len_rx_t);
-		DB_PR2("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
+		DB_PR("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
 
 		USART2_RX_STA =0;
 		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
@@ -2616,7 +2618,7 @@ chengxu_start_2:
 	else
 	{
 		delay_ms(2000);
-		DB_PR2("...a-4-1-2 ...\n");
+		DB_PR2("...a-4-1-2 e...\n");
 //		DB_PR2("--2--\n%s\n-----\n",USART2_RX_BUF);
 //		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
 //		{
@@ -3110,13 +3112,13 @@ chengxu_start_3:
 		timex_t++;
 		timex_t2++;
 		timex_t3++;
-		if(timex==20)
+		if(timex==50)
 		{
 			timex=0;
 			LED0=!LED0;
 		}
 
-		if(timex_t3==500)//5s
+		if(timex_t3==300)//3s
 		{
 			timex_t3=0;
 			IWDG_Feed();

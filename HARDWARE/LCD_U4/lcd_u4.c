@@ -467,12 +467,12 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
     // cJSON *arrayItem;
 
     //???????§json
-    DB_PR2("\n----1----text=\n%s\n",text);
+    DB_PR("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
 
     if(NULL == index)
     {
-        DB_PR2("------NULL----4444----------\n");
+        DB_PR2("------NULL----4444 qujianma----------\n");
         return 0xffff;
     }
     strcpy(text,index);
@@ -657,8 +657,9 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         // delay_ms(1000); //500
-        for(i=0;i<3;i++)
+        for(i=0;i<2;i++)
         {
+            IWDG_Feed();
             DB_PR("-------i=%d---------\n",i);
             //----------------------------
             sim900a_send_cmd("AT+QHTTPURL=44,80","CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
@@ -668,7 +669,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
             DB_PR("...a-10...\n");
 
 
-
+            IWDG_Feed();
             //USART2_RX_STA =0;  86
             memset(regst_key_post,0,sizeof(regst_key_post));
             sprintf(regst_key_post,"code=%8d&type=get_by_code&from=code-user&register_key=%s",qujian_num_int,regst_key);//
@@ -707,10 +708,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
             }
             else
             {
-                DB_PR2("...a-11-2  err...\n");
+                DB_PR2("...a-11-2  e...\n");
                 continue;
             }
-            
+            IWDG_Feed();         
             // sim900a_send_cmd(POST_DATA_OPENDOOR,"OK",1000);
             
             DB_PR("...a-12...\n");
@@ -731,7 +732,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    DB_PR2("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
+                    DB_PR("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 
                     if(0x000f!=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF))
@@ -758,7 +759,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         }
 
         DB_PR("-------i=%d---------\n",i);
-        if(i==3)
+        if(i==2)
         {
             DB_PR("...b-http timeout...\n");
             send_cmd_to_lcd_pic(0x0001);
