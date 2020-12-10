@@ -29,7 +29,7 @@ extern char regst_key[];
 
 extern u8 daojishi_ongo_flag;
 extern u8 qujianma_wait_tcp_flag;
-
+extern int  heart_beart_idx;
 
 void lcd_at_response(u8 mode);
 

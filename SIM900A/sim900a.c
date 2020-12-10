@@ -175,6 +175,8 @@ u16 cjson_to_struct_info_qrcode(char *text)//kaiji
     }
     else
     {
+		reg_status =1;//add
+
         DB_PR("%s\n", "有格式的方式打印Json:");           
         // DB_PR("%s\n\n", cJSON_Print(root));
         // DB_PR("%s\n", "无格式方式打印json：");
@@ -606,11 +608,15 @@ u16 cjson_to_struct_info_register(char *text)
 						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 						DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
-						cjson_to_struct_info_qrcode((char*)USART2_RX_BUF);
-						USART2_RX_STA=0;
+						if(1==cjson_to_struct_info_qrcode((char*)USART2_RX_BUF))
+						{
+							DB_PR("...a-13-2...\n");
+							break;
+						}
+						// USART2_RX_STA=0;
 					}
+					USART2_RX_STA=0;
 
-					break;
 
 					// cJSON_Delete(root);
 					// return reg_status;
@@ -989,6 +995,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 	char* temp_cjson=NULL;
 
 	int cjson_len=0;
+	u16 ret_value1=0;
 
 	
     if( text == NULL)
@@ -1146,7 +1153,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 				
 				IWDG_Feed();
-
+				heart_beart_idx++;
+				DB_PR2("-2-heart_beart_idx=%d\r\n",heart_beart_idx);
 
 
 				DB_PR("%s\n", "获取 door_number 下的cjson对象");
@@ -1246,7 +1254,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 delay_ms(1000); //500
                 // delay_ms(1000); //500
 
-
+				heart_beart_idx++;
+				DB_PR2("-3-heart_beart_idx=%d\r\n",heart_beart_idx);
 				for(i=0;i<2;i++)
 				{
 					IWDG_Feed();
@@ -1330,7 +1339,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 							//send_cmd_to_lcd_pic(0x0007);
-							if(0x000f!=cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF))
+							ret_value1=cjson_to_struct_info_overtime_pay((char*)USART2_RX_BUF);
+							if((0x000f!=ret_value1)&&(0xffff!=ret_value1))//
 							{
 								qujianma_wait_tcp_flag =0;
 								DB_PR("...a-13-1-1 ok...\n");

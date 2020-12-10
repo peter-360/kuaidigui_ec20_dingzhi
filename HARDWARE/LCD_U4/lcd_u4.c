@@ -578,6 +578,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
     char regst_key_post[300]={0};
     char qhttp_post_req[150]={0};
     u16 i=0;
+    u16 j=0;
+    u16 ret_value1;//add
     DB_PR("\n\n-----------------------shangping_exe=%8u---.\r\n",qujian_num_int);
 
     // reset_qujianma_timeout();
@@ -654,10 +656,11 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
-
+        heart_beart_idx++;
+        DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
 
         // delay_ms(1000); //500
-        for(i=0;i<2;i++)
+        for(i=0;i<3;i++)
         {
             IWDG_Feed();
             DB_PR("-------i=%d---------\n",i);
@@ -716,50 +719,66 @@ void shangping_exe(u16 qujian_num_one_lcd)
             
             DB_PR("...a-12...\n");
 
-            delay_ms(150); //500
-            // delay_ms(200); //500
+            // delay_ms(150); //500
             // delay_xs(30);
-            // delay_ms(1000); //500
+
 
             //reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
             
             // if(0==sim900a_send_cmd("AT+QHTTPREAD=80","CONNECT",1000))
-						//if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
-            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
-            { 
-                delay_ms(100);
-                DB_PR2("...a-13...\n");
-                //if(USART2_RX_STA&0X8000)		//接收到一次数据了
+			// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
+
+            for(j=0;j<3;j++)
+            {
+                if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
                 { 
-                    USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    DB_PR("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
+                    // delay_ms(100);
+                    DB_PR2("...a-13...\n");
+                    DB_PR2("...USART2_RX_STA&0X8000=%x...\n",USART2_RX_STA&0X8000);
+                    //if(USART2_RX_STA&0X8000)		//接收到一次数据了
+                    { 
+                        USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+                        DB_PR("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 
-                    if(0x000f!=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF))
-                    {  
-                        DB_PR2("...a-13 -1-1...\n");
-                        break;
+                        ret_value1=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
+                        if((0x000f!=ret_value1)&&(0xffff!=ret_value1))//
+                        {  
+                            DB_PR2("...a-13 -1-1...\n");
+                            break;
+                        }
+                        else
+                        {
+                            DB_PR2("...a-13  -1-e...\n");
+                        }
+                        
+                        USART2_RX_STA=0;
                     }
-                    else
-                    {
-                        DB_PR2("...a-13  -1-e...\n");
-                    }
-                    
-                    USART2_RX_STA=0;
+
                 }
-
+                else
+                {
+                    DB_PR2("...a-13-2 e...\n");
+                    continue;
+                }
+                delay_ms(300);
+            }
+            DB_PR("-------j=%d---------\n",j);
+            if((0x000f!=ret_value1)&&(0xffff!=ret_value1))//
+            {  
+                DB_PR2("...a-13 -1-1   a...\n");
+                break;
             }
             else
             {
-                DB_PR2("...a-13-2 e...\n");
-                continue;
+                DB_PR2("...a-13  -1    b-e...\n");
             }
             
             
         }
 
         DB_PR("-------i=%d---------\n",i);
-        if(i==2)
+        if(i==3)
         {
             DB_PR("...b-http timeout...\n");
             send_cmd_to_lcd_pic(0x0001);
