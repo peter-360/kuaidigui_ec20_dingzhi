@@ -32,7 +32,7 @@ static void RS485_delay(__IO u32 nCount)
 //进入接收模式,必须要有延时等待485处理完数据
 #define RS485_RX_EN()			RS485_delay(1000); GPIO_ResetBits(GPIOB,GPIO_Pin_1);  RS485_delay(1000);
 //进入发送模式,必须要有延时等待485处理完数据
-#define RS485_TX_EN()			RS485_delay(1000); GPIO_SetBits(GPIOB,GPIO_Pin_1);  RS485_delay(1000);
+#define RS485_TX_EN()			RS485_delay(1200); GPIO_SetBits(GPIOB,GPIO_Pin_1);  RS485_delay(1200);
 
 		 				    
 #endif

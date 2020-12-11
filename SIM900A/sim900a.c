@@ -1007,6 +1007,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
     // cJSON *arrayItem;
 
+	DB_PR("\n\n************************tcp_rcv sssss************************\n");
+
+
     //???????§json
     DB_PR("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
@@ -1040,32 +1043,19 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			IWDG_Feed();
 			DB_PR2("\n----TCP JSON IS ON----\n");
 			temp_cjson =cJSON_PrintUnformatted(root);
+			DB_PR("---------%s---------\n", "无格式方式打印json：");
+			DB_PR("---------\n%s\n------------\n\n",temp_cjson );
+			
 			cjson_len = strlen(temp_cjson);
 			// if(temp_cjson)
 			{
 				DB_PR("create js string is %s\n",temp_cjson);
-				free(temp_cjson);
+				free(temp_cjson);//------------must have---------------
 			}
-			DB_PR("%s\n", "无格式方式打印json：");
-			DB_PR("---------\n%s\n------------\n\n",temp_cjson );
 			DB_PR("---------cjson_len= %d---------\n\n",cjson_len );
-			DB_PR("strlen(text)= %d \n\n",strlen(text) );
+			DB_PR("---------strlen(text)= %d------\n\n",strlen(text) );
 
-			//{"type":"stc:heartbeat","time":1606975970061}
-			if(strlen(text)==cjson_len)
-			{
-				DB_PR("\n----1-1==   always----\n");
-			}
-			else//>
-			{
-				DB_PR("\n----1-2!=----\n");
-				// cJSON_Delete(root);
-				// cjson_to_struct_info_tcp_rcv(text);
-				cjson_to_struct_info_tcp_rcv(text+cjson_len);
-				
-				DB_PR("\n----2----strlen(text+cjson_len)=%d\n",strlen(text+cjson_len));
-				DB_PR("\n----2----text+cjson_len=\n%s\n",text+cjson_len);
-			}
+
 			
 			
 			//---------------------
@@ -1106,6 +1096,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				{
 					for(i=0;i<30;i++)
 					{
+						IWDG_Feed();
 						DB_PR("------i=%d----\n",i);   
 						delay_ms(100); //500
 						if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -1399,21 +1390,32 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			
 			
 
-
-			
-			
-
-		
-            //  uart0_debug_data_h(buff_t,256);
-            // send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+			DB_PR("----2-----cjson_len= %d---------\n\n",cjson_len );
+			DB_PR("----2-----strlen(text)= %d------\n\n",strlen(text) );
+			//{"type":"stc:heartbeat","time":1606975970061}
+			if(strlen(text)==cjson_len)
+			{
+				DB_PR("\n----1-1==   always----\n");
+			}
+			else//>
+			{
+				DB_PR("\n----1-2!=----\n");
+				// cJSON_Delete(root);
+				// cjson_to_struct_info_tcp_rcv(text);
+				cjson_to_struct_info_tcp_rcv(text+cjson_len);
+				
+				DB_PR("\n----2----strlen(text+cjson_len)=%d\n",strlen(text+cjson_len));
+				DB_PR("\n----2----text+cjson_len=\n%s\n",text+cjson_len);
+			}
 
     }
-
+	DB_PR("\n************************tcp_rcv eeeeee************************\n\n");
 
 
     cJSON_Delete(root);
-    return reg_status;
 
+
+    return reg_status;
 }
 
 void sim_at_response(u8 mode)
