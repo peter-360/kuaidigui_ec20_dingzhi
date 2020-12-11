@@ -866,7 +866,7 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 
 
 
-int  heart_beart_idx =0;
+int  heart_beart_idx =0;//0 or 1
 
 
 
@@ -1144,8 +1144,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 				
 				IWDG_Feed();
-				heart_beart_idx++;
-				DB_PR2("-2-heart_beart_idx=%d\r\n",heart_beart_idx);
+				// heart_beart_idx++;
+				// DB_PR2("-2-heart_beart_idx=%d\r\n",heart_beart_idx);
 
 
 				DB_PR("%s\n", "获取 door_number 下的cjson对象");
@@ -1210,7 +1210,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				// 	DB_PR("\n----------zhengzai daojishi-----------\n");  
 				// }
 				
-
+				IWDG_Feed();
 
 				
 			}
@@ -1232,7 +1232,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("-----captcha_id=%d\n", captcha_id);
 
 
-
+				IWDG_Feed();
 
                 //--------http----------------
 				//-----------add  panduan qujianma pingbi?  todo
@@ -1244,9 +1244,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
                 DB_PR("...a-0-1...\n");
                 delay_ms(1000); //500
                 // delay_ms(1000); //500
-
-				heart_beart_idx++;
-				DB_PR2("-3-heart_beart_idx=%d\r\n",heart_beart_idx);
+	
+				// heart_beart_idx++;
+				// DB_PR2("-3-heart_beart_idx=%d\r\n",heart_beart_idx);
 				for(i=0;i<2;i++)
 				{
 					IWDG_Feed();
@@ -1295,6 +1295,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					// sim900a_send_cmd("AT+QHTTPPOST=99,80,80","CONNECT",125000);
 					DB_PR("...a-11...\n");
 
+					IWDG_Feed();
 					// #define POST_DATA_OPENDOOR "code=12345678&type=get_by_code&from=code-user&register_key=register:7c772404a1fda38b4f0a42b8f013ae2"
 					uart0_debug_data_h(regst_key_post,strlen(regst_key_post));
 					if(0==sim900a_send_cmd_tou_data(regst_key_post,"+QHTTPPOST:",500))
@@ -1382,6 +1383,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----------stc:heartbeat---------\n");   
 				heart_beart_idx++;
 				DB_PR2("heart_beart_idx=%d\r\n",heart_beart_idx);
+
+				IWDG_Feed();
 			}
 			else
 			{

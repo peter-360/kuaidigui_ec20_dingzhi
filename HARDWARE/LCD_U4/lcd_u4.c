@@ -656,8 +656,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
-        heart_beart_idx++;
-        DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
+        // heart_beart_idx++;
+        // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
 
         // delay_ms(1000); //500
         for(i=0;i<3;i++)
