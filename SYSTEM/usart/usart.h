@@ -35,6 +35,16 @@ extern u16 USART_RX_STA;         		//接收状态标记
 void uart_init(u32 bound);
 
 
+
+
+
+ //V0_0_2C1  log
+ //V0_0_2C2 timer time
+#define FIRM_VERSION_EC20 "V0_0_4"//V0_0_2C1
+
+
+
+
 //log ctl 1
 #define _DEBUG_ 0
 

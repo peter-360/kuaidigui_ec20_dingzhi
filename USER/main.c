@@ -145,9 +145,7 @@ void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
   while(USART_GetFlagStatus(pUSARTx,USART_FLAG_TC)==RESET)
   {}
 }
- //V0_0_2C1  log
- //V0_0_2C2 timer time
-#define FIRM_VERSION_EC20 "V0_0_3D"//V0_0_2C1
+
 
  int main(void)
  { 
