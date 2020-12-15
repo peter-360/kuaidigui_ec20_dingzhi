@@ -600,7 +600,7 @@ u16 cjson_to_struct_info_register(char *text)
 				// delay_xs(30);
 
 				//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",900))// != GSM_TRUE) return GSM_FALSE;//"OK"
+				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",900))// != GSM_TRUE) return GSM_FALSE;//"OK"
 				{ 
 					DB_PR("...a-13...\n");
 					// if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -1182,7 +1182,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				Usart_SendArray( USART3,buff_t, size);//open door-------------------------------
 				RS485_RX_EN();
 
-				DB_PR("\n*******************lock open********************\n\n");  
+				DB_PR2("\n*******************lock open********************\n\n");  
 				// buff_t2[0] = guimen_gk_temp/100 +0x30;
 				// buff_t2[1] = guimen_gk_temp%100/100 +0x30;
 				// buff_t2[2] = guimen_gk_temp%10 +0x30;
@@ -1314,16 +1314,13 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					DB_PR("...a-12...\n");
 
 					IWDG_Feed();
-					delay_ms(50);
-					// delay_ms(1000); //500
-					// delay_ms(500); //500
-					// delay_xs(30);
+					// delay_ms(50);
 
 					//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
 					// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
 					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 					{ 
-						delay_ms(100);
+						// delay_ms(100);
 						DB_PR("...a-13...\n");
 						// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 						{ 
@@ -1373,8 +1370,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
                 // delay_ms(1000); //500
-                // sim900a_send_cmd("AT+QISWTMD=0,2\r\n","OK",2000);
-                sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+				// sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",1);
+				sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+				memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 				USART2_RX_STA=0;
 			}
 			else if(0==strcmp("stc:heartbeat",item->valuestring))
@@ -1558,6 +1556,129 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 
 	return res;
 } 
+
+
+
+
+#if 0
+//add
+u8 sim900a_send_cmd_tou_data_noclean(u8 *cmd,u8 *ack,u16 waittime)
+{
+	u8 res=0; 
+	USART2_RX_STA=0;
+	memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+
+	TIM4_Init(4999,7199);		//500ms    10ms中断  99
+	// TIM4_Init(1499,7199);		//150ms    10ms中断  99
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update); //清除更新中断请求位 add
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE ); //使能指定的TIM4中断,允许更新中断 add
+	TIM4_Set(0);			//关闭定时器4
+
+
+
+
+
+	if((u32)cmd<=0XFF)
+	{
+		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
+		USART2->DR=(u32)cmd;
+	}
+	else 
+	{
+		u2_printf("%s\r\n",cmd);//发送命令		
+		DB_PR("sendto 4G cmd=\n%s\n-------\r\n",cmd);
+	}
+
+	if(ack&&waittime)		//需要等待应答
+	{
+		while(--waittime)	//等待倒计时
+		{
+			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			{
+				if(sim900a_check_cmd(ack))break;//得到有效数据 
+				USART2_RX_STA=0;
+			} 
+			delay_ms(10);
+		}
+		if(waittime==0)res=1; 
+	}
+
+	// USART2_RX_STA = 0;	//标记接收完成
+	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
+	// TIM4_Set(0);			//关闭TIM4  
+
+
+
+	TIM4_Init(499,7199);		//50ms    10ms中断  99
+	// TIM4_Init(1499,7199);		//150ms    10ms中断  99
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update); //清除更新中断请求位 add
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE ); //使能指定的TIM4中断,允许更新中断 add
+	TIM4_Set(0);			//关闭定时器4
+
+
+	return res;
+} 
+
+
+//向sim900a发送命令
+//cmd:发送的命令字符串(不需要添加回车了),当cmd<0XFF的时候,发送数字(比如发送0X1A),大于的时候发送字符串.
+//ack:期待的应答结果,如果为空,则表示不需要等待应答
+//waittime:等待时间(单位:10ms)
+//返回值:0,发送成功(得到了期待的应答结果)
+//       1,发送失败
+u8 sim900a_send_cmd_noclean(u8 *cmd,u8 *ack,u16 waittime)
+{
+	u8 res=0; 
+	USART2_RX_STA=0;
+	memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+
+	TIM4_Init(4999,7199);		//50ms    10ms中断  99
+	// TIM4_Init(1499,7199);		//150ms    10ms中断  99
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update); //清除更新中断请求位 add
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE ); //使能指定的TIM4中断,允许更新中断 add
+	TIM4_Set(0);			//关闭定时器4
+
+	if((u32)cmd<=0XFF)
+	{
+		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
+		USART2->DR=(u32)cmd;
+	}
+	else 
+	{
+		u2_printf("%s\r\n",cmd);//发送命令		
+		DB_PR("sendto 4G cmd=\n%s\n-------\r\n",cmd);
+	}
+
+	if(ack&&waittime)		//需要等待应答
+	{
+		while(--waittime)	//等待倒计时
+		{
+			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			{
+				if(sim900a_check_cmd(ack))break;//得到有效数据 
+				USART2_RX_STA=0;
+			} 
+			delay_ms(10);
+		}
+		if(waittime==0)res=1; 
+	}
+
+	// USART2_RX_STA = 0;	//标记接收完成
+	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
+	// TIM4_Set(0);			//关闭TIM4  
+
+
+
+	TIM4_Init(499,7199);		//50ms    10ms中断  99
+	// TIM4_Init(1499,7199);		//150ms    10ms中断  99
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update); //清除更新中断请求位 add
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE ); //使能指定的TIM4中断,允许更新中断 add
+	TIM4_Set(0);			//关闭定时器4
+
+	return res;
+} 
+#endif
+
 //将1个字符转换为16进制数字
 //chr:字符,0~9/A~F/a~F
 //返回值:chr对应的16进制数值
@@ -2136,7 +2257,7 @@ chengxu_start_3:
 
 
 		//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
 		
 			// if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -2333,7 +2454,7 @@ chengxu_start_3:
 			timex_t4++;
 		}
 		
-		if((qujianma_wait_tcp_flag!=0)&&(timex_t4==1500))//30s
+		if((qujianma_wait_tcp_flag!=0)&&(timex_t4==1100))//11s
 		{
 			DB_PR("2-qujianma_wait_tcp_flag timeout ok\r\n");
 			qujianma_wait_tcp_flag=0;

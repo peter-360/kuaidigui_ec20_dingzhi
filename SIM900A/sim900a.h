@@ -22,7 +22,11 @@ void sim900a_test(void);//sim900a÷˜≤‚ ‘≥Ã–Ú
 void sim_send_sms(u8*phonenumber,u8*msg);
 void sim_at_response(u8 mode);	
 u8* sim900a_check_cmd(u8 *str);
-u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime);
+u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime);//
+u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime);
+u8 sim900a_send_cmd_tou_data_noclean(u8 *cmd,u8 *ack,u16 waittime);
+u8 sim900a_send_cmd_noclean(u8 *cmd,u8 *ack,u16 waittime);
+
 u8 sim900a_chr2hex(u8 chr);
 u8 sim900a_hex2chr(u8 hex);
 void sim900a_unigbk_exchange(u8 *src,u8 *dst,u8 mode);

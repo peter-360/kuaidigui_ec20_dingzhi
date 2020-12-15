@@ -789,9 +789,9 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         // delay_ms(1000); //500
-        // sim900a_send_cmd("AT+QISWTMD=0,2","OK",2000);
+        // sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",1);
         sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
-
+        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
         USART2_RX_STA=0;
 
 

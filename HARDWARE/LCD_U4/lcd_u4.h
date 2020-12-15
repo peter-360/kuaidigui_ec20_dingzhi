@@ -57,7 +57,7 @@ void send_cmd_to_lcd_bl_len(uint16_t opCode, uint8_t* buff_temp,uint16_t data_le
 void send_cmd_to_lcd_bl(uint16_t opCode, uint16_t temp);
 
 
-u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime);
+
 #endif
 
 
