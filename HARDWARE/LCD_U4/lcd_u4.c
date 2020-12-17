@@ -660,7 +660,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
 
         // delay_ms(1000); //500
-        for(i=0;i<3;i++)
+        for(i=0;i<2;i++)
         {
             IWDG_Feed();
             DB_PR("-------i=%d---------\n",i);
@@ -767,7 +767,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         }
 
         DB_PR("-------i=%d---------\n",i);
-        if(i==3)
+        if((i==2)&&((0x000f==ret_value1)||(0xffff==ret_value1)))
         {
             DB_PR("...b-http timeout...\n");
             send_cmd_to_lcd_pic(0x0001);

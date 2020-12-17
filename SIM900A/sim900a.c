@@ -1354,7 +1354,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 
 				DB_PR("----zhifu timeout?---i=%d---------\n",i);
-				if(i==2)
+				if((i==2)&&( (0x000f==ret_value1)||(0xffff==ret_value1)  )   )
 				{
 					DB_PR("...b-http timeout...\n");
 					send_cmd_to_lcd_pic(0x0001);

@@ -40,7 +40,7 @@ void uart_init(u32 bound);
 
  //V0_0_2C1  log
  //V0_0_2C2 timer time
-#define FIRM_VERSION_EC20 "V0_0_4B"//V0_0_2C1
+#define FIRM_VERSION_EC20 "V0_0_4C"//V0_0_2C1
 
 
 
