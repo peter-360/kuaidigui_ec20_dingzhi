@@ -477,7 +477,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
     }
     strcpy(text,index);
 
-	DB_PR2("\n----2----text=\n%s\n",text);
+	DB_PR("\n----2----text=\n%s\n",text);//DB_PR2
 
 
     root = cJSON_Parse(text);     

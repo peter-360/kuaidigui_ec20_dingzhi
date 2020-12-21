@@ -1425,6 +1425,7 @@ void sim_at_response(u8 mode)
 	// if(USART2_RX_STA&0X8000)		//-------sim_at_response----------
 	if(USART2_RX_STA!=0)
 	{ 
+		delay_ms(20);//确保数据接收完
 		DB_PR("USART2_RX_BUF=sssssssssssss\n");
 		// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");
@@ -1464,7 +1465,7 @@ u8* sim900a_check_cmd(u8 *str)
 
 		if((u8*)strx)
 		{
-			DB_PR("-------1a len=\n%d--------\r\n",USART2_RX_STA);
+			DB_PR("-------1a len=%d--------\r\n",USART2_RX_STA);
 			DB_PR("-------1a buff=\n%s--------\r\n",USART2_RX_BUF);
 			DB_PR("-------1b ack=\n%s--------\r\n",str);
 		}
@@ -1523,6 +1524,7 @@ u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime)
 	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
 	// TIM4_Set(0);			//关闭TIM4  
 
+	delay_ms(20);
 	return res;
 } 
 
@@ -1568,6 +1570,7 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
 	// TIM4_Set(0);			//关闭TIM4  
 
+	delay_ms(20);
 	return res;
 } 
 
@@ -1929,18 +1932,18 @@ chengxu_start_2:
 	{
 		delay_ms(2000);
 		DB_PR2("...a-4-1-2 e...\n");
-//		DB_PR2("--2--\n%s\n-----\n",USART2_RX_BUF);
-//		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
-//		{
-//			DB_PR2("...a-4-1-2a...\n\n\n\n");
-//			goto chengxu_start_2;
+		DB_PR2("--2--\n%s\n-----\n",USART2_RX_BUF);
+		if(0==sim900a_send_cmd("AT+QIDEACT=1","OK",400) )
+		{
+			DB_PR2("...a-4-1-2a...\n\n\n\n");
+			goto chengxu_start_2;
 
-//		}
-//		else
-//		{
-//			DB_PR2("...a-4-1-2b err...\n\n\n\n\n\n\n");
-//			Soft_Reset();
-//		}
+		}
+		else
+		{
+			DB_PR2("...a-4-1-2b err...\n\n\n\n\n\n\n");
+			Soft_Reset();
+		}
 
 	}
 	
@@ -1986,6 +1989,7 @@ chengxu_start_2:
 	// if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"iot.dev.modoubox.com\"","+QIURC:",800))
 	if(0==sim900a_send_cmd("AT+QIDNSGIP=1,\"express.tcp.xintiangui.com\"","+QIURC:",800))
 	{
+		delay_ms(50);
 		DB_PR("...a4-3-1...\n");
 		// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 		{ 
@@ -1993,14 +1997,23 @@ chengxu_start_2:
 			// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 			DB_PR("--4G_UART_RCV=--\r\n");
 			// uart0_debug_data_h(data_rx_t,len_rx_t);
-			DB_PR("%s",USART2_RX_BUF);	//发送到串口
-
+			DB_PR("USART2_RX_STA=%d\n",USART2_RX_STA);	//发送到串口
+			DB_PR("USART2_RX_BUF=\n%s\n",USART2_RX_BUF);
+			if((USART2_RX_STA) !=113)//(USART2_RX_STA&0x7FFF)
+			{
+				DB_PR("--IP chongxinhuoqu 1 e=--\r\n");
+			}
 
 			ptr = strrchr(USART2_RX_BUF, ',');
 			if (ptr)
 				DB_PR("The character ',' is at position: %s\n", ptr);
 			else
+			{
 				DB_PR("The character was not found\n");
+				DB_PR("--IP chongxinhuoqu 2 e=--\r\n");
+				goto chengxu_start_2;
+			}
+
 			sprintf(tcp_ip,"%s",ptr+1);//39.98.243.128"
 
 			memcpy(tcp_ip2,tcp_ip,strlen(tcp_ip)-2);
@@ -2095,7 +2108,7 @@ chengxu_start_3:
 	//imei
 	if(sim900a_send_cmd("AT+CGSN","OK",500)==0)//查询产品序列号
 	{ 
-		delay_ms(100);
+		delay_ms(100);//----------must----------
 		// p1=(u8*)strstr((const char*)(USART2_RX_BUF+2),"\r\n");//查找回车
 		// p1[0]=0;//加入结束符 
 		// sprintf((char*)p,"序列号:%s",USART2_RX_BUF+2);
