@@ -115,9 +115,11 @@ void USART2_Init(u32 bound)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		//子优先级3
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
 	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
-	TIM4_Init(1999,7199);		//200ms    10ms中断  99
+
+
+	// TIM4_Init(1999,7199);		//200ms    10ms中断  99
 	USART2_RX_STA=0;		//清零
-	TIM4_Set(0);			//关闭定时器4
+	// TIM4_Set(0);			//关闭定时器4
 #endif	 									  	
 }
 //串口2,printf 函数
@@ -136,7 +138,8 @@ void TIM4_IRQHandler(void)
 { 	
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//是更新中断
 	{	 			   
-		USART2_RX_STA|=1<<15;	//标记接收完成
+		// USART2_RX_STA|=1<<15;	//标记接收完成
+		USART2_RX_STA =0;
 		TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
 		TIM4_Set(0);			//关闭TIM4  
 	}   

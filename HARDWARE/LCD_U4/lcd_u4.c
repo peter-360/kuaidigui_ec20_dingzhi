@@ -729,7 +729,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
 			// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
 
 
-            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+            if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD:",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
                 // delay_ms(100);
                 DB_PR2("...a-13...\n");

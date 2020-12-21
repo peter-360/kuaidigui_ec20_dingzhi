@@ -600,7 +600,7 @@ u16 cjson_to_struct_info_register(char *text)
 				// delay_xs(30);
 
 				//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",900))// != GSM_TRUE) return GSM_FALSE;//"OK"
+				if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD:",900))// != GSM_TRUE) return GSM_FALSE;//"OK"
 				{ 
 					DB_PR("...a-13...\n");
 					// if(USART2_RX_STA&0X8000)		//接收到一次数据了
@@ -1318,7 +1318,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 					//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
 					// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
-					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+					if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD:",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 					{ 
 						// delay_ms(100);
 						DB_PR("...a-13...\n");
@@ -1464,7 +1464,7 @@ u8* sim900a_check_cmd(u8 *str)
 
 		if((u8*)strx)
 		{
-			DB_PR("-------1a len=\n%s--------\r\n",USART2_RX_STA);
+			DB_PR("-------1a len=\n%d--------\r\n",USART2_RX_STA);
 			DB_PR("-------1a buff=\n%s--------\r\n",USART2_RX_BUF);
 			DB_PR("-------1b ack=\n%s--------\r\n",str);
 		}
@@ -2270,7 +2270,7 @@ chengxu_start_3:
 
 
 		//reg_status3 = sim_at_response_https(1);//检查GSM模块发送过来的数据,及时上传给电脑
-		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","OK",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD:",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
 		
 			// if(USART2_RX_STA&0X8000)		//接收到一次数据了
