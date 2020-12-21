@@ -762,10 +762,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 continue;
             }
 
-
-            
             
         }
+        USART2_RX_STA=0;
+        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 
         DB_PR("-------i=%d---------\n",i);
         if((i==2)&&((0x000f==ret_value1)||(0xffff==ret_value1)))
@@ -782,7 +782,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         
 
 
-
+       
 
 
 
@@ -792,8 +792,41 @@ void shangping_exe(u16 qujian_num_one_lcd)
         // delay_ms(1000); //500
         // sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",1);
         sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
-        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+
+        if((0==ret_value1)||(2==ret_value1))
+        {
+            for(j=0;j<30;j++)
+            {
+                IWDG_Feed();
+                if(1 == cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF))
+                {
+                    DB_PR("...b-tcp pass...\n");
+                    break;
+                }  
+                else
+                {
+                    DB_PR("...b-tcp wait...\n");
+                    if(j==9)
+                    {
+                        DB_PR("...b-tcp timeout...\n");
+                        send_cmd_to_lcd_pic(0x0001);
+                        delay_ms(1000); 
+                        send_cmd_to_lcd_pic(0x0003);  
+                    }
+                }
+                
+                delay_ms(100);     
+            }
+
+        }
+
+
+
+
+        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//---------------
         USART2_RX_STA=0;
+
+
 
 
 

@@ -1084,6 +1084,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			// }
 			else if(0==strcmp("stc:opendoor",item->valuestring))
 			{
+				reg_status =1;
 				//---------------------
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
@@ -1216,6 +1217,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			}
 			else if(0==strcmp("stc:overtime_pay",item->valuestring))
 			{
+				reg_status =1;
 				send_cmd_to_lcd_pic(0x000a); //------------------
 				daojishi_ongo_flag =0;
 				DB_PR("----1-12c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
@@ -1432,10 +1434,11 @@ void sim_at_response(u8 mode)
         // uart0_debug_data_h(data_rx_t,len_rx_t);
 		DB_PR("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
 
-		USART2_RX_STA =0;
+		// USART2_RX_STA =0;//------------------
 		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
 
-
+		memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+		USART2_RX_STA =0;
 
 		// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 		
@@ -1570,7 +1573,7 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
 	// TIM4_Set(0);			//关闭TIM4  
 
-	delay_ms(20);
+	// delay_ms(20);
 	return res;
 } 
 
