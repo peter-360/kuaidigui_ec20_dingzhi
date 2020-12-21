@@ -733,10 +733,11 @@ void shangping_exe(u16 qujian_num_one_lcd)
             { 
                 // delay_ms(100);
                 DB_PR2("...a-13...\n");
-                DB_PR2("...USART2_RX_STA&0X8000=%x...\n",USART2_RX_STA&0X8000);
+                // DB_PR2("...USART2_RX_STA&0X8000=%x...\n",USART2_RX_STA&0X8000);
+                DB_PR2("...USART2_RX_STA=%x...\n",USART2_RX_STA);
                 //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
-                    USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+                    // USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
                     DB_PR("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 

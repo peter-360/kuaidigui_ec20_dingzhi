@@ -605,7 +605,7 @@ u16 cjson_to_struct_info_register(char *text)
 					DB_PR("...a-13...\n");
 					// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 					{ 
-						USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+						// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 						DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 						if(1==cjson_to_struct_info_qrcode((char*)USART2_RX_BUF))
@@ -1102,7 +1102,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 						{
 							// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
-							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+							// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
 							// uart0_debug_data_h(data_rx_t,len_rx_t);
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
@@ -1324,7 +1324,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						DB_PR("...a-13...\n");
 						// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 						{ 
-							USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+							// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 							//send_cmd_to_lcd_pic(0x0007);
@@ -1422,10 +1422,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 void sim_at_response(u8 mode)
 {
 	int reg_status2=0;
-	if(USART2_RX_STA&0X8000)		//接收到一次数据了
+	// if(USART2_RX_STA&0X8000)		//-------sim_at_response----------
+	if(USART2_RX_STA!=0)
 	{ 
 		DB_PR("USART2_RX_BUF=sssssssssssss\n");
-		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+		// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");
         // uart0_debug_data_h(data_rx_t,len_rx_t);
 		DB_PR("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
@@ -1455,14 +1456,25 @@ void sim_at_response(u8 mode)
 u8* sim900a_check_cmd(u8 *str)
 {
 	char *strx=0;
-	if(USART2_RX_STA&0X8000)		//接收到一次数据了
+	// if(USART2_RX_STA&0X8000)		//接收到一次数据了
+	if(USART2_RX_STA!=0)
 	{ 
-		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+		// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		strx=strstr((const char*)USART2_RX_BUF,(const char*)str);
-		DB_PR("-------1a=\n%s--------\r\n",USART2_RX_BUF);
-		DB_PR("-------1b=\n%s--------\r\n",str);
+
+		if((u8*)strx)
+		{
+			DB_PR("-------1a len=\n%s--------\r\n",USART2_RX_STA);
+			DB_PR("-------1a buff=\n%s--------\r\n",USART2_RX_BUF);
+			DB_PR("-------1b ack=\n%s--------\r\n",str);
+		}
+		else
+		{
+			// DB_PR("-------waiting--------\r\n");
+		}
+		
 	} 
-	DB_PR("-------2 (u8*)strx=%d--------\r\n\n\n",(u8*)strx);
+	// DB_PR("-------2 (u8*)strx=%d--------\r\n\n\n",(u8*)strx);
 	return (u8*)strx;
 }
 
@@ -1496,10 +1508,11 @@ u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime)
 		while(--waittime)	//等待倒计时
 		{
 			
-			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			// if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			if(USART2_RX_STA!=0)
 			{
 				if(sim900a_check_cmd(ack))break;//得到有效数据 
-				USART2_RX_STA=0;
+				// USART2_RX_STA=0;
 			} 
 			delay_ms(10);
 		}
@@ -1540,10 +1553,11 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(--waittime)	//等待倒计时
 		{
-			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			// if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			if(USART2_RX_STA!=0)
 			{
 				if(sim900a_check_cmd(ack))break;//得到有效数据 
-				USART2_RX_STA=0;
+				// USART2_RX_STA=0;
 			} 
 			delay_ms(10);
 		}
@@ -1833,7 +1847,7 @@ chengxu_start_1:
 
 
 ///////////////////////////////////////////////////////////////////
-
+	delay_xs(4); 
 
 chengxu_start_2:
 	//GSM_CLEAN_RX();  SIM READY?    2s
@@ -1851,7 +1865,6 @@ chengxu_start_2:
 
 	
 
-	delay_xs(4); 
 	DB_PR("\r\n-2-1-心甜智能柜\r\n");
 
 
@@ -1977,7 +1990,7 @@ chengxu_start_2:
 		// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 		{ 
 			// DB_PR("USART2_RX_BUF=sssssssssssss\n");
-			USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+			// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 			DB_PR("--4G_UART_RCV=--\r\n");
 			// uart0_debug_data_h(data_rx_t,len_rx_t);
 			DB_PR("%s",USART2_RX_BUF);	//发送到串口
@@ -2091,17 +2104,17 @@ chengxu_start_3:
 		// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 		{ 
 			// DB_PR("USART2_RX_BUF=sssssssssssss\n");
-			USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+			// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 			DB_PR("--4G_UART_RCV=--\r\n");
 			// uart0_debug_data_h(data_rx_t,len_rx_t);
 			DB_PR("---%s----\n",USART2_RX_BUF);	//发送到串口
-			DB_PR("---USART2_RX_STA&0x7FFF = %d----\n",USART2_RX_STA&0x7FFF); //33
-        	uart0_debug_data_h(USART2_RX_BUF,USART2_RX_STA&0x7FFF);
+			// DB_PR("---USART2_RX_STA&0x7FFF = %d----\n",USART2_RX_STA&0x7FFF); //33
+        	uart0_debug_data_h(USART2_RX_BUF,USART2_RX_STA);
 
 			// USART2_RX_STA=0;
 			// DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
 
-			if((USART2_RX_STA&0x7FFF) !=33)
+			if((USART2_RX_STA) !=33)//(USART2_RX_STA&0x7FFF)
 			{
 				DB_PR("--IMEI chongxinhuoqu 1=--\r\n");
 				goto chengxu_start_3;
@@ -2262,7 +2275,7 @@ chengxu_start_3:
 		
 			// if(USART2_RX_STA&0X8000)		//接收到一次数据了
 			{ 
-				USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+				// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 				DB_PR("%s",USART2_RX_BUF);	//发送到串口
 
 				DB_PR("...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...\n");
