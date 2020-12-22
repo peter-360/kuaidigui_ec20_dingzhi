@@ -810,13 +810,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
                     else
                     {
                         DB_PR("...b-tcp wait...\n");
-                        if(j==9)
-                        {
-                            DB_PR("...b-tcp timeout...\n");
-                            send_cmd_to_lcd_pic(0x0001);
-                            delay_ms(1000); 
-                            send_cmd_to_lcd_pic(0x0003);  
-                        }
+                        //------------
+                        // if(j==29)
                     }
 
                 }
@@ -824,6 +819,14 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 
                 delay_ms(100);     
             }
+            if(j==30)
+            {
+                DB_PR2("...b-tcp timeout 2...\n");
+                send_cmd_to_lcd_pic(0x0001);
+                delay_ms(1000); 
+                send_cmd_to_lcd_pic(0x0003);  
+            }
+
 
         }
 
