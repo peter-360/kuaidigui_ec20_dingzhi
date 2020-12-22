@@ -40,13 +40,13 @@ void uart_init(u32 bound);
 
  //V0_0_2C1  log
  //V0_0_2C2 timer time
-#define FIRM_VERSION_EC20 "V0_0_6B"//V0_0_2C1
+#define FIRM_VERSION_EC20 "V0_0_6C"//V0_0_2C1
 
 
 
 
 //log ctl 1
-#define _DEBUG_ 1
+#define _DEBUG_ 0
 
 #if _DEBUG_
 #define DB_PR(...) printf(__VA_ARGS__)

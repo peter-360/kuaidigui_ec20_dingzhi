@@ -1004,6 +1004,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 {
 	u8 reg_status=0x000f;
 	char *index;
+	char index_2[1024]={0};
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson???¨®
 	char regst_key_post[300];
@@ -1028,6 +1029,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     if( text == NULL)
     {
         DB_PR("\n----1 err----text=\n%s\n",text);
+		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+		// USART2_RX_STA =0;		
         return 0xffff;
     }
     // cJSON *root,*psub;
@@ -1044,19 +1047,25 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     if(NULL == index)
     {
         DB_PR("------NULL----4444----------\n");
+		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+		// USART2_RX_STA =0;	
         return 0xffff;
     }
-    strcpy(text,index);
+	//index_2 = index;
+    strcpy(index_2,index);
 
-	DB_PR("\n----2----text=\n%s\n",text);
-
-
-
+	DB_PR("\n----2----index_2=\n%s\n",index_2);
 
 
 
+	memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+	USART2_RX_STA =0;
 
-    root = cJSON_Parse(text);     
+
+
+
+
+    root = cJSON_Parse(index_2);     
 
 
     DB_PR("\n----3----\n");
@@ -1064,6 +1073,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
     if (!root) 
     {
         DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
+		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+		// USART2_RX_STA =0;	
     }
     else
     {
@@ -1094,6 +1105,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			// DB_PR("%s\n", cJSON_Print(item));
 			
 
+			memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+			USART2_RX_STA =0;
 			if(0==strcmp("stc:restart",item->valuestring))
 			{
 				//---------------------
@@ -1474,7 +1487,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 void sim_at_response(u8 mode)
 {
-	int reg_status2=0;
+	int ret_status2=0;
 	// if(USART2_RX_STA&0X8000)		//-------sim_at_response----------
 	if(USART2_RX_STA!=0)//--------------------
 	{ 
@@ -1486,10 +1499,13 @@ void sim_at_response(u8 mode)
 		DB_PR("TCP RCV---\n%s\n----",USART2_RX_BUF);	//·¢ËÍµ½´®¿Ú
 
 		// USART2_RX_STA =0;//------------------
-		cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
+		ret_status2 = cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
+		if((0x000f==ret_status2)||(0xffff==ret_status2))
+		{
+			memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+			USART2_RX_STA =0;			
+		}
 
-		memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
-		USART2_RX_STA =0;
 
 		// reg_status2 = cjson_to_struct_info_register((char*)USART2_RX_BUF);
 		
