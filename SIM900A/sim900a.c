@@ -553,7 +553,7 @@ u16 cjson_to_struct_info_register(char *text)
 				memset(regst_key_post,0,sizeof(regst_key_post));
 				sprintf(regst_key_post,"AT+QHTTPPOST=%d,80,80",46+strlen(regst_key));
 				//sim900a_send_cmd(regst_key_post,"CONNECT",500);// != GSM_TRUE) return GSM_FALSE;//"OK"
-				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",1000))
+				if(0==sim900a_send_cmd(regst_key_post,"CONNECT",1200))//>6s
 				{
 					DB_PR("...a-10-1...\n");
 				}
@@ -2307,7 +2307,7 @@ chengxu_start_3:
 
 
 		//USART2_RX_STA =0;
-		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",800))// != GSM_TRUE) return GSM_FALSE;//"OK"
+		if(0==sim900a_send_cmd("AT+QHTTPPOST=42,80,80","CONNECT",1200))// != GSM_TRUE) return GSM_FALSE;//"OK"
 		{
 			DB_PR("...a-10-1...\n");
 		}
