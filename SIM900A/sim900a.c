@@ -222,7 +222,7 @@ char regst_key[60]={0};
 
 u16 cjson_to_struct_info_register(char *text)
 {
-	u8 reg_status=0x000f;
+	u16 reg_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson对象
@@ -545,7 +545,7 @@ u16 cjson_to_struct_info_register(char *text)
 
 
 			// delay_ms(1000); //500
-			for(i=0;i<3;i++)
+			for(i=0;i<5;i++)
 			{
 				// delay_ms(100); //500
 				//USART2_RX_STA =0;  86
@@ -613,10 +613,16 @@ u16 cjson_to_struct_info_register(char *text)
 							DB_PR("...a-13-2...\n");
 							break;
 						}
+						else
+						{
+							reg_status =0xf1;//add
+							DB_PR2("...a-13-2 e  ...\n");
+						}
+						
 						// USART2_RX_STA=0;
 					}
-					USART2_RX_STA=0;
-
+					USART2_RX_STA=0;//----------------
+					memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 
 					// cJSON_Delete(root);
 					// return reg_status;
@@ -995,7 +1001,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 	char* temp_cjson=NULL;
 
 	int cjson_len=0;
-	u16 ret_value1=0;
+	u16 ret_value1=0xf1;
 
 	
     if( text == NULL)
@@ -1132,7 +1138,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					if(i==30)//没有收到支付成功
 					{
 						DB_PR("----my dbg3 timeout-----i=%d---------\n",i);   
-						// daojishi_ongo_flag =0;
+						daojishi_ongo_flag =0;
 						DB_PR("----1-10c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 						// daojishi_time=30;
 						// TIM5_Set(1);		
@@ -1143,7 +1149,29 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 					
 				}
+				else// if(0==daojishi_ongo_flag) 
+				{
+					qujianma_wait_tcp_flag =0;
+					DB_PR("\n----------no daojishi yemian-----------\n");  
+					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
+					// send_cmd_to_lcd_bl(0x1650,buff_t2);
+					send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
+					send_cmd_to_lcd_pic(0x0006); //kaimen ok
+
+					daojishi_ongo_flag =0;
+					DB_PR("----1-11c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
+					daojishi_time=5;
+					TIM5_Set(1);
+				}
+				// else
+				// {
+				// 	DB_PR("\n----------zhengzai daojishi-----------\n");  
+				// }
 				
+
+
+
+
 				IWDG_Feed();
 				// heart_beart_idx++;
 				// DB_PR2("-2-heart_beart_idx=%d\r\n",heart_beart_idx);
@@ -1192,24 +1220,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 				printf("-----daojishi_time=%d-----\n",daojishi_time);
 				DB_PR("----2-2---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
-				if(0==daojishi_ongo_flag) 
-				{
-					qujianma_wait_tcp_flag =0;
-					DB_PR("\n----------no daojishi yemian-----------\n");  
-					itoa((int)(guimen_gk_temp),(char*)(buff_t2) ,10);
-					// send_cmd_to_lcd_bl(0x1650,buff_t2);
-					send_cmd_to_lcd_bl_len(0x1650,(uint8_t*)buff_t2,32+4);
-					send_cmd_to_lcd_pic(0x0006); //kaimen ok
-
-					daojishi_ongo_flag =0;
-					DB_PR("----1-11c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
-					daojishi_time=5;
-					TIM5_Set(1);
-				}
-				// else
-				// {
-				// 	DB_PR("\n----------zhengzai daojishi-----------\n");  
-				// }
+				
 				
 				IWDG_Feed();
 
@@ -1340,6 +1351,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 							else
 							{
 								DB_PR("...a-13-2-2 err...\n");
+								//
 							}
 							
 							// USART2_RX_STA=0;
@@ -1356,7 +1368,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				}
 
 				DB_PR("----zhifu timeout?---i=%d---------\n",i);
-				if((i==2)&&( (0x000f==ret_value1)||(0xffff==ret_value1)  )   )
+				if((i==2)&&( (0x000f==ret_value1)||(0xffff==ret_value1) || (0xf1==ret_value1) )   )
 				{
 					DB_PR("...b-http timeout...\n");
 					send_cmd_to_lcd_pic(0x0001);
