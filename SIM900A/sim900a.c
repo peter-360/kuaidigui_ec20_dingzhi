@@ -847,7 +847,7 @@ u16 cjson_to_struct_info_overtime_pay(char *text)
 			send_cmd_to_lcd_bl_len(0x1950,buff_t,10+4);
 
 
-			send_cmd_to_lcd_pic(0x0007);//-------chaoshsi yemian--------
+			send_cmd_to_lcd_pic(0x0007);//-------pay chaoshsi yemian--------
 			daojishi_ongo_flag =1;//-------------------
 			DB_PR2("----1-7---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 		}
@@ -1135,6 +1135,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						DB_PR("----2-2---USART2_RX_STA=%d\n",USART2_RX_STA);
 						if(USART2_RX_STA>0)
 						{
+							delay_ms(5);
 							// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
 							// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 							DB_PR("--------timeout dbg1--------4G_UART_RCV=---------------------\r\n");
@@ -1177,8 +1178,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 						// return //------------	
 					}
-					delay_ms(500); //500
-					daojishi_ongo_flag =0;//--------------------
+					// delay_ms(500); //500
+					// daojishi_ongo_flag =0;//---------can not-----------
 					
 				}//2-1
 
@@ -1195,7 +1196,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
 				DB_PR("%d\n", item->valueint);
 				guimen_gk_temp = item->valueint;
-				DB_PR("---open lock-----guimen_gk_temp=%d\n", guimen_gk_temp);
+				DB_PR2("---open lock-----guimen_gk_temp=%d\n", guimen_gk_temp);
 
 
 				item = cJSON_GetObjectItem(root, "order_ary");
@@ -1223,7 +1224,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				Usart_SendArray( USART3,buff_t, size);//open door-------------------------------
 				RS485_RX_EN();
 
-				DB_PR2("\n*******************lock open********************\n\n");  
+				DB_PR2("\n******************************lock open*******************************\n\n");  
 				// buff_t2[0] = guimen_gk_temp/100 +0x30;
 				// buff_t2[1] = guimen_gk_temp%100/100 +0x30;
 				// buff_t2[2] = guimen_gk_temp%10 +0x30;
@@ -1250,13 +1251,13 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					daojishi_time=5;
 					TIM5_Set(1);
 				}
-				else//不会发生
+				else//kuai diyuan toujian
 				{
-					send_cmd_to_lcd_pic(0x0001);
-					delay_ms(500); 
-					send_cmd_to_lcd_pic(0x0003);  
-					daojishi_ongo_flag =0;
-					DB_PR("\n----------zhengzai daojishi-----------\n");  
+					// send_cmd_to_lcd_pic(0x0001);
+					// delay_ms(500); 
+					// send_cmd_to_lcd_pic(0x0003);  
+					// daojishi_ongo_flag =0;
+					DB_PR("\n----------daojishi ongo, kuai diyuan toujian-----------\n");  
 				}
 				
 				printf("-----daojishi_time=%d-----\n",daojishi_time);
@@ -1475,9 +1476,9 @@ void sim_at_response(u8 mode)
 {
 	int reg_status2=0;
 	// if(USART2_RX_STA&0X8000)		//-------sim_at_response----------
-	if(USART2_RX_STA!=0)
+	if(USART2_RX_STA!=0)//--------------------
 	{ 
-		delay_ms(20);//确保数据接收完
+		delay_ms(5);//确保数据接收完 20 not
 		DB_PR("USART2_RX_BUF=sssssssssssss\n");
 		// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");

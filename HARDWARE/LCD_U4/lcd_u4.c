@@ -514,6 +514,7 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 				DB_PR("--door---\n");
 				
 				// send_cmd_to_lcd_pic(0x0006);
+                // daojishi_ongo_flag =0;//can not open
                 qujianma_wait_tcp_flag=1;
 			}
 			else if(reg_status == 1)
@@ -526,13 +527,13 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
                 TIM5_Set(1);
 
 			}
-			else if(reg_status == 2)
+			else if(reg_status == 2)//TCP stc:overtime_pay
 			{
                 daojishi_ongo_flag =0;
                 DB_PR("----1-2c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				DB_PR("-2-reg_status=%d---\n", reg_status);
 				// send_cmd_to_lcd_pic(0x0007);
-                //-----------  TCP中接受   stc:overtime_pay
+                //-----------  TCP中接受   
                 qujianma_wait_tcp_flag=1;
 			}
 
@@ -803,6 +804,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 IWDG_Feed();
                 if(USART2_RX_STA>0)
                 {
+                    delay_ms(5);     
                     if(1 == cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF))
                     {
                         DB_PR("...b-tcp pass...\n");
@@ -935,7 +937,7 @@ void lcd_at_response(u8 mode)
                         send_cmd_to_lcd_bl(0x1290,0x0000);
 
                         send_cmd_to_lcd_pic(0x0004);//qujianma qujian
-                        daojishi_ongo_flag =1;
+                        daojishi_ongo_flag =2;//1-gai
                         DB_PR("----1-5s---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 
                         
