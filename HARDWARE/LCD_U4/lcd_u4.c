@@ -799,6 +799,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
         {
             for(j=0;j<30;j++)
             {
+                DB_PR2("\n\n..............j=%d...................\n",j);
                 IWDG_Feed();
                 if(USART2_RX_STA>0)
                 {

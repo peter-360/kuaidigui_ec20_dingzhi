@@ -882,8 +882,8 @@ u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 {
 	u8 ret_status=0x000f;
 	char *index;
-	cJSON * root = NULL;
-	cJSON * item = NULL;//cjson???ó
+	//cJSON * root = NULL;
+	//cJSON * item = NULL;//cjson???ó
 	char regst_key_post[300];
 //	cJSON * item2 = NULL;//cjson???ó
 //	cJSON * item3 = NULL;//cjson???ó
@@ -920,59 +920,80 @@ u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 
 	DB_PR("\n----2----text=\n%s\n",text);
 
+	if(strstr(text,"stc:overtime_pay_success"))
+	{
+		DB_PR2("\n----------stc:overtime_pay_success------------\n");
 
-    root = cJSON_Parse(text);     
-    DB_PR("\n----3----\n");
-
-    if (!root) 
-    {
-        DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
-    }
-    else
-    {
-
-		//---------------------
-		DB_PR("%s\n", "获取type下的cjson对象");
-		item = cJSON_GetObjectItem(root, "type");//
-		DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
-		DB_PR("--2--%s\n", item->valuestring);
-		// reg_status = item->valueint;
-		// DB_PR("%s\n", cJSON_Print(item));
-		
-
-
-
+		send_cmd_to_lcd_pic(0x0008);
+		// daojishi_time=2;
+		// TIM5_Set(1);
 
 		daojishi_ongo_flag =0;
-		DB_PR("----1-8c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
-		// if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
-		if(0==strcmp("stc:overtime_pay_success",item->valuestring))
-		{
-			send_cmd_to_lcd_pic(0x0008);
-			// daojishi_time=2;
-			// TIM5_Set(1);
+		ret_status =1;
+		DB_PR("...stc:overtime_pay_success...\n");
+	}
+	else
+	{
+		DB_PR("...stc:overtime_pay_    fail...\n");
+	}
+	
 
-			ret_status =1;
-			DB_PR("...stc:overtime_pay_success...\n");
-		}
-		else
-		{
-			DB_PR("...stc:overtime_pay_    fail...\n");
-		}
+
+	printf("ret_status=%d\n",ret_status);
+
+
+    // root = cJSON_Parse(text);     
+    // DB_PR("\n----3----\n");
+
+    // if (!root) 
+    // {
+    //     DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
+    // }
+    // else
+    // {
+
+	// 	//---------------------
+	// 	DB_PR("%s\n", "获取type下的cjson对象");
+	// 	item = cJSON_GetObjectItem(root, "type");//
+	// 	DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
+	// 	DB_PR("--2--%s\n", item->valuestring);
+	// 	// reg_status = item->valueint;
+	// 	// DB_PR("%s\n", cJSON_Print(item));
 		
 
 
-		printf("ret_status=%d\n",ret_status);
+
+
+	// 	daojishi_ongo_flag =0;
+	// 	DB_PR("----1-8c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
+	// 	// if(NULL!=strstr(item->valuestring, "stc:overtime_pay_success"))
+	// 	if(0==strcmp("stc:overtime_pay_success",item->valuestring))
+	// 	{
+	// 		send_cmd_to_lcd_pic(0x0008);
+	// 		// daojishi_time=2;
+	// 		// TIM5_Set(1);
+
+	// 		ret_status =1;
+	// 		DB_PR("...stc:overtime_pay_success...\n");
+	// 	}
+	// 	else
+	// 	{
+	// 		DB_PR("...stc:overtime_pay_    fail...\n");
+	// 	}
+		
+
+
+	// 	printf("ret_status=%d\n",ret_status);
 		
 		
-            //  uart0_debug_data_h(buff_t,256);
-            // send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
+    //         //  uart0_debug_data_h(buff_t,256);
+    //         // send_cmd_to_lcd_bl_len(0x2000,(uint8_t*)buff_t,128+4);//gekou 33 +3
 
-    }
+    // }
 
 
 
-    cJSON_Delete(root);
+    // cJSON_Delete(root);
     return ret_status;
 
 }
@@ -1101,8 +1122,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("----2-1---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
 				if(1== daojishi_ongo_flag)
 				{
-					memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//-----------------
-					USART2_RX_STA=0;
+					
+					// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//-----------------
+					// USART2_RX_STA=0;
 
 					for(i=0;i<30;i++)
 					{
@@ -1110,6 +1132,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 						DB_PR("------i=%d----\n",i);   
 						delay_ms(100); //500
 						// if(USART2_RX_STA&0X8000)		//接收到一次数据了
+						DB_PR("----2-2---USART2_RX_STA=%d\n",USART2_RX_STA);
+						if(USART2_RX_STA>0)
 						{
 							// DB_PR("--------USART2_RX_BUF=sssssssssssss\n-------");
 							// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
@@ -1134,6 +1158,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 							DB_PR("USART2_RX_BUF=eeeeeeeeeeeee-4G\n\n");
 						} 
+						else
+						{
+							DB_PR("----------USART2_RX_STA =0----------\n\n");
+						}
+						
 
 					}
 					
