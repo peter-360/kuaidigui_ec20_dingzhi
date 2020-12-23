@@ -1105,8 +1105,8 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			// DB_PR("%s\n", cJSON_Print(item));
 			
 
-			memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
-			USART2_RX_STA =0;
+			// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+			// USART2_RX_STA =0;
 			if(0==strcmp("stc:restart",item->valuestring))
 			{
 				//---------------------
@@ -1139,7 +1139,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 					// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//-----------------
 					// USART2_RX_STA=0;
 
-					for(i=0;i<30;i++)
+					for(i=0;i<15;i++)//30
 					{
 						IWDG_Feed();
 						DB_PR("------i=%d----\n",i);   
@@ -1491,7 +1491,7 @@ void sim_at_response(u8 mode)
 	// if(USART2_RX_STA&0X8000)		//-------sim_at_response----------
 	if(USART2_RX_STA!=0)//--------------------
 	{ 
-		delay_ms(5);//确保数据接收完 20 not
+		delay_ms(15);//>10ms 确保数据接收完 20 not
 		DB_PR("USART2_RX_BUF=sssssssssssss\n");
 		// USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
 		DB_PR("--4G_UART_RCV=--\r\n");

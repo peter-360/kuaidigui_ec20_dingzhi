@@ -881,16 +881,16 @@ void lcd_at_response(u8 mode)
 
 	if(USART4_RX_STA&0X8000)		//接收到一次数据了
 	{ 
-        DB_PR("USART4_RX_BUF=sssssssssssss\n");
+        // DB_PR("USART4_RX_BUF=sssssssssssss\n");
         USART4_RX_BUF[USART4_RX_STA&0X7FFF]=0;//添加结束符 -------------
         // DB_PR("USART4_RX_BUF=%s\n",USART4_RX_BUF);	//发送到串口
         len_rx_t=USART4_RX_STA&0x7FFF;
-        DB_PR("len_rx_t=%x",len_rx_t);	//asdUSART4_RX_STA=8003
+        // DB_PR("len_rx_t=%x",len_rx_t);	//asdUSART4_RX_STA=8003
 
         //Usart_SendByte
         memcpy(data_rx_t,USART4_RX_BUF,len_rx_t);
-        DB_PR("--LCD_UART_RCV=--\r\n");
-        uart0_debug_data_h(data_rx_t,len_rx_t);
+        // DB_PR("--LCD_UART_RCV=--\r\n");
+        // uart0_debug_data_h(data_rx_t,len_rx_t);
 
         if(mode)
             USART4_RX_STA=0;
@@ -1257,7 +1257,7 @@ void lcd_at_response(u8 mode)
                 }
             }
 
-        DB_PR("USART4_RX_BUF=eeeeeeeeeeeeee-lcd\n\n");
+        // DB_PR("USART4_RX_BUF=eeeeeeeeeeeeee-lcd\n\n");
 
 	} 
 }
@@ -1363,7 +1363,7 @@ void send_cmd_to_lcd_bl_len(uint16_t opCode, uint8_t* buff_temp,uint16_t data_le
     tx_Buffer[4] = opCode/256;
     tx_Buffer[5] = opCode%256;//dizhi
 
-    DB_PR("-------data_len=%d--------\r\n",data_len-3);
+    // DB_PR("-------data_len=%d--------\r\n",data_len-3);
     for (i = 0; i < data_len-3 ; i++) //data_len-2
 		{
 				tx_Buffer[6+i] = buff_temp[i];
@@ -1380,8 +1380,8 @@ void send_cmd_to_lcd_bl_len(uint16_t opCode, uint8_t* buff_temp,uint16_t data_le
     // tx_Buffer[3+ data_len-2 +1] = (crc16_temp>>8)&0xff;
     // DB_PR("---------debug1---------\r\n");
     Usart_SendArray( UART4, tx_Buffer, data_len);
-    DB_PR("---------debug2---------\r\n");
-    uart0_debug_data_h( tx_Buffer, data_len);
+    // DB_PR("---------debug2---------\r\n");
+    // uart0_debug_data_h( tx_Buffer, data_len);
 }
 
 
