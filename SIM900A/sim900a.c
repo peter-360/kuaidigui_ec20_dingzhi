@@ -1091,7 +1091,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				free(temp_cjson);//------------must have---------------
 			}
 			DB_PR("---------cjson_len= %d---------\n\n",cjson_len );
-			DB_PR("---------strlen(text)= %d------\n\n",strlen(text) );
+			DB_PR("---------strlen(index_2)= %d------\n\n",strlen(index_2) );
 
 
 			
@@ -1215,7 +1215,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				item = cJSON_GetObjectItem(root, "order_ary");
 				// DB_PR("%s\n", cJSON_Print(item));
 				item = cJSON_GetObjectItem(item, "data");
-				DB_PR("%s\n", cJSON_Print(item));
+				//DB_PR("%s\n", cJSON_Print(item));//---------------------------
 				size = cJSON_GetArraySize(item);
 				DB_PR("--------size=%d-----------\n",size);
 				// fprintf(stdout, "key: %s:", "value2");
@@ -1458,9 +1458,9 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			
 
 			DB_PR("----2-----cjson_len= %d---------\n\n",cjson_len );
-			DB_PR("----2-----strlen(text)= %d------\n\n",strlen(text) );
+			DB_PR("----2-----strlen(index_2)= %d------\n\n",strlen(index_2) );
 			//{"type":"stc:heartbeat","time":1606975970061}
-			if(strlen(text)==cjson_len)
+			if(strlen(index_2)==cjson_len)
 			{
 				DB_PR("\n----1-1==   always----\n");
 			}
@@ -1468,11 +1468,11 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			{
 				DB_PR("\n----1-2!=----\n");
 				// cJSON_Delete(root);
-				// cjson_to_struct_info_tcp_rcv(text);
-				cjson_to_struct_info_tcp_rcv(text+cjson_len);
+				// cjson_to_struct_info_tcp_rcv(index_2);
+				cjson_to_struct_info_tcp_rcv(index_2+cjson_len);
 				
-				DB_PR("\n----2----strlen(text+cjson_len)=%d\n",strlen(text+cjson_len));
-				DB_PR("\n----2----text+cjson_len=\n%s\n",text+cjson_len);
+				DB_PR("\n----2----strlen(index_2+cjson_len)=%d\n",strlen(index_2+cjson_len));
+				DB_PR("\n----2----index_2+cjson_len=\n%s\n",index_2+cjson_len);
 			}
 
     }
