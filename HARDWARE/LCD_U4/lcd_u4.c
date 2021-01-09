@@ -11,6 +11,7 @@
 #include "usart2.h"
 #include "cJSON.h"
 #include "usart.h"
+#include "sim900a.h"
 //#include "timer.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -808,7 +809,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
        
-
+        my_ret_status =0;
         // if(0==sim900a_send_cmd("AT+QISWTMD=0,1","OK",300))//add
         if(0==sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",300))
         {
@@ -839,8 +840,10 @@ void shangping_exe(u16 qujian_num_one_lcd)
                     delay_ms(5);    
                     ret_value2 =cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF,1);
                     DB_PR2("..b2.ret_value2=%x...\n",ret_value2);
-                    if(1 == ret_value2 )
+                    DB_PR2("-----------b2.my_ret_status=%x-----------\n",my_ret_status);
+                    if(1 == my_ret_status )
                     {
+                        my_ret_status =0;
                         memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//---------------
                         USART2_RX_STA=0;
                         DB_PR2("...b-tcp pass...\n");

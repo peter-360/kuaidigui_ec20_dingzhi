@@ -998,7 +998,7 @@ u32 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 
 }
 
-
+u32 my_ret_status;
 
 u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 {
@@ -1134,6 +1134,7 @@ u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 				// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//-----------------
 				// USART2_RX_STA=0;
 				reg_status =1;
+				my_ret_status = 1;
 				DB_PR2("---3a---reg_status=%x---------\n",reg_status);
 				//---------------------
 				DB_PR("----------tcp opendoor---------\n");   
@@ -1289,6 +1290,7 @@ u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 			else if(0==strcmp("stc:overtime_pay",item->valuestring))
 			{
 				reg_status =1;
+				my_ret_status = 1;
 				DB_PR2("---3b---reg_status=%x---------\n",reg_status);
 				send_cmd_to_lcd_pic(0x000a); //------------------
 				daojishi_ongo_flag =0;

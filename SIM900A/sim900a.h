@@ -45,6 +45,8 @@ void sim900a_test(void);			//SIM900AÖ÷²âÊÔº¯Êı
 
 
 void at_mode_go();
+
+extern u32 my_ret_status;
 #endif
 
 
