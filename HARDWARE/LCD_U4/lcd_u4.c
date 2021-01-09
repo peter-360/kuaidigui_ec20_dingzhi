@@ -442,9 +442,9 @@ pbDest[i] = s1*16 + s2;
 
 u8 qujianma_wait_tcp_flag=0;
 
-u16 cjson_to_struct_info_qujianma_opendoor(char *text)
+u32 cjson_to_struct_info_qujianma_opendoor(char *text)
 {
-	u8 reg_status=0x000f;
+	u32 reg_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson???ó
@@ -482,7 +482,13 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
 
     root = cJSON_Parse(text);     
     DB_PR("\n----3----\n");
-
+    // sim900a_send_cmd_noclean("AT+QISWTMD=0,1",0,0);//add
+    // delay_ms(1000);
+    // delay_ms(1000);
+    // delay_ms(1000);
+    // delay_ms(1000);
+    // delay_ms(1000);
+    // delay_ms(1000);
     if (!root) 
     {
         DB_PR2("--3-1--Error before: [%s]\n",cJSON_GetErrorPtr());
@@ -491,14 +497,14 @@ u16 cjson_to_struct_info_qujianma_opendoor(char *text)
     {
 
 			//---------------------
-			DB_PR2("--3-2--%s\n", "----获取status下的cjson对象---");
+			DB_PR("--3-2--%s\n", "----获取status下的cjson对象---");
 			item = cJSON_GetObjectItem(root, "status");//
 			DB_PR("--1--%s:", item->string);   //??????cjson???ó???á???????????????±??????
 			DB_PR("--2--%d\n", item->valueint);
 			reg_status = item->valueint;
 			// DB_PR("%s\n", cJSON_Print(item));
 			
-			DB_PR("--reg_status=%d---\n", reg_status);
+			DB_PR2("--reg_status=%d---\n", reg_status);
 			if(reg_status == 0)//TCP  "stc:opendoor"
 			{
 				DB_PR("-0-reg_status=%d---\n", reg_status);
@@ -580,13 +586,18 @@ void shangping_exe(u16 qujian_num_one_lcd)
     char qhttp_post_req[150]={0};
     u16 i=0;
     u16 j=0;
-    u16 ret_value1 = 0xf1;//add
+    u32 ret_value1 = 0xf1;//add
+
+
+    u32 ret_value2 = 0;//add
     DB_PR("\n\n-----------------------shangping_exe=%8u---.\r\n",qujian_num_int);
 
     // reset_qujianma_timeout();
     mtimer_flag =1;
     daojishi_time=30;
     
+
+    DB_PR2("qujian_num_input_len=%d\n",qujian_num_input_len);
     switch (qujian_num_input_len)
     {
     case 1:/* constant-expression */
@@ -646,23 +657,27 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
         //--------http----------------
-        DB_PR("...a-0-0...\n");
-        // delay_ms(1000); //500
-        delay_ms(1000); //500
-        sim900a_send_cmd_tou_data("+++",0,0);//AT
-        // sim900a_send_cmd("+++\r\n","OK",3000);//AT
-        DB_PR("...a-0-1...\n");
-        delay_ms(1000); //500
-        // delay_ms(1000); //500
 
 
 
-        // heart_beart_idx++;
-        // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
-
-        // delay_ms(1000); //500
         for(i=0;i<2;i++)
         {
+            DB_PR("...a-0-0...\n");
+            // delay_ms(1000); //500
+            delay_ms(1000); //500
+            sim900a_send_cmd_tou_data("+++",0,0);//AT
+            // sim900a_send_cmd("+++\r\n","OK",3000);//AT
+            DB_PR("...a-0-1...\n");
+            delay_ms(1000); //500
+            // delay_ms(1000); //500
+
+
+
+            // heart_beart_idx++;
+            // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
+
+            // delay_ms(1000); //500
+
             IWDG_Feed();
             DB_PR("-------i=%d---------\n",i);
             //----------------------------
@@ -730,18 +745,24 @@ void shangping_exe(u16 qujian_num_one_lcd)
 			// if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD",500))
 
 
+
+
+
+//+QHTTPREAD:
             if(0==sim900a_send_cmd("AT+QHTTPREAD=80","+QHTTPREAD:",500))// != GSM_TRUE) return GSM_FALSE;//"OK"
             { 
+
                 // delay_ms(100);
                 DB_PR2("...a-13...\n");
                 // DB_PR2("...USART2_RX_STA&0X8000=%x...\n",USART2_RX_STA&0X8000);
-                DB_PR2("...USART2_RX_STA=%x...\n",USART2_RX_STA);
+                DB_PR2("..a1.USART2_RX_STA=%d...\n",USART2_RX_STA);
                 //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     // USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    DB_PR("---USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
+                    DB_PR2("--a1-USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 
+    
                     ret_value1=cjson_to_struct_info_qujianma_opendoor((char*)USART2_RX_BUF);
                     if((0x000f!=ret_value1)&&(0xffff!=ret_value1))//
                     {  
@@ -754,7 +775,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
                         //
                     }
                     
-                    USART2_RX_STA=0;
+                    // USART2_RX_STA=0;
                 }
 
             }
@@ -766,8 +787,9 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
             
         }
-        USART2_RX_STA=0;
-        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+
+
+        
 
         DB_PR("-------i=%d---------\n",i);
         if((i==2)&&((0x000f==ret_value1)||(0xffff==ret_value1)||(0xf1==ret_value1)) )
@@ -787,14 +809,24 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
        
 
-
-
+        // if(0==sim900a_send_cmd("AT+QISWTMD=0,1","OK",300))//add
+        if(0==sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",300))
+        {
+            DB_PR2("...a-14-2 ...\n");
+            DB_PR2("..b1.USART2_RX_STA=%d...\n",USART2_RX_STA);
+            DB_PR2("-b1--USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	
+        }
+        else
+        {
+            DB_PR2("...a-14-2 e...\n");
+        }
 
 
         // sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",1);
-        sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+        // sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
 
-
+        DB_PR2("..b2.USART2_RX_STA=%d...\n",USART2_RX_STA);
+        DB_PR2("-b2--USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	
 /*************************start****************************/
         if((0==ret_value1)||(2==ret_value1))
         {
@@ -802,17 +834,19 @@ void shangping_exe(u16 qujian_num_one_lcd)
             {
                 DB_PR2("\n\n..............j=%d...................\n",j);
                 IWDG_Feed();
-                if(USART2_RX_STA>0)
+                // if(USART2_RX_STA>0)
                 {
-                    delay_ms(5);     
-                    if(1 == cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF))
+                    delay_ms(5);    
+                    ret_value2 =cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF,1);
+                    DB_PR2("..b2.ret_value2=%x...\n",ret_value2);
+                    if(1 == ret_value2 )
                     {
-                        DB_PR("...b-tcp pass...\n");
+                        DB_PR2("...b-tcp pass...\n");
                         break;
                     }  
                     else
                     {
-                        DB_PR("...b-tcp wait...\n");
+                        DB_PR2("...b-tcp wait...\n");
                         //------------
                         // if(j==29)
                     }
@@ -833,8 +867,11 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
         }
 
-        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//---------------
-        USART2_RX_STA=0;
+        DB_PR2("... qujianma end 1 ...\n\n\n");
+        // sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+        // memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//---------------
+        // USART2_RX_STA=0;
+        // DB_PR2("... qujianma end 2 ...\n\n\n");
 /*************************end****************************/
 
 
@@ -860,6 +897,21 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 u8 daojishi_ongo_flag=0;
+
+
+
+
+
+void uart0_debug_data_h2(uint8_t* data,uint16_t len)//hex8
+{
+	int i;
+    DB_PR2("---LCD RCV 2s----:\n");
+    for(i=0;i<len;i++)
+        DB_PR2("%02x ",data[i]);
+    DB_PR2("\n-----2e---------\n");
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
@@ -890,7 +942,7 @@ void lcd_at_response(u8 mode)
         //Usart_SendByte
         memcpy(data_rx_t,USART4_RX_BUF,len_rx_t);
         // DB_PR("--LCD_UART_RCV=--\r\n");
-        // uart0_debug_data_h(data_rx_t,len_rx_t);
+        // uart0_debug_data_h(data_rx_t,len_rx_t);//----------------------
 
         if(mode)
             USART4_RX_STA=0;

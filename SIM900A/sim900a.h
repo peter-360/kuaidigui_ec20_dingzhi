@@ -24,7 +24,7 @@ void sim_at_response(u8 mode);
 u8* sim900a_check_cmd(u8 *str);
 u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime);//
 u8 sim900a_send_cmd_tou_data(u8 *cmd,u8 *ack,u16 waittime);
-u8 sim900a_send_cmd_tou_data_noclean(u8 *cmd,u8 *ack,u16 waittime);
+// u8 sim900a_send_cmd_tou_data_noclean(u8 *cmd,u8 *ack,u16 waittime);
 u8 sim900a_send_cmd_noclean(u8 *cmd,u8 *ack,u16 waittime);
 
 u8 sim900a_chr2hex(u8 chr);

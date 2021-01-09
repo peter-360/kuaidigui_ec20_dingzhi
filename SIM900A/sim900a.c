@@ -1000,9 +1000,9 @@ u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 
 
 
-u16 cjson_to_struct_info_tcp_rcv(char *text)
+u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 {
-	u8 reg_status=0x000f;
+	u32 reg_status=0x000f;
 	char *index;
 	char index_2[1024]={0};
 	cJSON * root = NULL;
@@ -1025,13 +1025,15 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 	int cjson_len=0;
 	u16 ret_value1=0xf1;
 
-	
+	//DB_PR2("---0---reg_status=%x---------\n",reg_status);
     if( text == NULL)
     {
-        DB_PR("\n----1 err----text=\n%s\n",text);
+        DB_PR2("\n----1 err----text=\n%s\n",text);
 		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 		// USART2_RX_STA =0;		
-        return 0xffff;
+		reg_status = 0xffff;
+		DB_PR2("---1---reg_status=%x---------\n",reg_status);
+        return reg_status;
     }
     // cJSON *root,*psub;
 
@@ -1041,15 +1043,17 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
 
     //???????§json
-    DB_PR("\n----1----text=\n%s\n",text);
+    DB_PR2("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
 
     if(NULL == index)
     {
-        DB_PR("------NULL----4444----------\n");
+        DB_PR2("------NULL----4444----------\n");
 		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 		// USART2_RX_STA =0;	
-        return 0xffff;
+		reg_status = 0xffff;
+		DB_PR2("---2---reg_status=%x---------\n",reg_status);
+        return reg_status;
     }
 	//index_2 = index;
     strcpy(index_2,index);
@@ -1057,9 +1061,12 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 	DB_PR("\n----2----index_2=\n%s\n",index_2);
 
 
+	if(clear_mode == 0)
+	{
+		memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+		USART2_RX_STA =0;	
+	}
 
-	memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
-	USART2_RX_STA =0;
 
 
 
@@ -1072,7 +1079,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 
     if (!root) 
     {
-        DB_PR("Error before: [%s]\n",cJSON_GetErrorPtr());
+        DB_PR2("Error before: [%s]\n",cJSON_GetErrorPtr());
 		// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 		// USART2_RX_STA =0;	
     }
@@ -1127,6 +1134,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//-----------------
 				// USART2_RX_STA=0;
 				reg_status =1;
+				DB_PR2("---3a---reg_status=%x---------\n",reg_status);
 				//---------------------
 				DB_PR("----------tcp opendoor---------\n");   
 				DB_PR("\n%s\n", "--2--一步一步的获取 door_number 键值对:");
@@ -1209,7 +1217,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("%s:", item->string);   //看一下cjson对象的结构体中这两个成员的意思
 				DB_PR("%d\n", item->valueint);
 				guimen_gk_temp = item->valueint;
-				DB_PR2("---open lock-----guimen_gk_temp=%d\n", guimen_gk_temp);
+				DB_PR2("--------------open lock-----------guimen_gk_temp=%d\n", guimen_gk_temp);
 
 
 				item = cJSON_GetObjectItem(root, "order_ary");
@@ -1281,6 +1289,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 			else if(0==strcmp("stc:overtime_pay",item->valuestring))
 			{
 				reg_status =1;
+				DB_PR2("---3b---reg_status=%x---------\n",reg_status);
 				send_cmd_to_lcd_pic(0x000a); //------------------
 				daojishi_ongo_flag =0;
 				DB_PR("----1-12c---daojishi_ongo_flag=%d\n",daojishi_ongo_flag);
@@ -1469,7 +1478,7 @@ u16 cjson_to_struct_info_tcp_rcv(char *text)
 				DB_PR("\n----1-2!=----\n");
 				// cJSON_Delete(root);
 				// cjson_to_struct_info_tcp_rcv(index_2);
-				cjson_to_struct_info_tcp_rcv(index_2+cjson_len);
+				cjson_to_struct_info_tcp_rcv(index_2+cjson_len, clear_mode);
 				
 				DB_PR("\n----2----strlen(index_2+cjson_len)=%d\n",strlen(index_2+cjson_len));
 				DB_PR("\n----2----index_2+cjson_len=\n%s\n",index_2+cjson_len);
@@ -1499,7 +1508,7 @@ void sim_at_response(u8 mode)
 		DB_PR("TCP RCV---\n%s\n----",USART2_RX_BUF);	//发送到串口
 
 		// USART2_RX_STA =0;//------------------
-		ret_status2 = cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF);
+		ret_status2 = cjson_to_struct_info_tcp_rcv((char*)USART2_RX_BUF, 0);
 		if((0x000f==ret_status2)||(0xffff==ret_status2))
 		{
 			memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
@@ -1644,7 +1653,45 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	return res;
 } 
 
+u8 sim900a_send_cmd_noclean(u8 *cmd,u8 *ack,u16 waittime)
+{
+	u8 res=0; 
+	// USART2_RX_STA=0;
+	// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
 
+	// if((u32)cmd<=0XFF)
+	// {
+	// 	while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
+	// 	USART2->DR=(u32)cmd;
+	// }
+	// else 
+	{
+		u2_printf("%s\r\n",cmd);//发送命令		
+		DB_PR("sendto 4G cmd=\n%s\n-------\r\n",cmd);
+	}
+
+	if(ack&&waittime)		//需要等待应答
+	{
+		while(--waittime)	//等待倒计时
+		{
+			// if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			if(USART2_RX_STA!=0)
+			{
+				if(sim900a_check_cmd(ack))break;//得到有效数据 
+				// USART2_RX_STA=0;
+			} 
+			delay_ms(10);
+		}
+		if(waittime==0)res=1; 
+	}
+
+	// USART2_RX_STA = 0;	//标记接收完成
+	// TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx更新中断标志    
+	// TIM4_Set(0);			//关闭TIM4  
+
+	// delay_ms(20);
+	return res;
+} 
 
 
 #if 0
