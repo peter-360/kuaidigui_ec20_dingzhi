@@ -129,9 +129,9 @@ void delay_xs(u16 xms)
 
 
 
-u16 cjson_to_struct_info_qrcode(char *text)//kaiji
+u32 cjson_to_struct_info_qrcode(char *text)//kaiji
 {
-	u8 reg_status=0x000f;
+	u32 reg_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson对象
@@ -220,9 +220,9 @@ u16 cjson_to_struct_info_qrcode(char *text)//kaiji
 
 char regst_key[60]={0};
 
-u16 cjson_to_struct_info_register(char *text)
+u32 cjson_to_struct_info_register(char *text)
 {
-	u16 reg_status=0x000f;
+	u32 reg_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson对象
@@ -677,9 +677,9 @@ u16 cjson_to_struct_info_register(char *text)
 int captcha_id=0;
 
 
-u16 cjson_to_struct_info_overtime_pay(char *text)
+u32 cjson_to_struct_info_overtime_pay(char *text)
 {
-	u8 my_status=0x000f;
+	u32 my_status=0x000f;
 	char *index;
 	cJSON * root = NULL;
 	cJSON * item = NULL;//cjson对象
@@ -878,9 +878,9 @@ int  heart_beart_idx =0;//0 or 1
 
 
 
-u16 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
+u32 cjson_to_struct_info_tcp_rcv_overtime_pay_success(char *text)
 {
-	u8 ret_status=0x000f;
+	u32 ret_status=0x000f;
 	char *index;
 	//cJSON * root = NULL;
 	//cJSON * item = NULL;//cjson???ó
@@ -1043,7 +1043,7 @@ u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 
 
     //???????§json
-    DB_PR2("\n----1----text=\n%s\n",text);
+    // DB_PR2("\n----1----text=\n%s\n",text);
     index=strchr(text,'{');
 
     if(NULL == index)

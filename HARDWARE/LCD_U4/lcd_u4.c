@@ -759,7 +759,7 @@ void shangping_exe(u16 qujian_num_one_lcd)
                 //if(USART2_RX_STA&0X8000)		//接收到一次数据了
                 { 
                     // USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
-                    DB_PR2("--a1-USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
+                    // DB_PR2("--a1-USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	//发送到串口
 
 
     
@@ -841,6 +841,8 @@ void shangping_exe(u16 qujian_num_one_lcd)
                     DB_PR2("..b2.ret_value2=%x...\n",ret_value2);
                     if(1 == ret_value2 )
                     {
+                        memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);//---------------
+                        USART2_RX_STA=0;
                         DB_PR2("...b-tcp pass...\n");
                         break;
                     }  
