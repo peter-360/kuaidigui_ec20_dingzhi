@@ -661,24 +661,22 @@ void shangping_exe(u16 qujian_num_one_lcd)
 
 
 
+
+        DB_PR("...a-0-0...\n");
+        // delay_ms(1000); //500
+        delay_ms(1000); //500
+        sim900a_send_cmd_tou_data("+++",0,0);//AT
+        // sim900a_send_cmd("+++\r\n","OK",3000);//AT
+        DB_PR("...a-0-1...\n");
+        delay_ms(1000); //500
+        // delay_ms(1000); //500
+
+        // heart_beart_idx++;
+        // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
+
+        // delay_ms(1000); //500
         for(i=0;i<2;i++)
         {
-            DB_PR("...a-0-0...\n");
-            // delay_ms(1000); //500
-            delay_ms(1000); //500
-            sim900a_send_cmd_tou_data("+++",0,0);//AT
-            // sim900a_send_cmd("+++\r\n","OK",3000);//AT
-            DB_PR("...a-0-1...\n");
-            delay_ms(1000); //500
-            // delay_ms(1000); //500
-
-
-
-            // heart_beart_idx++;
-            // DB_PR2("-1-heart_beart_idx=%d\r\n",heart_beart_idx);
-
-            // delay_ms(1000); //500
-
             IWDG_Feed();
             DB_PR("-------i=%d---------\n",i);
             //----------------------------
