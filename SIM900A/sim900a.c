@@ -1448,9 +1448,19 @@ u32 cjson_to_struct_info_tcp_rcv(char *text,u8 clear_mode)
 
                 // delay_ms(1000); //500
 				// sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",1);
-				sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
-				memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
-				USART2_RX_STA=0;
+				// sim900a_send_cmd("AT+QISWTMD=0,2",0,0);
+				// memset(USART2_RX_BUF,0,USART2_MAX_RECV_LEN);
+				// USART2_RX_STA=0;
+				if(0==sim900a_send_cmd("AT+QISWTMD=0,2","CONNECT",300))
+				{
+					DB_PR2("...c-14-2 ...\n");
+					DB_PR2("..c1.USART2_RX_STA=%d...\n",USART2_RX_STA);
+					DB_PR2("-c1--USART2_RX_BUF----\n%s\n---------",USART2_RX_BUF);	
+				}
+				else
+				{
+					DB_PR2("...c-14-2 e...\n");
+				}
 			}
 			else if(0==strcmp("stc:heartbeat",item->valuestring))
 			{
