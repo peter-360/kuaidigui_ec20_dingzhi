@@ -2574,7 +2574,7 @@ chengxu_start_3:
 			DB_PR("------------feed dog ongo-----------\n");	
 		}
 
-		if(timex_t==6000)//1min   6000
+		if(timex_t==3000)//1min   6000
 		{
 			timex_t =0;
 			// sim900a_send_cmd("AT+QISEND=0\r\n","SEND OK", 500);
